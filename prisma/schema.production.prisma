@@ -1,0 +1,168 @@
+// This is your Prisma schema file for production (PostgreSQL)
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String   // In production, this should be hashed
+  role      String   @default("STUDENT") // ADMIN, TEACHER, or STUDENT
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  attempts       QuizAttempt[]
+  createdQuizzes Quiz[] @relation("QuizCreator")
+  createdChatRooms ChatRoom[] @relation("ChatRoomCreator")
+  chatMessages   ChatMessage[]
+  createdStudyGroups StudyGroup[] @relation("StudyGroupCreator")
+  studyGroupMemberships UserStudyGroup[]
+
+  @@map("users")
+}
+
+model Quiz {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  passingScore Int     @default(60) // Percentage
+  timeLimit   Int?     // in minutes
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  creatorId   String
+  creator     User   @relation("QuizCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+  questions   Question[]
+  attempts    QuizAttempt[]
+  chatRooms   ChatRoom[]
+  studyGroups StudyGroup[]
+
+  @@map("quizzes")
+}
+
+model Question {
+  id       String       @id @default(cuid())
+  text     String
+  type     String       // MULTIPLE_CHOICE or TRUE_FALSE
+  order    Int
+  quizId   String
+  quiz     Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  options  QuestionOption[]
+  answers  Answer[]
+
+  @@map("questions")
+}
+
+model QuestionOption {
+  id         String   @id @default(cuid())
+  text       String
+  isCorrect  Boolean  @default(false)
+  order      Int
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@map("question_options")
+}
+
+model QuizAttempt {
+  id        String   @id @default(cuid())
+  score     Int      // Percentage
+  passed    Boolean
+  startedAt DateTime @default(now())
+  completedAt DateTime?
+  timeSpent Int?     // in seconds
+
+  // Relations
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quizId    String
+  quiz      Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  answers   Answer[]
+
+  @@map("quiz_attempts")
+}
+
+model Answer {
+  id         String   @id @default(cuid())
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  attemptId  String
+  attempt    QuizAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  selectedOptionId String?
+  isCorrect  Boolean
+
+  @@unique([questionId, attemptId])
+  @@map("answers")
+}
+
+model ChatRoom {
+  id        String   @id @default(cuid())
+  name      String
+  type      String   // general, study, quiz
+  quizId    String?
+  createdBy String
+  createdAt DateTime @default(now())
+  isActive  Boolean  @default(true)
+
+  // Relations
+  quiz      Quiz?         @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  creator   User          @relation("ChatRoomCreator", fields: [createdBy], references: [id], onDelete: Cascade)
+  messages  ChatMessage[]
+
+  @@map("chat_rooms")
+}
+
+model ChatMessage {
+  id              String   @id @default(cuid())
+  roomId          String
+  userId          String
+  message         String
+  createdAt       DateTime @default(now())
+  isSystemMessage Boolean  @default(false)
+
+  // Relations
+  room            ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("chat_messages")
+}
+
+model StudyGroup {
+  id        String   @id @default(cuid())
+  name      String
+  quizId    String?
+  createdBy String
+  createdAt DateTime @default(now())
+
+  // Relations
+  quiz      Quiz?            @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  creator   User             @relation("StudyGroupCreator", fields: [createdBy], references: [id], onDelete: Cascade)
+  members   UserStudyGroup[]
+
+  @@map("study_groups")
+}
+
+model UserStudyGroup {
+  userId   String
+  groupId  String
+  joinedAt DateTime @default(now())
+  role     String   @default("member") // member, moderator
+
+  // Relations
+  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group    StudyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@id([userId, groupId])
+  @@map("user_study_groups")
+}

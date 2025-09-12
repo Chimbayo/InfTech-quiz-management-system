@@ -1,0 +1,300 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String   // In production, this should be hashed
+  role      String   @default("STUDENT") // ADMIN, TEACHER, or STUDENT
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  attempts       QuizAttempt[]
+  createdQuizzes Quiz[] @relation("QuizCreator")
+  createdChatRooms ChatRoom[] @relation("ChatRoomCreator")
+  chatMessages   ChatMessage[]
+  createdStudyGroups StudyGroup[] @relation("StudyGroupCreator")
+  studyGroupMemberships UserStudyGroup[]
+  suspiciousActivities SuspiciousActivity[]
+  presence       UserPresence?
+  quizBroadcasts QuizBroadcast[] @relation("QuizBroadcastSender")
+  createdStudySessions StudySession[] @relation("StudySessionCreator")
+  studySessionParticipations StudySessionParticipant[]
+  sentAnnouncements Announcement[]
+
+  @@map("users")
+}
+
+model Quiz {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  passingScore Int     @default(60) // Percentage
+  timeLimit   Int?     // in minutes
+  isActive    Boolean  @default(true)
+  enableChat  Boolean  @default(false)
+  startAt     DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  chatSettings String?   // Store chat configuration as JSON string
+
+  // Relations
+  creatorId   String
+  creator     User   @relation("QuizCreator", fields: [creatorId], references: [id], onDelete: Cascade)
+  questions   Question[]
+  attempts    QuizAttempt[]
+  chatRooms   ChatRoom[]
+  studyGroups StudyGroup[]
+  broadcasts  QuizBroadcast[]
+  studySessions StudySession[]
+  announcements Announcement[]
+
+  @@map("quizzes")
+}
+
+model Question {
+  id       String       @id @default(cuid())
+  text     String
+  type     String       // MULTIPLE_CHOICE or TRUE_FALSE
+  order    Int
+  quizId   String
+  quiz     Quiz         @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  options  QuestionOption[]
+  answers  Answer[]
+
+  @@map("questions")
+}
+
+model QuestionOption {
+  id         String   @id @default(cuid())
+  text       String
+  isCorrect  Boolean  @default(false)
+  order      Int
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+
+  @@map("question_options")
+}
+
+model QuizAttempt {
+  id        String   @id @default(cuid())
+  score     Int      // Percentage
+  passed    Boolean
+  startedAt DateTime @default(now())
+  completedAt DateTime?
+  timeSpent Int?     // in seconds
+
+  // Relations
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quizId    String
+  quiz      Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  answers   Answer[]
+
+  @@map("quiz_attempts")
+}
+
+model Answer {
+  id         String   @id @default(cuid())
+  questionId String
+  question   Question @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  attemptId  String
+  attempt    QuizAttempt @relation(fields: [attemptId], references: [id], onDelete: Cascade)
+  selectedOptionId String?
+  isCorrect  Boolean
+
+  @@unique([questionId, attemptId])
+  @@map("answers")
+}
+
+model ChatRoom {
+  id        String   @id @default(cuid())
+  name      String
+  description String?
+  type      String   // GENERAL, STUDY_GROUP, QUIZ_DISCUSSION
+  quizId    String?
+  studyGroupId String?
+  createdBy String
+  createdAt DateTime @default(now())
+  isActive  Boolean  @default(true)
+  allowChatDuringQuiz Boolean @default(false)
+
+  // Relations
+  quiz      Quiz?         @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  studyGroup StudyGroup?  @relation(fields: [studyGroupId], references: [id], onDelete: Cascade)
+  creator   User          @relation("ChatRoomCreator", fields: [createdBy], references: [id], onDelete: Cascade)
+  messages  ChatMessage[]
+  suspiciousActivities SuspiciousActivity[]
+
+  @@map("chat_rooms")
+}
+
+model ChatMessage {
+  id              String   @id @default(cuid())
+  roomId          String
+  userId          String
+  content         String
+  createdAt       DateTime @default(now())
+  isSystemMessage Boolean  @default(false)
+  isFlagged       Boolean  @default(false)
+  isDeleted       Boolean  @default(false)
+  flaggedReason   String?
+  flaggedAt       DateTime?
+  deletedAt       DateTime?
+  flaggedBy       String?
+  deletedBy       String?
+
+  // Relations
+  room            ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  suspiciousActivities SuspiciousActivity[]
+
+  @@map("chat_messages")
+}
+
+model StudyGroup {
+  id        String   @id @default(cuid())
+  name      String
+  description String?
+  quizId    String?
+  createdBy String
+  createdAt DateTime @default(now())
+
+  // Relations
+  quiz      Quiz?            @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  creator   User             @relation("StudyGroupCreator", fields: [createdBy], references: [id], onDelete: Cascade)
+  members   UserStudyGroup[]
+  chatRooms ChatRoom[]
+  studySessions StudySession[]
+
+  @@map("study_groups")
+}
+
+model UserStudyGroup {
+  userId   String
+  groupId  String
+  joinedAt DateTime @default(now())
+  role     String   @default("member") // member, moderator
+
+  // Relations
+  user     User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  group    StudyGroup @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@id([userId, groupId])
+  @@map("user_study_groups")
+}
+
+model SuspiciousActivity {
+  id          String   @id @default(cuid())
+  userId      String
+  roomId      String
+  messageId   String?
+  type        String   // RAPID_MESSAGING, COPY_PASTE, SUSPICIOUS_PATTERN, etc.
+  timestamp   DateTime @default(now())
+  resolved    Boolean  @default(false)
+  resolvedBy  String?
+  resolvedAt  DateTime?
+  activity    String?
+  severity    String?  // LOW, MEDIUM, HIGH
+  description String?
+  evidence    String?  // JSON string containing evidence data
+
+  // Relations
+  user    User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  room    ChatRoom     @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  message ChatMessage? @relation(fields: [messageId], references: [id], onDelete: SetNull)
+
+  @@map("suspicious_activities")
+}
+
+model UserPresence {
+  id         String   @id @default(cuid())
+  userId     String   @unique
+  isOnline   Boolean  @default(false)
+  lastSeen   DateTime @default(now())
+  currentRoom String?
+  socketId   String?
+  updatedAt  DateTime @updatedAt
+
+  // Relations
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_presence")
+}
+
+model QuizBroadcast {
+  id        String   @id @default(cuid())
+  quizId    String
+  type      String   // PUBLISHED, CLOSED, STARTED, ENDED
+  message   String
+  timestamp DateTime @default(now())
+  sentBy    String
+
+  // Relations
+  quiz      Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  sender    User     @relation("QuizBroadcastSender", fields: [sentBy], references: [id], onDelete: Cascade)
+
+  @@map("quiz_broadcasts")
+}
+
+model StudySession {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  studyGroupId String?
+  quizId      String?
+  createdBy   String
+  startTime   DateTime
+  endTime     DateTime?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+
+  // Relations
+  studyGroup  StudyGroup? @relation(fields: [studyGroupId], references: [id], onDelete: Cascade)
+  quiz        Quiz?       @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  creator     User        @relation("StudySessionCreator", fields: [createdBy], references: [id], onDelete: Cascade)
+  participants StudySessionParticipant[]
+
+  @@map("study_sessions")
+}
+
+model StudySessionParticipant {
+  id        String   @id @default(cuid())
+  sessionId String
+  userId    String
+  joinedAt  DateTime @default(now())
+  leftAt    DateTime?
+  isActive  Boolean  @default(true)
+
+  // Relations
+  session   StudySession @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  user      User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([sessionId, userId])
+  @@map("study_session_participants")
+}
+
+model Announcement {
+  id        String   @id @default(cuid())
+  message   String
+  type      String   @default("GENERAL") // GENERAL or QUIZ_SPECIFIC
+  quizId    String?
+  sentBy    String
+  createdAt DateTime @default(now())
+  
+  sender    User     @relation(fields: [sentBy], references: [id], onDelete: Cascade)
+  quiz      Quiz?    @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  
+  @@map("announcements")
+}
