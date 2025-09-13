@@ -97,18 +97,49 @@ app.prepare().then(() => {
     })
 
     // Handle new messages
-    socket.on('send-message', (data) => {
-      const messageData = {
-        ...data.message,
-        id: `${Date.now()}-${socket.id}`,
-        createdAt: new Date().toISOString(),
-        status: 'sent'
+    socket.on('send-message', async (data) => {
+      try {
+        const { roomId, content, replyToId } = data
+        
+        if (!content || !content.trim()) {
+          socket.emit('error', { message: 'Message content is required' })
+          return
+        }
+
+        // Send message via API to ensure proper validation and storage
+        const response = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/chat/rooms/${roomId}/messages`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Cookie': socket.handshake.headers.cookie || ''
+          },
+          body: JSON.stringify({ content, replyToId })
+        })
+
+        if (response.ok) {
+          const message = await response.json()
+          
+          // Broadcast to all users in the room
+          io.to(roomId).emit('new-message', {
+            ...message,
+            status: 'delivered'
+          })
+          
+          // Send confirmation to sender
+          socket.emit('message-sent', {
+            tempId: data.tempId,
+            message: {
+              ...message,
+              status: 'sent'
+            }
+          })
+        } else {
+          socket.emit('error', { message: 'Failed to send message' })
+        }
+      } catch (error) {
+        console.error('Error sending message:', error)
+        socket.emit('error', { message: 'Internal server error' })
       }
-      
-      // Broadcast to all users in the room
-      io.to(data.roomId).emit('new-message', messageData)
-      
-      console.log(`Message sent in room ${data.roomId}: ${data.message.message}`)
     })
 
     // Handle typing indicators
@@ -124,6 +155,96 @@ app.prepare().then(() => {
         userId: socket.userId,
         userName: socket.userName
       })
+    })
+
+    // Handle message editing
+    socket.on('edit-message', async (data) => {
+      try {
+        const { messageId, content } = data
+        
+        const response = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/chat/messages/${messageId}`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'Cookie': socket.handshake.headers.cookie || ''
+          },
+          body: JSON.stringify({ content })
+        })
+
+        if (response.ok) {
+          const updatedMessage = await response.json()
+          
+          // Broadcast to all users in the room
+          io.to(data.roomId).emit('message-edited', {
+            ...updatedMessage,
+            isEdited: true
+          })
+        } else {
+          socket.emit('error', { message: 'Failed to edit message' })
+        }
+      } catch (error) {
+        console.error('Error editing message:', error)
+        socket.emit('error', { message: 'Internal server error' })
+      }
+    })
+
+    // Handle message deletion
+    socket.on('delete-message', async (data) => {
+      try {
+        const { messageId } = data
+        
+        const response = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/chat/messages/${messageId}`, {
+          method: 'DELETE',
+          headers: {
+            'Cookie': socket.handshake.headers.cookie || ''
+          }
+        })
+
+        if (response.ok) {
+          // Broadcast to all users in the room
+          io.to(data.roomId).emit('message-deleted', {
+            messageId,
+            isDeleted: true,
+            deletedAt: new Date().toISOString()
+          })
+        } else {
+          socket.emit('error', { message: 'Failed to delete message' })
+        }
+      } catch (error) {
+        console.error('Error deleting message:', error)
+        socket.emit('error', { message: 'Internal server error' })
+      }
+    })
+
+    // Handle message reactions
+    socket.on('react-to-message', async (data) => {
+      try {
+        const { messageId, emoji } = data
+        
+        const response = await fetch(`${process.env.NEXTAUTH_URL || 'http://localhost:3000'}/api/chat/messages/${messageId}/reactions`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Cookie': socket.handshake.headers.cookie || ''
+          },
+          body: JSON.stringify({ emoji })
+        })
+
+        if (response.ok) {
+          const result = await response.json()
+          
+          // Broadcast to all users in the room
+          io.to(data.roomId).emit('message-reaction-updated', {
+            messageId,
+            reactions: result.reactions
+          })
+        } else {
+          socket.emit('error', { message: 'Failed to react to message' })
+        }
+      } catch (error) {
+        console.error('Error reacting to message:', error)
+        socket.emit('error', { message: 'Internal server error' })
+      }
     })
 
     // Handle message status updates

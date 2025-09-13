@@ -32,6 +32,7 @@ model User {
   createdStudySessions StudySession[] @relation("StudySessionCreator")
   studySessionParticipations StudySessionParticipant[]
   sentAnnouncements Announcement[]
+  messageReactions MessageReaction[]
 
   @@map("users")
 }
@@ -146,6 +147,7 @@ model ChatMessage {
   userId          String
   content         String
   createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt @default(now())
   isSystemMessage Boolean  @default(false)
   isFlagged       Boolean  @default(false)
   isDeleted       Boolean  @default(false)
@@ -154,13 +156,32 @@ model ChatMessage {
   deletedAt       DateTime?
   flaggedBy       String?
   deletedBy       String?
+  replyToId       String?
 
   // Relations
   room            ChatRoom @relation(fields: [roomId], references: [id], onDelete: Cascade)
   user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  replyTo         ChatMessage? @relation("MessageReplies", fields: [replyToId], references: [id], onDelete: SetNull)
+  replies         ChatMessage[] @relation("MessageReplies")
+  reactions       MessageReaction[]
   suspiciousActivities SuspiciousActivity[]
 
   @@map("chat_messages")
+}
+
+model MessageReaction {
+  id        String   @id @default(cuid())
+  messageId String
+  userId    String
+  emoji     String
+  createdAt DateTime @default(now())
+
+  // Relations
+  message   ChatMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  user      User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([messageId, userId, emoji])
+  @@map("message_reactions")
 }
 
 model StudyGroup {

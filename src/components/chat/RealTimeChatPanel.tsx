@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect, useRef } from 'react'
-import { Send, Users, Wifi, WifiOff, MessageSquare, MoreVertical } from 'lucide-react'
+import React, { useState, useEffect, useRef, useCallback } from 'react'
+import { Send, Users, Wifi, WifiOff, MessageSquare, MoreVertical, Reply, Edit, Trash2, Smile, Copy } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -12,6 +12,7 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
+  DropdownMenuSeparator,
 } from '@/components/ui/dropdown-menu'
 
 interface Message {
@@ -24,7 +25,23 @@ interface Message {
     role: string
   }
   createdAt: string
+  updatedAt?: string
   isSystemMessage: boolean
+  isEdited?: boolean
+  isDeleted?: boolean
+  deletedAt?: string
+  replyTo?: {
+    id: string
+    content: string
+    user: {
+      name: string
+    }
+  }
+  reactions?: {
+    emoji: string
+    users: string[]
+    count: number
+  }[]
   status?: 'sending' | 'sent' | 'delivered' | 'read'
 }
 
@@ -50,10 +67,36 @@ export function RealTimeChatPanel({ roomId, userId }: RealTimeChatPanelProps) {
   const [currentRoom, setCurrentRoom] = useState<ChatRoom | null>(null)
   const [typingUsers, setTypingUsers] = useState<string[]>([])
   const [onlineUsers, setOnlineUsers] = useState<string[]>([])
+  const [editingMessage, setEditingMessage] = useState<string | null>(null)
+  const [editingContent, setEditingContent] = useState('')
+  const [replyingTo, setReplyingTo] = useState<Message | null>(null)
+  const [selectedReaction, setSelectedReaction] = useState<string>('')
+  const [userName, setUserName] = useState<string>('')
+  const [userRole, setUserRole] = useState<string>('')
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const typingTimeoutRef = useRef<NodeJS.Timeout>()
 
   const { socket, isConnected } = useWebSocket()
+
+  // Fetch user data
+  useEffect(() => {
+    const fetchUserData = async () => {
+      try {
+        const response = await fetch('/api/auth/session')
+        if (response.ok) {
+          const session = await response.json()
+          if (session?.user) {
+            setUserName(session.user.name || '')
+            setUserRole(session.user.role || 'STUDENT')
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching user data:', error)
+      }
+    }
+    
+    fetchUserData()
+  }, [])
 
   // Fetch initial messages and room data
   useEffect(() => {
@@ -142,44 +185,159 @@ export function RealTimeChatPanel({ roomId, userId }: RealTimeChatPanelProps) {
     }
   }
 
-  const handleSendMessage = async () => {
-    if (!newMessage.trim() || !roomId || isLoading) return
+  const handleSendMessage = useCallback(async () => {
+    if (!newMessage.trim() || isLoading || !isConnected) return
 
-    const messageText = newMessage.trim()
+    const tempId = `temp-${Date.now()}`
+    const messageData = {
+      id: tempId,
+      content: newMessage,
+      user: {
+        id: userId,
+        name: userName,
+        role: userRole
+      },
+      createdAt: new Date().toISOString(),
+      isSystemMessage: false,
+      status: 'sending' as const,
+      replyTo: replyingTo ? {
+        id: replyingTo.id,
+        content: replyingTo.content || replyingTo.message || '',
+        user: {
+          name: replyingTo.user.name
+        }
+      } : undefined
+    }
+
+    // Add message optimistically
+    setMessages(prev => [...prev, messageData])
     setNewMessage('')
+    setReplyingTo(null)
     setIsLoading(true)
 
     try {
-      const response = await fetch(`/api/chat/rooms/${roomId}/messages`, {
+      // Send via Socket.IO for real-time delivery
+      if (socket) {
+        socket.emit('send-message', {
+          roomId,
+          content: newMessage,
+          replyToId: replyingTo?.id,
+          tempId
+        })
+      }
+    } catch (error) {
+      console.error('Error sending message:', error)
+      // Remove the optimistic message on error
+      setMessages(prev => prev.filter(msg => msg.id !== tempId))
+    } finally {
+      setIsLoading(false)
+    }
+  }, [newMessage, isLoading, isConnected, socket, roomId, userId, userName, userRole, replyingTo])
+
+  const handleEditMessage = async (messageId: string, newContent: string) => {
+    try {
+      const response = await fetch(`/api/chat/messages/${messageId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: newContent
+        }),
+      })
+
+      if (response.ok) {
+        const updatedMsg = await response.json()
+        
+        // Update local messages
+        setMessages(prev => prev.map(msg => 
+          msg.id === messageId ? { ...msg, ...updatedMsg, isEdited: true } : msg
+        ))
+        
+        // Emit to socket
+        if (socket) {
+          socket.emit('message-edited', {
+            roomId,
+            messageId,
+            newContent,
+            updatedMessage: updatedMsg
+          })
+        }
+        
+        setEditingMessage(null)
+        setEditingContent('')
+      }
+    } catch (error) {
+      console.error('Error editing message:', error)
+    }
+  }
+
+  const handleDeleteMessage = async (messageId: string) => {
+    try {
+      const response = await fetch(`/api/chat/messages/${messageId}`, {
+        method: 'DELETE'
+      })
+
+      if (response.ok) {
+        // Update local messages
+        setMessages(prev => prev.map(msg => 
+          msg.id === messageId ? { ...msg, isDeleted: true, content: 'This message was deleted' } : msg
+        ))
+        
+        // Emit to socket
+        if (socket) {
+          socket.emit('message-deleted', {
+            roomId,
+            messageId
+          })
+        }
+      }
+    } catch (error) {
+      console.error('Error deleting message:', error)
+    }
+  }
+
+  const handleReactToMessage = async (messageId: string, emoji: string) => {
+    try {
+      const response = await fetch(`/api/chat/messages/${messageId}/react`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          content: messageText,
+          emoji
         }),
       })
 
       if (response.ok) {
-        const newMsg = await response.json()
+        const updatedReactions = await response.json()
         
-        // Emit to socket for real-time updates
+        // Update local messages
+        setMessages(prev => prev.map(msg => 
+          msg.id === messageId ? { ...msg, reactions: updatedReactions } : msg
+        ))
+        
+        // Emit to socket
         if (socket) {
-          socket.emit('send-message', {
+          socket.emit('message-reaction', {
             roomId,
-            message: newMsg
+            messageId,
+            emoji,
+            userId
           })
         }
-      } else {
-        console.error('Failed to send message')
-        setNewMessage(messageText) // Restore message on error
       }
     } catch (error) {
-      console.error('Error sending message:', error)
-      setNewMessage(messageText) // Restore message on error
-    } finally {
-      setIsLoading(false)
+      console.error('Error reacting to message:', error)
     }
+  }
+
+  const handleReplyToMessage = (message: Message) => {
+    setReplyingTo(message)
+  }
+
+  const handleCopyMessage = (content: string) => {
+    navigator.clipboard.writeText(content)
   }
 
   const handleTyping = () => {
@@ -258,12 +416,10 @@ export function RealTimeChatPanel({ roomId, userId }: RealTimeChatPanelProps) {
                   <span className="text-xs">Connecting...</span>
                 </div>
               )}
-              {onlineUsers.length > 0 && (
-                <Badge variant="secondary" className="text-xs">
-                  <Users className="h-3 w-3 mr-1" />
-                  {onlineUsers.length} online
-                </Badge>
-              )}
+              <Badge variant="secondary" className="text-xs">
+                <Users className="h-3 w-3 mr-1" />
+                {onlineUsers.length} online
+              </Badge>
             </div>
           </div>
         </div>
@@ -293,11 +449,12 @@ export function RealTimeChatPanel({ roomId, userId }: RealTimeChatPanelProps) {
             messages.map((message, index) => {
               const isOwnMessage = message.user.id === userId
               const showAvatar = index === 0 || messages[index - 1].user.id !== message.user.id
+              const isEditing = editingMessage === message.id
               
               return (
                 <div
                   key={message.id}
-                  className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'}`}
+                  className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'} group`}
                 >
                   <div className={`flex items-end space-x-2 max-w-xs lg:max-w-md ${isOwnMessage ? 'flex-row-reverse space-x-reverse' : ''}`}>
                     {!isOwnMessage && showAvatar && (
@@ -309,36 +466,178 @@ export function RealTimeChatPanel({ roomId, userId }: RealTimeChatPanelProps) {
                       <div className="w-8 h-8" />
                     )}
                     
-                    <div
-                      className={`px-4 py-2 rounded-2xl ${
-                        isOwnMessage
-                          ? 'bg-blue-600 text-white rounded-br-md'
-                          : message.isSystemMessage
-                          ? 'bg-yellow-100 text-yellow-800 border border-yellow-200'
-                          : 'bg-gray-100 text-gray-900 rounded-bl-md'
-                      }`}
-                    >
-                      {!isOwnMessage && !message.isSystemMessage && showAvatar && (
-                        <div className="text-xs font-medium mb-1 text-gray-600">
-                          {message.user.name}
-                          {message.user.role === 'ADMIN' && (
-                            <Badge variant="secondary" className="ml-1 text-xs">Admin</Badge>
-                          )}
-                          {message.user.role === 'TEACHER' && (
-                            <Badge variant="secondary" className="ml-1 text-xs">Teacher</Badge>
-                          )}
+                    <div className="relative">
+                      {/* Reply indicator */}
+                      {message.replyTo && (
+                        <div className={`mb-1 p-2 rounded-lg border-l-4 ${
+                          isOwnMessage ? 'border-blue-300 bg-blue-50' : 'border-gray-300 bg-gray-50'
+                        }`}>
+                          <div className="text-xs font-medium text-gray-600">
+                            Replying to {message.replyTo.user.name}
+                          </div>
+                          <div className="text-xs text-gray-500 truncate">
+                            {message.replyTo.content}
+                          </div>
                         </div>
                       )}
-                      <div className="break-words whitespace-pre-wrap">{message.content || message.message}</div>
-                      <div className={`flex items-center justify-between mt-1 text-xs ${
-                        isOwnMessage ? 'text-blue-100' : 'text-gray-500'
-                      }`}>
-                        <span>{formatTime(message.createdAt)}</span>
-                        {isOwnMessage && (
-                          <div className="ml-2">
-                            {getMessageStatusIcon(message.status)}
+                      
+                      <div
+                        className={`px-4 py-2 rounded-2xl relative ${
+                          message.isDeleted
+                            ? 'bg-gray-100 text-gray-500 italic'
+                            : isOwnMessage
+                            ? 'bg-blue-600 text-white rounded-br-md'
+                            : message.isSystemMessage
+                            ? 'bg-yellow-100 text-yellow-800 border border-yellow-200'
+                            : 'bg-gray-100 text-gray-900 rounded-bl-md'
+                        }`}
+                      >
+                        {/* Message actions dropdown */}
+                        {!message.isSystemMessage && !message.isDeleted && (
+                          <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <DropdownMenu>
+                              <DropdownMenuTrigger asChild>
+                                <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
+                                  <MoreVertical className="h-3 w-3" />
+                                </Button>
+                              </DropdownMenuTrigger>
+                              <DropdownMenuContent align="end">
+                                <DropdownMenuItem onClick={() => handleReplyToMessage(message)}>
+                                  <Reply className="h-4 w-4 mr-2" />
+                                  Reply
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleCopyMessage(message.content || message.message || '')}>
+                                  <Copy className="h-4 w-4 mr-2" />
+                                  Copy
+                                </DropdownMenuItem>
+                                <DropdownMenuSeparator />
+                                <DropdownMenuItem onClick={() => handleReactToMessage(message.id, '👍')}>
+                                  <Smile className="h-4 w-4 mr-2" />
+                                  👍
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleReactToMessage(message.id, '❤️')}>
+                                  <Smile className="h-4 w-4 mr-2" />
+                                  ❤️
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleReactToMessage(message.id, '😂')}>
+                                  <Smile className="h-4 w-4 mr-2" />
+                                  😂
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleReactToMessage(message.id, '😮')}>
+                                  <Smile className="h-4 w-4 mr-2" />
+                                  😮
+                                </DropdownMenuItem>
+                                <DropdownMenuItem onClick={() => handleReactToMessage(message.id, '😢')}>
+                                  <Smile className="h-4 w-4 mr-2" />
+                                  😢
+                                </DropdownMenuItem>
+                                {isOwnMessage && (
+                                  <>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem 
+                                      onClick={() => {
+                                        setEditingMessage(message.id)
+                                        setEditingContent(message.content || message.message || '')
+                                      }}
+                                    >
+                                      <Edit className="h-4 w-4 mr-2" />
+                                      Edit
+                                    </DropdownMenuItem>
+                                    <DropdownMenuItem 
+                                      onClick={() => handleDeleteMessage(message.id)}
+                                      className="text-red-600"
+                                    >
+                                      <Trash2 className="h-4 w-4 mr-2" />
+                                      Delete
+                                    </DropdownMenuItem>
+                                  </>
+                                )}
+                              </DropdownMenuContent>
+                            </DropdownMenu>
                           </div>
                         )}
+
+                        {!isOwnMessage && !message.isSystemMessage && showAvatar && (
+                          <div className="text-xs font-medium mb-1 text-gray-600">
+                            {message.user.name}
+                            {message.user.role === 'ADMIN' && (
+                              <Badge variant="secondary" className="ml-1 text-xs">Admin</Badge>
+                            )}
+                            {message.user.role === 'TEACHER' && (
+                              <Badge variant="secondary" className="ml-1 text-xs">Teacher</Badge>
+                            )}
+                          </div>
+                        )}
+                        
+                        {isEditing ? (
+                          <div className="space-y-2">
+                            <Input
+                              value={editingContent}
+                              onChange={(e) => setEditingContent(e.target.value)}
+                              onKeyPress={(e) => {
+                                if (e.key === 'Enter') {
+                                  handleEditMessage(message.id, editingContent)
+                                } else if (e.key === 'Escape') {
+                                  setEditingMessage(null)
+                                  setEditingContent('')
+                                }
+                              }}
+                              className="text-sm"
+                            />
+                            <div className="flex space-x-2">
+                              <Button 
+                                size="sm" 
+                                onClick={() => handleEditMessage(message.id, editingContent)}
+                              >
+                                Save
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant="outline"
+                                onClick={() => {
+                                  setEditingMessage(null)
+                                  setEditingContent('')
+                                }}
+                              >
+                                Cancel
+                              </Button>
+                            </div>
+                          </div>
+                        ) : (
+                          <div className="break-words whitespace-pre-wrap">
+                            {message.content || message.message}
+                            {message.isEdited && (
+                              <span className="text-xs opacity-70 ml-2">(edited)</span>
+                            )}
+                          </div>
+                        )}
+                        
+                        {/* Reactions */}
+                        {message.reactions && message.reactions.length > 0 && (
+                          <div className="flex flex-wrap gap-1 mt-2">
+                            {message.reactions.map((reaction, idx) => (
+                              <button
+                                key={idx}
+                                onClick={() => handleReactToMessage(message.id, reaction.emoji)}
+                                className="flex items-center space-x-1 bg-gray-200 hover:bg-gray-300 rounded-full px-2 py-1 text-xs transition-colors"
+                              >
+                                <span>{reaction.emoji}</span>
+                                <span>{reaction.count}</span>
+                              </button>
+                            ))}
+                          </div>
+                        )}
+                        
+                        <div className={`flex items-center justify-between mt-1 text-xs ${
+                          isOwnMessage ? 'text-blue-100' : 'text-gray-500'
+                        }`}>
+                          <span>{formatTime(message.createdAt)}</span>
+                          {isOwnMessage && (
+                            <div className="ml-2">
+                              {getMessageStatusIcon(message.status)}
+                            </div>
+                          )}
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -373,12 +672,36 @@ export function RealTimeChatPanel({ roomId, userId }: RealTimeChatPanelProps) {
 
       {/* Message Input */}
       <div className="p-4 border-t bg-gray-50 rounded-b-lg">
+        {/* Reply preview */}
+        {replyingTo && (
+          <div className="mb-3 p-3 bg-blue-50 border-l-4 border-blue-400 rounded">
+            <div className="flex items-center justify-between">
+              <div>
+                <div className="text-xs font-medium text-blue-700">
+                  Replying to {replyingTo.user.name}
+                </div>
+                <div className="text-sm text-blue-600 truncate">
+                  {replyingTo.content || replyingTo.message}
+                </div>
+              </div>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setReplyingTo(null)}
+                className="h-6 w-6 p-0 text-blue-600"
+              >
+                ×
+              </Button>
+            </div>
+          </div>
+        )}
+        
         <div className="flex space-x-2">
           <Input
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={handleKeyPress}
-            placeholder="Type a message..."
+            placeholder={replyingTo ? "Reply to message..." : "Type a message..."}
             disabled={isLoading || !isConnected}
             className="flex-1 bg-white"
           />

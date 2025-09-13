@@ -410,7 +410,7 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => handleJoinChatRoom(quiz.chatRooms[0].id)}
+                              onClick={() => handleJoinChatRoom(quiz.chatRooms![0].id)}
                             >
                               <MessageSquare className="h-4 w-4" />
                             </Button>
@@ -505,7 +505,7 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                             <Button
                               variant="outline"
                               size="sm"
-                              onClick={() => handleJoinChatRoom(quiz.chatRooms[0].id)}
+                              onClick={() => handleJoinChatRoom(quiz.chatRooms![0].id)}
                               className="border-green-200 text-green-700 hover:bg-green-50"
                             >
                               <MessageSquare className="h-4 w-4 mr-2" />

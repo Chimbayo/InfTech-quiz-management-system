@@ -11,36 +11,6 @@
       "static/css/app/layout.css",
       "static/chunks/app/layout.js"
     ],
-    "/admin/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/admin/page.js"
-    ],
-    "/admin/dashboard/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/admin/dashboard/page.js"
-    ],
-    "/chat/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/chat/page.js"
-    ],
-    "/admin/quizzes/create/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/admin/quizzes/create/page.js"
-    ],
-    "/admin/quizzes/[id]/edit/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/admin/quizzes/[id]/edit/page.js"
-    ],
-    "/admin/quizzes/[id]/results/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/admin/quizzes/[id]/results/page.js"
-    ],
     "/student/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
@@ -55,6 +25,16 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/chat/[roomId]/page.js"
+    ],
+    "/chat/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/chat/page.js"
+    ],
+    "/student/quiz/[id]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/student/quiz/[id]/page.js"
     ]
   }
 }

@@ -67,9 +67,9 @@ export async function POST(
 
     const roomId = params.id
     const body = await request.json()
-    const { content } = body
+    const { content, replyToId } = body
 
-    if (!content || content.trim().length === 0) {
+    if (!content || !content.trim()) {
       return NextResponse.json(
         { error: 'Message content is required' },
         { status: 400 }
@@ -98,9 +98,10 @@ export async function POST(
     // Create the message
     const message = await prisma.chatMessage.create({
       data: {
-        content: content.trim(),
+        roomId,
         userId: session.id,
-        roomId
+        content: content.trim(),
+        replyToId: replyToId || undefined
       },
       include: {
         user: {
