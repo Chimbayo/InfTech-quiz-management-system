@@ -44,6 +44,13 @@ interface QuizWithCounts extends Omit<Quiz, 'enableChat'> {
     id: string
     name: string
     type: string
+    quiz?: {
+      id: string
+      title: string
+    }
+    _count?: {
+      messages: number
+    }
   }[]
   _count: {
     questions: number
@@ -76,7 +83,10 @@ interface EnhancedStudentDashboardProps {
 export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedStudentDashboardProps) {
   const router = useRouter()
   const [isLoggingOut, setIsLoggingOut] = useState(false)
-  const [chatRooms, setChatRooms] = useState<ChatRoom[]>([])
+  const [chatRooms, setChatRooms] = useState<(ChatRoom & {
+    quiz?: { id: string; title: string }
+    _count?: { messages: number }
+  })[]>([])
   const [studyGroups, setStudyGroups] = useState<StudyGroupWithMembers[]>([])
   const [studyMilestones, setStudyMilestones] = useState<StudyMilestone[]>([])
   const [activeTab, setActiveTab] = useState('dashboard')
@@ -846,7 +856,7 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">No quiz attempts yet</h3>
                   <p className="text-gray-600 mb-4">Start taking quizzes to track your progress</p>
                   <Button 
-                    onClick={() => router.push('#quizzes')}
+                    onClick={() => setActiveTab('quizzes')}
                     className="bg-blue-600 hover:bg-blue-700"
                   >
                     <Play className="h-4 w-4 mr-2" />

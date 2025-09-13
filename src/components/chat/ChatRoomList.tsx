@@ -269,7 +269,7 @@ export function ChatRoomList({ selectedRoomId, onRoomSelect, userRole }: ChatRoo
               {filteredRooms.map((room) => (
                 <button
                   key={room.id}
-                  onClick={() => onRoomSelect(room.id)}
+                  onClick={() => window.location.href = `/chat/${room.id}`}
                   className={`w-full p-3 text-left rounded-lg border transition-colors ${
                     selectedRoomId === room.id
                       ? 'bg-blue-50 border-blue-200'
