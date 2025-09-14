@@ -25,7 +25,11 @@ import {
   BarChart3,
   UserPlus,
   XCircle,
-  History
+  History,
+  Flame,
+  Bell,
+  TrendingDown,
+  Activity
 } from 'lucide-react'
 import { SessionUser } from '@/lib/auth'
 import NotificationBell from '@/components/NotificationBell'
@@ -92,6 +96,10 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
   const [activeTab, setActiveTab] = useState('dashboard')
   const [upcomingQuizzes, setUpcomingQuizzes] = useState<QuizWithCounts[]>([])
   const [allQuizzes, setAllQuizzes] = useState<QuizWithCounts[]>(quizzes)
+  const [studyStreak, setStudyStreak] = useState(0)
+  const [weeklyGoal, setWeeklyGoal] = useState(5)
+  const [completedThisWeek, setCompletedThisWeek] = useState(0)
+  const [recentNotifications, setRecentNotifications] = useState<any[]>([])
   const { socket, isConnected } = useWebSocket()
 
   const fetchQuizzes = useCallback(async () => {
@@ -107,26 +115,114 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
     }
   }, [])
 
+  const calculateStudyStreak = useCallback(() => {
+    if (attempts.length === 0) return 0
+    
+    const sortedAttempts = attempts
+      .filter(attempt => attempt.completedAt)
+      .sort((a, b) => new Date(b.completedAt!).getTime() - new Date(a.completedAt!).getTime())
+    
+    let streak = 0
+    let currentDate = new Date()
+    currentDate.setHours(0, 0, 0, 0)
+    
+    for (const attempt of sortedAttempts) {
+      const attemptDate = new Date(attempt.completedAt!)
+      attemptDate.setHours(0, 0, 0, 0)
+      
+      const daysDiff = Math.floor((currentDate.getTime() - attemptDate.getTime()) / (1000 * 60 * 60 * 24))
+      
+      if (daysDiff === streak) {
+        streak++
+      } else if (daysDiff > streak) {
+        break
+      }
+    }
+    
+    return streak
+  }, [attempts])
+
+  const calculateWeeklyProgress = useCallback(() => {
+    const oneWeekAgo = new Date()
+    oneWeekAgo.setDate(oneWeekAgo.getDate() - 7)
+    
+    const weeklyAttempts = attempts.filter(attempt => 
+      attempt.completedAt && new Date(attempt.completedAt) > oneWeekAgo
+    )
+    
+    return weeklyAttempts.length
+  }, [attempts])
+
+  const fetchChatRooms = useCallback(async () => {
+    try {
+      const response = await fetch('/api/chat/rooms')
+      if (response.ok) {
+        const data = await response.json()
+        setChatRooms(data)
+      }
+    } catch (error) {
+      console.error('Error fetching chat rooms:', error)
+    }
+  }, [])
+
+  const fetchStudyGroups = useCallback(async () => {
+    try {
+      const response = await fetch('/api/study-groups')
+      if (response.ok) {
+        const data = await response.json()
+        setStudyGroups(data)
+      }
+    } catch (error) {
+      console.error('Error fetching study groups:', error)
+    }
+  }, [])
+
+  const fetchStudyMilestones = useCallback(async () => {
+    try {
+      const response = await fetch('/api/study-milestones')
+      if (response.ok) {
+        const data = await response.json()
+        setStudyMilestones(data)
+      }
+    } catch (error) {
+      console.error('Error fetching study milestones:', error)
+    }
+  }, [])
+
   useEffect(() => {
+    fetchQuizzes()
     fetchChatRooms()
     fetchStudyGroups()
     fetchStudyMilestones()
-    fetchQuizzes()
-  }, [fetchQuizzes])
+    setStudyStreak(calculateStudyStreak())
+    setCompletedThisWeek(calculateWeeklyProgress())
+  }, [fetchQuizzes, fetchChatRooms, fetchStudyGroups, fetchStudyMilestones, calculateStudyStreak, calculateWeeklyProgress])
 
-  // Listen for real-time quiz updates
+  // Real-time notifications effect
   useEffect(() => {
     if (!socket || !isConnected) return
 
+    const handleQuizNotification = (notification: any) => {
+      setRecentNotifications(prev => [notification, ...prev.slice(0, 4)])
+    }
+
     const handleNewQuiz = (data: any) => {
       console.log('New quiz notification received:', data)
-      // Refresh quiz list when new quiz is created
+      handleQuizNotification({
+        type: 'quiz-created',
+        message: `New quiz available: ${data.title}`,
+        timestamp: new Date()
+      })
       fetchQuizzes()
     }
 
     const handleQuizUpdate = (data: any) => {
       console.log('Quiz update received:', data)
-      // Refresh quiz list when quiz is updated
+      handleQuizNotification({
+        type: 'quiz-updated',
+        message: `Quiz updated: ${data.title}`,
+        timestamp: new Date()
+      })
       fetchQuizzes()
     }
 
@@ -137,45 +233,12 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
       socket.off('new-quiz-notification', handleNewQuiz)
       socket.off('quiz-broadcast', handleQuizUpdate)
     }
-  }, [socket, isConnected])
+  }, [socket, isConnected, fetchQuizzes])
 
   useEffect(() => {
     setUpcomingQuizzes(allQuizzes.slice(0, 3)) // Show next 3 quizzes
   }, [allQuizzes])
 
-  const fetchChatRooms = async () => {
-    try {
-      const response = await fetch('/api/chat/rooms')
-      if (response.ok) {
-        const data = await response.json()
-        setChatRooms(data || [])
-      }
-    } catch (error) {
-      console.error('Error fetching chat rooms:', error)
-    }
-  }
-
-  const fetchStudyGroups = async () => {
-    try {
-      // Fetch study groups that the current user is a member of
-      const response = await fetch('/api/study-groups')
-      if (response.ok) {
-        const data = await response.json()
-        setStudyGroups(data || [])
-      }
-    } catch (error) {
-      console.error('Error fetching study groups:', error)
-    }
-  }
-
-  const fetchStudyMilestones = async () => {
-    // Mock data for study milestones
-    setStudyMilestones([
-      { id: '1', title: 'Completed JavaScript Basics', date: new Date(), type: 'completion', completed: true },
-      { id: '2', title: 'Joined React Study Group', date: new Date(), type: 'social', completed: true },
-      { id: '3', title: '5-day study streak!', date: new Date(), type: 'achievement', completed: true }
-    ])
-  }
 
   const handleLogout = async () => {
     setIsLoggingOut(true)

@@ -8,7 +8,7 @@ export default async function MessageModerationPage() {
     const session = await requireRole('ADMIN')
     
     // Fetch flagged messages with user and room information
-    const flaggedMessages = await prisma.chatMessage.findMany({
+    const flaggedMessagesRaw = await prisma.chatMessage.findMany({
       where: { 
         isFlagged: true,
         isDeleted: false,
@@ -22,7 +22,7 @@ export default async function MessageModerationPage() {
             role: true,
           }
         },
-        chatRoom: {
+        room: {
           select: {
             id: true,
             name: true,
@@ -39,8 +39,19 @@ export default async function MessageModerationPage() {
       orderBy: { createdAt: 'desc' },
     })
 
+    // Transform flagged messages to match expected interface
+    const flaggedMessages = flaggedMessagesRaw.map(message => ({
+      id: message.id,
+      content: message.content,
+      createdAt: message.createdAt,
+      isFlagged: message.isFlagged,
+      flaggedReason: message.flaggedReason,
+      user: message.user,
+      chatRoom: message.room
+    }))
+
     // Fetch recent messages for context (last 100 messages)
-    const recentMessages = await prisma.chatMessage.findMany({
+    const recentMessagesRaw = await prisma.chatMessage.findMany({
       where: {
         isDeleted: false,
       },
@@ -63,6 +74,15 @@ export default async function MessageModerationPage() {
       orderBy: { createdAt: 'desc' },
       take: 100,
     })
+
+    // Transform recent messages to match expected interface
+    const recentMessages = recentMessagesRaw.map(message => ({
+      id: message.id,
+      content: message.content,
+      createdAt: message.createdAt,
+      user: message.user,
+      chatRoom: message.room
+    }))
 
     // Get moderation statistics
     const stats = {
