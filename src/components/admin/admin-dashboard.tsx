@@ -167,12 +167,20 @@ export function AdminDashboard({ user, quizzes, stats }: AdminDashboardProps) {
           </div>
           <div className="flex gap-3">
             <Button 
+              onClick={() => router.push('/admin/students')}
+              variant="outline"
+              className="btn-secondary-professional"
+            >
+              <Users className="h-4 w-4 mr-2" />
+              Students
+            </Button>
+            <Button 
               onClick={() => router.push('/admin/users')}
               variant="outline"
               className="btn-secondary-professional"
             >
               <Users className="h-4 w-4 mr-2" />
-              View Users
+              All Users
             </Button>
             <Button 
               onClick={() => router.push('/admin/chat')}
