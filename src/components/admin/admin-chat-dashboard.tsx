@@ -325,7 +325,7 @@ export function AdminChatDashboard({ user, chatRooms, stats }: AdminChatDashboar
                 <CardContent>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
                     <div className="text-center p-3 bg-gray-50 rounded-lg">
-                      <div className="text-2xl font-bold text-blue-600">{room._count.messages}</div>
+                      <div className="text-2xl font-bold text-blue-600">{room._count?.messages}</div>
                       <div className="text-sm text-gray-600">Messages</div>
                     </div>
                     <div className="text-center p-3 bg-gray-50 rounded-lg">

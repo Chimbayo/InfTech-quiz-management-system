@@ -1,9 +1,9 @@
 {
-  "/student/dashboard/page": "app/student/dashboard/page.js",
+  "/student/page": "app/student/page.js",
+  "/page": "app/page.js",
   "/admin/page": "app/admin/page.js",
   "/admin/dashboard/page": "app/admin/dashboard/page.js",
-  "/chat/[roomId]/page": "app/chat/[roomId]/page.js",
-  "/chat/page": "app/chat/page.js",
+  "/admin/quizzes/[id]/edit/page": "app/admin/quizzes/[id]/edit/page.js",
   "/api/quizzes/route": "app/api/quizzes/route.js",
   "/api/reports/academic-integrity/route": "app/api/reports/academic-integrity/route.js"
 }

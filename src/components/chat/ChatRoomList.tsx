@@ -298,6 +298,11 @@ export function ChatRoomList({ selectedRoomId, onRoomSelect, userRole }: ChatRoo
                             Quiz: {room.quiz.title}
                           </p>
                         )}
+                        {room._count?.messages && (
+                          <p className="text-xs text-gray-500 mt-2">
+                            {room._count.messages} messages
+                          </p>
+                        )}
                         <div className="flex items-center justify-between mt-1">
                           <span className="text-xs text-gray-500">
                             by {room.creator.name}
@@ -308,7 +313,7 @@ export function ChatRoomList({ selectedRoomId, onRoomSelect, userRole }: ChatRoo
                         </div>
                       </div>
                     </div>
-                    {room._count.messages > 0 && (
+                    {room._count?.messages && room._count.messages > 0 && (
                       <Badge variant="secondary" className="ml-2 text-xs">
                         {room._count.messages}
                       </Badge>

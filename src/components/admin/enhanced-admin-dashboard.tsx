@@ -1062,7 +1062,7 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
                                 </Badge>
                               </div>
                               <CardDescription className="mt-2">
-                                {room._count.messages} messages
+                                {room._count?.messages} messages
                                 {room.quiz && ` • Quiz: ${room.quiz.title}`}
                               </CardDescription>
                             </div>

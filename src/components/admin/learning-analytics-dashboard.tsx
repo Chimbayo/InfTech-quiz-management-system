@@ -66,7 +66,7 @@ interface LearningAnalyticsData {
 export function LearningAnalyticsDashboard() {
   const [data, setData] = useState<LearningAnalyticsData | null>(null)
   const [timeRange, setTimeRange] = useState('30')
-  const [selectedQuiz, setSelectedQuiz] = useState<string>('')
+  const [selectedQuiz, setSelectedQuiz] = useState<string>('all')
   const [quizzes, setQuizzes] = useState<Array<{id: string, title: string}>>([])
   const [isLoading, setIsLoading] = useState(true)
 
@@ -96,7 +96,7 @@ export function LearningAnalyticsDashboard() {
     try {
       const params = new URLSearchParams({
         timeRange,
-        ...(selectedQuiz && { quizId: selectedQuiz })
+        ...(selectedQuiz && selectedQuiz !== 'all' && { quizId: selectedQuiz })
       })
       
       const response = await fetch(`/api/analytics/learning?${params}`)
@@ -181,7 +181,7 @@ export function LearningAnalyticsDashboard() {
               <SelectValue placeholder="All Quizzes" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Quizzes</SelectItem>
+              <SelectItem value="all">All Quizzes</SelectItem>
               {quizzes.map(quiz => (
                 <SelectItem key={quiz.id} value={quiz.id}>{quiz.title}</SelectItem>
               ))}
@@ -266,14 +266,14 @@ export function LearningAnalyticsDashboard() {
           <div className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div className="text-center p-4 bg-blue-50 rounded-lg">
-                <p className="text-sm text-gray-600">High Engagement (>50 messages)</p>
+                <p className="text-sm text-gray-600">High Engagement (&gt; 50 messages)</p>
                 <p className="text-2xl font-bold text-blue-600">
                   {data.engagementCorrelation.filter(u => u.messageCount > 50).length}
                 </p>
                 <p className="text-xs text-gray-500">users</p>
               </div>
               <div className="text-center p-4 bg-green-50 rounded-lg">
-                <p className="text-sm text-gray-600">High Performers (>80% avg)</p>
+                <p className="text-sm text-gray-600">High Performers (&gt;80% avg)</p>
                 <p className="text-2xl font-bold text-green-600">
                   {data.engagementCorrelation.filter(u => u.averageScore > 80).length}
                 </p>

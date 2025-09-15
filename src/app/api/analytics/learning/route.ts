@@ -257,7 +257,7 @@ export async function GET(request: NextRequest) {
         : 0
 
       const totalMessages = group.chatRooms.reduce((sum, room) => 
-        sum + room._count.messages, 0
+        sum + room._count?.messages || 0, 0
       )
 
       return {

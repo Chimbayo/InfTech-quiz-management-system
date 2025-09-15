@@ -111,7 +111,7 @@ export function AcademicIntegrityReport() {
   const [data, setData] = useState<IntegrityReportData | null>(null)
   const [isLoading, setIsLoading] = useState(true)
   const [timeRange, setTimeRange] = useState('30')
-  const [selectedQuiz, setSelectedQuiz] = useState<string>('')
+  const [selectedQuiz, setSelectedQuiz] = useState<string>('all')
   const [quizzes, setQuizzes] = useState<Array<{id: string, title: string}>>([])
 
   useEffect(() => {
@@ -140,7 +140,7 @@ export function AcademicIntegrityReport() {
     try {
       const params = new URLSearchParams({
         timeRange,
-        ...(selectedQuiz && { quizId: selectedQuiz })
+        ...(selectedQuiz && selectedQuiz !== 'all' && { quizId: selectedQuiz })
       })
       
       const response = await fetch(`/api/reports/academic-integrity?${params}`)
@@ -237,7 +237,7 @@ export function AcademicIntegrityReport() {
               <SelectValue placeholder="All Quizzes" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">All Quizzes</SelectItem>
+              <SelectItem value="all">All Quizzes</SelectItem>
               {quizzes.map(quiz => (
                 <SelectItem key={quiz.id} value={quiz.id}>{quiz.title}</SelectItem>
               ))}

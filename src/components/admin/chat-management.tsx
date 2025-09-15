@@ -102,7 +102,7 @@ export function ChatManagement() {
       // Calculate stats
       const totalRooms = rooms.length
       const activeRooms = rooms.filter(room => room.isActive).length
-      const totalMessages = rooms.reduce((sum, room) => sum + room._count.messages, 0)
+      const totalMessages = rooms.reduce((sum, room) => sum + room._count?.messages, 0)
       const suspiciousActivities = activities.length
       const highRiskActivities = activities.filter(activity => activity.severity === 'HIGH').length
 
@@ -279,7 +279,7 @@ export function ChatManagement() {
                           </Badge>
                         </div>
                         <div className="text-sm text-gray-600 mt-1">
-                          {room._count.messages} messages • Created {new Date(room.createdAt).toLocaleDateString()}
+                          {room._count?.messages} messages • Created {new Date(room.createdAt).toLocaleDateString()}
                           {room.quiz && ` • Quiz: ${room.quiz.title}`}
                           {room.studyGroup && ` • Study Group: ${room.studyGroup.name}`}
                         </div>

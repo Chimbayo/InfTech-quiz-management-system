@@ -666,7 +666,7 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                             Join Chat
                           </Button>
                         </div>
-                        {room._count && (
+                        {room._count?.messages && (
                           <p className="text-xs text-gray-500 mt-2">
                             {room._count.messages} messages
                           </p>
@@ -718,7 +718,7 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                             Join Chat
                           </Button>
                         </div>
-                        {room._count && (
+                        {room._count?.messages && (
                           <p className="text-xs text-gray-500 mt-2">
                             {room._count.messages} messages
                           </p>
