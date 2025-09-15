@@ -28,13 +28,20 @@ import {
   Calendar,
   UserPlus,
   Bell,
-  Megaphone
+  Megaphone,
+  Brain,
+  Target,
+  Award
 } from 'lucide-react'
 import { SessionUser } from '@/lib/auth'
 import { Quiz } from '@prisma/client'
 import QuizStatusBroadcast from '@/components/realtime/QuizStatusBroadcast'
 import InstructorPresence from '@/components/realtime/InstructorPresence'
 import StudyProgressUpdates from '@/components/realtime/StudyProgressUpdates'
+import { LearningAnalyticsDashboard } from '@/components/admin/learning-analytics-dashboard'
+import { PredictiveAnalyticsDashboard } from '@/components/admin/predictive-analytics-dashboard'
+import { AcademicIntegrityReport } from '@/components/admin/academic-integrity-report'
+import { QuizAnnouncementManager } from '@/components/admin/quiz-announcement-manager'
 
 interface QuizWithCounts extends Omit<Quiz, 'enableChat' | 'chatSettings'> {
   enableChat?: boolean
@@ -548,6 +555,42 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
             >
               <Shield className="h-4 w-4 mr-2" />
               Monitoring
+            </Button>
+            <Button
+              onClick={() => setActiveTab('analytics')}
+              variant={activeTab === 'analytics' ? 'default' : 'ghost'}
+              className={`w-full justify-start ${
+                activeTab === 'analytics' 
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' 
+                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
+              }`}
+            >
+              <BarChart3 className="h-4 w-4 mr-2" />
+              Learning Analytics
+            </Button>
+            <Button
+              onClick={() => setActiveTab('predictive')}
+              variant={activeTab === 'predictive' ? 'default' : 'ghost'}
+              className={`w-full justify-start ${
+                activeTab === 'predictive' 
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' 
+                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
+              }`}
+            >
+              <Brain className="h-4 w-4 mr-2" />
+              Predictive Analytics
+            </Button>
+            <Button
+              onClick={() => setActiveTab('integrity')}
+              variant={activeTab === 'integrity' ? 'default' : 'ghost'}
+              className={`w-full justify-start ${
+                activeTab === 'integrity' 
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' 
+                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
+              }`}
+            >
+              <Target className="h-4 w-4 mr-2" />
+              Integrity Report
             </Button>
           </div>
         </div>
@@ -1322,6 +1365,26 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
 
             {/* Announcements Tab */}
             <TabsContent value="announcements" className="space-y-6 p-6">
+              <QuizAnnouncementManager />
+            </TabsContent>
+
+            {/* Learning Analytics Tab */}
+            <TabsContent value="analytics" className="space-y-6 p-6">
+              <LearningAnalyticsDashboard />
+            </TabsContent>
+
+            {/* Predictive Analytics Tab */}
+            <TabsContent value="predictive" className="space-y-6 p-6">
+              <PredictiveAnalyticsDashboard />
+            </TabsContent>
+
+            {/* Academic Integrity Report Tab */}
+            <TabsContent value="integrity" className="space-y-6 p-6">
+              <AcademicIntegrityReport />
+            </TabsContent>
+
+            {/* Legacy Announcements Tab - keeping for compatibility */}
+            <TabsContent value="legacy-announcements" className="space-y-6 p-6">
               <div className="space-y-6">
                 <div>
                   <h2 className="text-2xl font-bold text-gray-900">Announcements</h2>

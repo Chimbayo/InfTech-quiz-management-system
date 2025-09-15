@@ -31,6 +31,7 @@ import {
   TrendingDown,
   Activity
 } from 'lucide-react'
+import { GamificationPanel } from '@/components/student/gamification-panel'
 import { SessionUser } from '@/lib/auth'
 import NotificationBell from '@/components/NotificationBell'
 import { useWebSocket } from '@/hooks/useWebSocket'
@@ -385,6 +386,18 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
             >
               <TrendingUp className="h-4 w-4 mr-2" />
               Progress
+            </Button>
+            <Button
+              onClick={() => setActiveTab('achievements')}
+              variant={activeTab === 'achievements' ? 'default' : 'ghost'}
+              className={`w-full justify-start ${
+                activeTab === 'achievements' 
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' 
+                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
+              }`}
+            >
+              <Trophy className="h-4 w-4 mr-2" />
+              Achievements
             </Button>
           </nav>
         </div>
@@ -928,6 +941,16 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                 </CardContent>
               </Card>
             )}
+          </TabsContent>
+
+          {/* Achievements Tab */}
+          <TabsContent value="achievements" className="space-y-6">
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">Your Achievements</h2>
+              <p className="text-gray-600 mt-1">Track your progress and unlock new badges through active participation</p>
+            </div>
+
+            <GamificationPanel userId={user.id} />
           </TabsContent>
             </Tabs>
           </div>
