@@ -21,7 +21,6 @@ export default async function EditQuizPage({ params }: EditQuizPageProps) {
     const quiz = await prisma.quiz.findUnique({
       where: { 
         id: params.id,
-        creatorId: session.id, // Ensure admin can only edit their own quizzes
       },
       include: {
         questions: {

@@ -17,11 +17,10 @@ export default async function AdminQuizResultsPage({ params }: QuizResultsPagePr
   try {
     const session = await requireRole('ADMIN')
     
-    // Verify the quiz belongs to the admin
+    // Get the quiz details
     const quiz = await prisma.quiz.findUnique({
       where: { 
         id: params.id,
-        creatorId: session.id,
       },
     })
 

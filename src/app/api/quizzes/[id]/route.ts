@@ -22,7 +22,6 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
     const quiz = await prisma.quiz.findUnique({
       where: { 
         id: params.id,
-        creatorId: session.id, // Ensure admin can only access their own quizzes
       },
       include: {
         questions: {
@@ -93,7 +92,6 @@ export async function PUT(request: NextRequest, { params }: RouteParams) {
     const existingQuiz = await prisma.quiz.findUnique({
       where: { 
         id: params.id,
-        creatorId: session.id,
       },
     })
 
@@ -201,7 +199,6 @@ export async function DELETE(request: NextRequest, { params }: RouteParams) {
     const existingQuiz = await prisma.quiz.findUnique({
       where: { 
         id: params.id,
-        creatorId: session.id,
       },
     })
 

@@ -17,11 +17,10 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
   try {
     const session = await requireRole('ADMIN')
     
-    // Verify the quiz belongs to the admin
+    // Get the quiz details
     const quiz = await prisma.quiz.findUnique({
       where: { 
         id: params.id,
-        creatorId: session.id,
       },
     })
 

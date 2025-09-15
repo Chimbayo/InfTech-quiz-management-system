@@ -292,9 +292,12 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
       })
 
       if (response.ok) {
-        router.refresh()
+        // Update local state by removing the deleted quiz
+        setAllQuizzes(prevQuizzes => prevQuizzes.filter(quiz => quiz.id !== quizId))
+        alert('Quiz deleted successfully!')
       } else {
-        alert('Failed to delete quiz')
+        const errorData = await response.json()
+        alert(`Failed to delete quiz: ${errorData.error || 'Unknown error'}`)
       }
     } catch (error) {
       console.error('Delete error:', error)
@@ -412,7 +415,12 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
       })
 
       if (response.ok) {
-        router.refresh()
+        // Update local state
+        setAllQuizzes(prevQuizzes => 
+          prevQuizzes.map(quiz => 
+            quiz.id === quizId ? { ...quiz, enableChat } : quiz
+          )
+        )
       }
     } catch (error) {
       console.error('Error updating quiz chat settings:', error)
@@ -661,7 +669,7 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
                 </div>
 
                 <div className="grid gap-6">
-                  {quizzes.map((quiz) => (
+                  {allQuizzes.map((quiz) => (
                     <Card key={quiz.id} className="card-professional card-professional-hover">
                       <CardHeader>
                         <div className="flex justify-between items-start">
