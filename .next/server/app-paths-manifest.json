@@ -1,9 +1,10 @@
 {
-  "/student/page": "app/student/page.js",
-  "/page": "app/page.js",
+  "/chat/[roomId]/page": "app/chat/[roomId]/page.js",
+  "/chat/page": "app/chat/page.js",
+  "/student/quiz/[id]/results/page": "app/student/quiz/[id]/results/page.js",
   "/admin/page": "app/admin/page.js",
   "/admin/dashboard/page": "app/admin/dashboard/page.js",
-  "/admin/quizzes/[id]/edit/page": "app/admin/quizzes/[id]/edit/page.js",
   "/api/quizzes/route": "app/api/quizzes/route.js",
-  "/api/reports/academic-integrity/route": "app/api/reports/academic-integrity/route.js"
+  "/api/reports/academic-integrity/route": "app/api/reports/academic-integrity/route.js",
+  "/api/announcements/route": "app/api/announcements/route.js"
 }
