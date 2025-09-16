@@ -84,70 +84,130 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Auto-create chat room if enabled
-    if (data.enableChat) {
-      try {
-        const roomName = data.chatRoomName || `${quiz.title} - Discussion`
-        
-        const chatRoom = await prisma.chatRoom.create({
+    // Auto-create chat rooms for all quizzes created by admin
+    console.log(`Creating chat rooms for quiz: ${quiz.title}`)
+    try {
+      // Create Pre-Quiz Discussion Room
+      console.log('Creating pre-quiz discussion room...')
+      const preQuizRoom = await prisma.chatRoom.create({
+        data: {
+          name: `${quiz.title} - Pre-Quiz Discussion`,
+          description: 'Discuss quiz topics and prepare together before attempting',
+          type: 'PRE_QUIZ_DISCUSSION',
+          quizId: quiz.id,
+          createdBy: data.creatorId,
+          allowChatDuringQuiz: false,
+          isActive: true,
+        }
+      })
+
+      await prisma.chatMessage.create({
+        data: {
+          roomId: preQuizRoom.id,
+          userId: data.creatorId,
+          content: `📚 Pre-Quiz Discussion for "${quiz.title}" is now open! Discuss topics, ask questions, and prepare together before attempting the quiz.`,
+          isSystemMessage: true
+        }
+      })
+      console.log('Pre-quiz room created successfully')
+
+      // Create Post-Quiz Review Room (initially inactive)
+      console.log('Creating post-quiz review room...')
+      const postQuizRoom = await prisma.chatRoom.create({
+        data: {
+          name: `${quiz.title} - Post-Quiz Review`,
+          description: 'Review answers and discuss explanations after completing the quiz',
+          type: 'POST_QUIZ_REVIEW',
+          quizId: quiz.id,
+          createdBy: data.creatorId,
+          allowChatDuringQuiz: false,
+          isActive: false, // Will be activated when first student completes quiz
+        }
+      })
+
+      await prisma.chatMessage.create({
+        data: {
+          roomId: postQuizRoom.id,
+          userId: data.creatorId,
+          content: `🎯 Post-Quiz Review for "${quiz.title}" will be available after you complete the quiz. Discuss answers, explanations, and learn from each other!`,
+          isSystemMessage: true
+        }
+      })
+      console.log('Post-quiz room created successfully')
+
+      // Create General Quiz Discussion Room (always active)
+      console.log('Creating general discussion room...')
+      const generalRoom = await prisma.chatRoom.create({
+        data: {
+          name: data.chatRoomName || `${quiz.title} - General Discussion`,
+          description: 'General discussion about the quiz topic',
+          type: 'QUIZ_DISCUSSION',
+          quizId: quiz.id,
+          createdBy: data.creatorId,
+          allowChatDuringQuiz: data.allowChatDuringQuiz || false,
+          isActive: true,
+        }
+      })
+
+      await prisma.chatMessage.create({
+        data: {
+          roomId: generalRoom.id,
+          userId: data.creatorId,
+          content: `💬 General discussion room for "${quiz.title}" is now available! Share insights, ask questions, and collaborate with your peers.`,
+          isSystemMessage: true
+        }
+      })
+      console.log('General discussion room created successfully')
+
+      // Create study group if enabled
+      if (data.enableStudyGroup) {
+        console.log('Creating study group...')
+        const studyGroup = await prisma.studyGroup.create({
           data: {
-            name: roomName,
-            type: 'QUIZ_DISCUSSION',
+            name: `${quiz.title} - Study Group`,
+            description: `Collaborative study group for ${quiz.title}. Join to study together and help each other succeed!`,
             quizId: quiz.id,
             createdBy: data.creatorId,
-            allowChatDuringQuiz: data.allowChatDuringQuiz || false,
+          }
+        })
+
+        // Create study group chat room
+        const studyGroupRoom = await prisma.chatRoom.create({
+          data: {
+            name: `${quiz.title} - Study Group Chat`,
+            description: 'Private chat for study group members',
+            type: 'STUDY_GROUP',
+            studyGroupId: studyGroup.id,
+            createdBy: data.creatorId,
+            allowChatDuringQuiz: true, // Study groups can chat during quiz
             isActive: true,
           }
         })
 
-        // Create system message
         await prisma.chatMessage.create({
           data: {
-            roomId: chatRoom.id,
+            roomId: studyGroupRoom.id,
             userId: data.creatorId,
-            content: `📚 Discussion room created for quiz: ${quiz.title}. Students can join after completing the quiz.`,
+            content: `👥 Welcome to the "${quiz.title}" study group! This is your private space to collaborate, share resources, and help each other prepare for the quiz. Good luck!`,
             isSystemMessage: true
           }
         })
 
-        // Create study group if enabled
-        if (data.enableStudyGroup) {
-          const studyGroup = await prisma.studyGroup.create({
-            data: {
-              name: `${quiz.title} - Study Group`,
-              description: `Collaborative study group for ${quiz.title}`,
-              quizId: quiz.id,
-              createdBy: data.creatorId,
-            }
-          })
-
-          // Create study group chat room
-          const studyGroupRoom = await prisma.chatRoom.create({
-            data: {
-              name: `${quiz.title} - Study Group`,
-              type: 'STUDY_GROUP',
-              studyGroupId: studyGroup.id,
-              createdBy: data.creatorId,
-              allowChatDuringQuiz: true, // Study groups can chat during quiz
-              isActive: true,
-            }
-          })
-
-          await prisma.chatMessage.create({
-            data: {
-              roomId: studyGroupRoom.id,
-              userId: data.creatorId,
-              content: `👥 Study group created! Collaborate and help each other learn about: ${quiz.title}`,
-              isSystemMessage: true
-            }
-          })
-        }
-
-        console.log(`Auto-created chat room for quiz: ${quiz.title}`)
-      } catch (error) {
-        console.warn('Failed to create chat room for quiz:', error)
-        // Don't fail quiz creation if chat room creation fails
+        // Auto-add creator as moderator
+        await prisma.userStudyGroup.create({
+          data: {
+            userId: data.creatorId,
+            groupId: studyGroup.id,
+            role: 'moderator'
+          }
+        })
+        console.log('Study group created successfully')
       }
+
+      console.log(`✅ Auto-created chat rooms for quiz: ${quiz.title}`)
+    } catch (error) {
+      console.error('❌ Failed to create chat rooms for quiz:', error)
+      // Don't fail quiz creation if chat room creation fails
     }
 
     // Broadcast quiz creation if active

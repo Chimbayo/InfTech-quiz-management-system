@@ -30,9 +30,14 @@ model User {
   presence       UserPresence?
   quizBroadcasts QuizBroadcast[] @relation("QuizBroadcastSender")
   createdStudySessions StudySession[] @relation("StudySessionCreator")
-  studySessionParticipations StudySessionParticipant[]
+  studySessionParticipants StudySessionParticipant[]
   sentAnnouncements Announcement[]
   messageReactions MessageReaction[]
+  studyReminders StudyReminder[]
+  notificationSettings UserNotificationSettings?
+  helpRequests      HelpRequest[]
+  helpResponses     HelpResponse[]
+  studyMilestones   StudyMilestone[]
 
   @@map("users")
 }
@@ -60,6 +65,8 @@ model Quiz {
   broadcasts  QuizBroadcast[]
   studySessions StudySession[]
   announcements Announcement[]
+  studyReminders StudyReminder[]
+  helpRequests  HelpRequest[]
 
   @@map("quizzes")
 }
@@ -286,6 +293,7 @@ model StudySession {
   quiz        Quiz?       @relation(fields: [quizId], references: [id], onDelete: Cascade)
   creator     User        @relation("StudySessionCreator", fields: [createdBy], references: [id], onDelete: Cascade)
   participants StudySessionParticipant[]
+  studyReminders StudyReminder[]
 
   @@map("study_sessions")
 }
@@ -318,4 +326,89 @@ model Announcement {
   quiz      Quiz?    @relation(fields: [quizId], references: [id], onDelete: Cascade)
   
   @@map("announcements")
+}
+
+model StudyReminder {
+  id            String    @id @default(cuid())
+  title         String
+  description   String?
+  type          String    // QUIZ_DEADLINE, STUDY_SESSION, CUSTOM, PROGRESS_CHECK
+  reminderTime  DateTime
+  isActive      Boolean   @default(true)
+  userId        String
+  quizId        String?
+  studySessionId String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+  deletedAt     DateTime?
+
+  // Relations
+  user          User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quiz          Quiz?         @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  studySession  StudySession? @relation(fields: [studySessionId], references: [id], onDelete: Cascade)
+
+  @@map("study_reminders")
+}
+
+model UserNotificationSettings {
+  id                  String   @id @default(cuid())
+  userId              String   @unique
+  emailNotifications  Boolean  @default(true)
+  pushNotifications   Boolean  @default(true)
+  reminderFrequency   String   @default("1_HOUR") // 15_MIN, 30_MIN, 1_HOUR, 2_HOUR, 1_DAY
+  autoReminders       Boolean  @default(true)
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+
+  // Relations
+  user               User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("user_notification_settings")
+}
+
+model HelpRequest {
+  id          String   @id @default(cuid())
+  topic       String
+  question    String
+  priority    String   @default("MEDIUM") // LOW, MEDIUM, HIGH
+  status      String   @default("OPEN")   // OPEN, IN_PROGRESS, RESOLVED
+  userId      String
+  quizId      String
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  // Relations
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  quiz        Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  responses   HelpResponse[]
+
+  @@map("help_requests")
+}
+
+model HelpResponse {
+  id            String      @id @default(cuid())
+  response      String
+  helpRequestId String
+  responderId   String
+  createdAt     DateTime    @default(now())
+
+  // Relations
+  helpRequest   HelpRequest @relation(fields: [helpRequestId], references: [id], onDelete: Cascade)
+  responder     User        @relation(fields: [responderId], references: [id], onDelete: Cascade)
+
+  @@map("help_responses")
+}
+
+model StudyMilestone {
+  id          String   @id @default(cuid())
+  type        String   // QUIZ_COMPLETED, STREAK_ACHIEVED, SCORE_IMPROVED, STUDY_GOAL_MET, BADGE_EARNED
+  description String
+  value       Int      @default(0)
+  userId      String
+  createdAt   DateTime @default(now())
+
+  // Relations
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("study_milestones")
 }

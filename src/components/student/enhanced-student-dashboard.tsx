@@ -29,9 +29,14 @@ import {
   Flame,
   Bell,
   TrendingDown,
-  Activity
+  Activity,
+  HelpCircle
 } from 'lucide-react'
 import { GamificationPanel } from '@/components/student/gamification-panel'
+import { StudySchedulingPanel } from '@/components/student/study-scheduling-panel'
+import { HelpRequestPanel } from '@/components/student/help-request-panel'
+import { ProgressSharingPanel } from '@/components/student/progress-sharing-panel'
+import { StudyRemindersPanel } from '@/components/student/study-reminders-panel'
 import { SessionUser } from '@/lib/auth'
 import NotificationBell from '@/components/NotificationBell'
 import { useWebSocket } from '@/hooks/useWebSocket'
@@ -101,6 +106,8 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
   const [weeklyGoal, setWeeklyGoal] = useState(5)
   const [completedThisWeek, setCompletedThisWeek] = useState(0)
   const [recentNotifications, setRecentNotifications] = useState<any[]>([])
+  const [selectedQuizForHelp, setSelectedQuizForHelp] = useState<string | null>(null)
+  const [selectedQuizForSession, setSelectedQuizForSession] = useState<string | null>(null)
   const { socket, isConnected } = useWebSocket()
 
   const fetchQuizzes = useCallback(async () => {
@@ -262,11 +269,84 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
   }
 
   const getQuizChatRooms = () => {
-    return chatRooms.filter(room => room.type === 'QUIZ_DISCUSSION')
+    return chatRooms.filter(room => 
+      room.type === 'QUIZ_DISCUSSION' || 
+      room.type === 'PRE_QUIZ_DISCUSSION' || 
+      room.type === 'POST_QUIZ_REVIEW'
+    )
   }
 
   const getGeneralChatRooms = () => {
     return chatRooms.filter(room => room.type === 'GENERAL')
+  }
+
+  const getStudyGroupChatRooms = () => {
+    return chatRooms.filter(room => room.type === 'STUDY_GROUP')
+  }
+
+  const getPreQuizRooms = () => {
+    return chatRooms.filter(room => room.type === 'PRE_QUIZ_DISCUSSION')
+  }
+
+  const getPostQuizRooms = () => {
+    return chatRooms.filter(room => room.type === 'POST_QUIZ_REVIEW')
+  }
+
+  const getGeneralQuizRooms = () => {
+    return chatRooms.filter(room => room.type === 'QUIZ_DISCUSSION')
+  }
+
+  const getSubjectBasedRooms = () => {
+    // Group chat rooms by subject/topic extracted from quiz titles
+    const subjectRooms = chatRooms.filter(room => 
+      room.quiz && (room.type === 'QUIZ_DISCUSSION' || room.type === 'PRE_QUIZ_DISCUSSION' || room.type === 'POST_QUIZ_REVIEW')
+    )
+    
+    // Group by subject for better organization
+    const subjectGroups = new Map()
+    subjectRooms.forEach(room => {
+      const subject = extractSubject(room.quiz?.title || '')
+      if (!subjectGroups.has(subject)) {
+        subjectGroups.set(subject, [])
+      }
+      subjectGroups.get(subject).push(room)
+    })
+    
+    return subjectRooms
+  }
+
+  const extractSubject = (title: string) => {
+    // Extract subject from quiz title (e.g., "Math Quiz 1" -> "Math", "JavaScript Basics" -> "JavaScript")
+    const subjects = ['Math', 'Science', 'History', 'English', 'JavaScript', 'Python', 'React', 'Node.js', 'Database', 'Physics', 'Chemistry', 'Biology']
+    const foundSubject = subjects.find(subject => 
+      title.toLowerCase().includes(subject.toLowerCase())
+    )
+    return foundSubject || title.split(' ')[0] || 'General'
+  }
+
+  const getRelatedChatRooms = (quizId: string) => {
+    return chatRooms.filter(room => room.quiz?.id === quizId)
+  }
+
+  const shareQuizResult = async (quizId: string, score: number, passed: boolean) => {
+    try {
+      const response = await fetch('/api/chat/share-result', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          quizId,
+          score: passed ? 'PASSED' : 'FAILED', // Only share pass/fail, not exact score
+          message: `Just ${passed ? 'passed' : 'attempted'} the quiz! ${passed ? '🎉' : 'Will try again! 💪'}`
+        })
+      })
+      
+      if (response.ok) {
+        // Show success notification
+        console.log('Result shared successfully')
+      }
+    } catch (error) {
+      console.error('Error sharing result:', error)
+    }
   }
 
   const getSubjectRooms = () => {
@@ -398,6 +478,18 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
             >
               <Trophy className="h-4 w-4 mr-2" />
               Achievements
+            </Button>
+            <Button
+              onClick={() => setActiveTab('reminders')}
+              variant={activeTab === 'reminders' ? 'default' : 'ghost'}
+              className={`w-full justify-start ${
+                activeTab === 'reminders' 
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' 
+                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
+              }`}
+            >
+              <Bell className="h-4 w-4 mr-2" />
+              Study Reminders
             </Button>
           </nav>
         </div>
@@ -589,12 +681,30 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                             </Button>
                           )}
                           <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setSelectedQuizForHelp(quiz.id)}
+                            className="border-orange-200 text-orange-700 hover:bg-orange-50"
+                          >
+                            <HelpCircle className="h-4 w-4 mr-2" />
+                            Ask Help
+                          </Button>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setSelectedQuizForSession(quiz.id)}
+                            className="border-purple-200 text-purple-700 hover:bg-purple-50"
+                          >
+                            <Calendar className="h-4 w-4 mr-2" />
+                            Schedule
+                          </Button>
+                          <Button
                             onClick={() => handleStartQuiz(quiz.id)}
                             disabled={!quiz.isActive}
                             className="bg-blue-600 hover:bg-blue-700"
                           >
                             <Play className="h-4 w-4 mr-2" />
-                            Start Quiz
+                            {attempts.some(attempt => attempt.quizId === quiz.id) ? 'Retake Quiz' : 'Start Quiz'}
                           </Button>
                         </div>
                       </div>
@@ -619,8 +729,43 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                         </div>
                         <div className="text-center p-3 bg-green-50 rounded-lg">
                           <div className="text-2xl font-bold text-green-600">{quiz._count.attempts}</div>
-                          <div className="text-sm text-green-700">Attempts</div>
+                          <div className="text-sm text-green-700">Total Attempts</div>
                         </div>
+                        {(() => {
+                          const userAttempts = attempts.filter(attempt => attempt.quizId === quiz.id)
+                          const bestScore = userAttempts.length > 0 ? Math.max(...userAttempts.map(a => a.score)) : null
+                          const lastAttempt = userAttempts.length > 0 ? userAttempts[userAttempts.length - 1] : null
+                          
+                          if (userAttempts.length > 0) {
+                            return (
+                              <div className="col-span-2 md:col-span-4 mt-2 p-3 bg-yellow-50 rounded-lg border-l-4 border-yellow-400">
+                                <div className="flex items-center justify-between">
+                                  <div>
+                                    <div className="text-sm font-medium text-yellow-800">
+                                      Your Progress: {userAttempts.length} attempt{userAttempts.length > 1 ? 's' : ''}
+                                    </div>
+                                    <div className="text-xs text-yellow-600">
+                                      Best Score: <span className="font-semibold">{bestScore}%</span>
+                                      {lastAttempt && (
+                                        <span className="ml-2">
+                                          Last: {lastAttempt.score}% 
+                                          {lastAttempt.passed ? ' ✅' : ' ❌'}
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                  {bestScore && bestScore >= quiz.passingScore && (
+                                    <Badge className="bg-green-100 text-green-800">
+                                      <CheckCircle className="h-3 w-3 mr-1" />
+                                      Passed
+                                    </Badge>
+                                  )}
+                                </div>
+                              </div>
+                            )
+                          }
+                          return null
+                        })()}
                       </div>
                     </CardContent>
                   </Card>
@@ -636,16 +781,120 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
               <p className="text-gray-600 mt-1">Join quiz discussions and general study rooms</p>
             </div>
 
-            {/* Quiz Chat Rooms Section */}
+            {/* Pre-Quiz Discussion Rooms */}
             <div className="mb-8">
               <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <BookOpen className="h-5 w-5 text-blue-600" />
-                Quiz Discussion Rooms
+                <BookOpen className="h-5 w-5 text-green-600" />
+                Pre-Quiz Discussion Rooms
               </h3>
               
-              {getQuizChatRooms().length > 0 ? (
+              {getPreQuizRooms().length > 0 ? (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {getQuizChatRooms().map((room) => (
+                  {getPreQuizRooms().map((room) => (
+                    <Card key={room.id} className="hover:shadow-lg transition-shadow cursor-pointer border-l-4 border-l-green-500"
+                          onClick={() => handleJoinChatRoom(room.id)}>
+                      <CardHeader className="pb-3">
+                        <CardTitle className="flex items-center gap-2 text-base">
+                          <MessageSquare className="h-4 w-4 text-green-600" />
+                          {room.name}
+                        </CardTitle>
+                        <CardDescription className="text-sm">
+                          {room.quiz ? `Prepare for: ${room.quiz.title}` : 'Pre-Quiz Preparation'}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="pt-0">
+                        <div className="flex items-center justify-between">
+                          <Badge className="bg-green-100 text-green-800">
+                            Pre-Quiz Prep
+                          </Badge>
+                          <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                            Join Discussion
+                          </Button>
+                        </div>
+                        {room._count?.messages && (
+                          <p className="text-xs text-gray-500 mt-2">
+                            {room._count.messages} messages
+                          </p>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <Card className="border-dashed border-2 border-gray-200">
+                  <CardContent className="text-center py-6">
+                    <BookOpen className="h-10 w-10 text-gray-300 mx-auto mb-2" />
+                    <h4 className="text-base font-medium text-gray-900 mb-1">No Pre-Quiz Rooms</h4>
+                    <p className="text-gray-600 text-sm">
+                      Pre-quiz discussion rooms will appear here
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+
+            {/* Post-Quiz Review Rooms */}
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                <Target className="h-5 w-5 text-purple-600" />
+                Post-Quiz Review Rooms
+              </h3>
+              
+              {getPostQuizRooms().length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {getPostQuizRooms().map((room) => (
+                    <Card key={room.id} className="hover:shadow-lg transition-shadow cursor-pointer border-l-4 border-l-purple-500"
+                          onClick={() => handleJoinChatRoom(room.id)}>
+                      <CardHeader className="pb-3">
+                        <CardTitle className="flex items-center gap-2 text-base">
+                          <MessageSquare className="h-4 w-4 text-purple-600" />
+                          {room.name}
+                        </CardTitle>
+                        <CardDescription className="text-sm">
+                          {room.quiz ? `Review: ${room.quiz.title}` : 'Post-Quiz Review'}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="pt-0">
+                        <div className="flex items-center justify-between">
+                          <Badge className="bg-purple-100 text-purple-800">
+                            Post-Quiz Review
+                          </Badge>
+                          <Button size="sm" className="bg-purple-600 hover:bg-purple-700">
+                            Join Review
+                          </Button>
+                        </div>
+                        {room._count?.messages && (
+                          <p className="text-xs text-gray-500 mt-2">
+                            {room._count.messages} messages
+                          </p>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <Card className="border-dashed border-2 border-gray-200">
+                  <CardContent className="text-center py-6">
+                    <Target className="h-10 w-10 text-gray-300 mx-auto mb-2" />
+                    <h4 className="text-base font-medium text-gray-900 mb-1">No Post-Quiz Rooms</h4>
+                    <p className="text-gray-600 text-sm">
+                      Post-quiz review rooms will appear after completing quizzes
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+
+            {/* General Quiz Discussion Rooms */}
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                <MessageSquare className="h-5 w-5 text-blue-600" />
+                General Quiz Discussion
+              </h3>
+              
+              {getGeneralQuizRooms().length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {getGeneralQuizRooms().map((room) => (
                     <Card key={room.id} className="hover:shadow-lg transition-shadow cursor-pointer border-l-4 border-l-blue-500"
                           onClick={() => handleJoinChatRoom(room.id)}>
                       <CardHeader className="pb-3">
@@ -654,13 +903,13 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                           {room.name}
                         </CardTitle>
                         <CardDescription className="text-sm">
-                          {room.quiz ? `Quiz: ${room.quiz.title}` : 'Quiz Discussion'}
+                          {room.quiz ? `Quiz: ${room.quiz.title}` : 'General Quiz Discussion'}
                         </CardDescription>
                       </CardHeader>
                       <CardContent className="pt-0">
                         <div className="flex items-center justify-between">
                           <Badge className="bg-blue-100 text-blue-800">
-                            Quiz Discussion
+                            General Discussion
                           </Badge>
                           <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
                             Join Chat
@@ -677,11 +926,63 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                 </div>
               ) : (
                 <Card className="border-dashed border-2 border-gray-200">
-                  <CardContent className="text-center py-8">
-                    <BookOpen className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                    <h4 className="text-lg font-medium text-gray-900 mb-2">No Quiz Chat Rooms</h4>
+                  <CardContent className="text-center py-6">
+                    <MessageSquare className="h-10 w-10 text-gray-300 mx-auto mb-2" />
+                    <h4 className="text-base font-medium text-gray-900 mb-1">No General Quiz Rooms</h4>
                     <p className="text-gray-600 text-sm">
-                      Quiz chat rooms will appear here when instructors create quizzes with chat enabled
+                      General quiz discussion rooms will appear here
+                    </p>
+                  </CardContent>
+                </Card>
+              )}
+            </div>
+
+            {/* Subject-Based Chat Rooms */}
+            <div className="mb-8">
+              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
+                <BookOpen className="h-5 w-5 text-indigo-600" />
+                Subject-Based Study Rooms
+              </h3>
+              
+              {getSubjectBasedRooms().length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {getSubjectBasedRooms().map((room) => (
+                    <Card key={room.id} className="hover:shadow-lg transition-shadow cursor-pointer border-l-4 border-l-indigo-500"
+                          onClick={() => handleJoinChatRoom(room.id)}>
+                      <CardHeader className="pb-3">
+                        <CardTitle className="flex items-center gap-2 text-base">
+                          <BookOpen className="h-4 w-4 text-indigo-600" />
+                          {room.name}
+                        </CardTitle>
+                        <CardDescription className="text-sm">
+                          {room.quiz ? `Subject: ${extractSubject(room.quiz.title)}` : 'Subject-based discussion'}
+                        </CardDescription>
+                      </CardHeader>
+                      <CardContent className="pt-0">
+                        <div className="flex items-center justify-between">
+                          <Badge className="bg-indigo-100 text-indigo-800">
+                            {room.quiz ? extractSubject(room.quiz.title) : 'General Subject'}
+                          </Badge>
+                          <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700">
+                            Join Subject Chat
+                          </Button>
+                        </div>
+                        {room._count?.messages && (
+                          <p className="text-xs text-gray-500 mt-2">
+                            {room._count.messages} messages
+                          </p>
+                        )}
+                      </CardContent>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <Card className="border-dashed border-2 border-gray-200">
+                  <CardContent className="text-center py-6">
+                    <BookOpen className="h-10 w-10 text-gray-300 mx-auto mb-2" />
+                    <h4 className="text-base font-medium text-gray-900 mb-1">No Subject Rooms</h4>
+                    <p className="text-gray-600 text-sm">
+                      Subject-based study rooms will appear here
                     </p>
                   </CardContent>
                 </Card>
@@ -741,12 +1042,12 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
             </div>
 
             {/* Empty state when no rooms at all */}
-            {getQuizChatRooms().length === 0 && getGeneralChatRooms().length === 0 && (
+            {getQuizChatRooms().length === 0 && getGeneralChatRooms().length === 0 && getStudyGroupChatRooms().length === 0 && (
               <Card className="mt-8">
                 <CardContent className="text-center py-16">
                   <MessageSquare className="h-16 w-16 text-gray-300 mx-auto mb-4" />
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">No chat rooms available</h3>
-                  <p className="text-gray-600">Chat rooms will appear here when quizzes with chat are created</p>
+                  <p className="text-gray-600">Chat rooms will appear here when quizzes with chat are created or when you join study groups</p>
                 </CardContent>
               </Card>
             )}
@@ -867,6 +1168,53 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                 </CardContent>
               </Card>
             )}
+
+            {/* Study Tools Section */}
+            <div className="mt-8 space-y-6">
+              <div className="mb-6">
+                <h3 className="text-xl font-bold text-gray-900 mb-2">Study Tools</h3>
+                <p className="text-gray-600">Organize your study sessions and get help when needed</p>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <Calendar className="h-5 w-5 text-blue-600" />
+                      Study Scheduling
+                    </CardTitle>
+                    <CardDescription>
+                      Schedule and manage your study sessions with group members
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <StudySchedulingPanel 
+              studyGroups={studyGroups} 
+              userId={user.id}
+              selectedQuizId={selectedQuizForSession || undefined}
+            />
+                  </CardContent>
+                </Card>
+
+                <Card>
+                  <CardHeader>
+                    <CardTitle className="flex items-center gap-2">
+                      <MessageSquare className="h-5 w-5 text-green-600" />
+                      Question Clarification
+                    </CardTitle>
+                    <CardDescription>
+                      Get help with quiz topics and clarify doubts with peers and teachers
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent>
+                    <HelpRequestPanel 
+              userId={user.id} 
+              selectedQuizId={selectedQuizForHelp || undefined}
+            />
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
           </TabsContent>
 
           {/* Progress Tab */}
@@ -894,22 +1242,36 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                               <XCircle className="h-8 w-8 text-red-600" />
                             )}
                           </div>
-                          <div>
-                            <h3 className="font-medium text-gray-900">{attempt.quiz.title}</h3>
+                          <div className="flex-1">
+                            <h4 className="font-medium text-gray-900">{attempt.quiz.title}</h4>
                             <p className="text-sm text-gray-600">
-                              {new Date(attempt.completedAt || attempt.startedAt).toLocaleDateString()}
+                              Score: <span className={getScoreColor(attempt.score, attempt.quiz.passingScore)}>
+                                {attempt.score}%
+                              </span>
                             </p>
                           </div>
                         </div>
-                        <div className="flex items-center space-x-4">
-                          <div className="text-right">
-                            <div className={`text-xl font-bold ${getScoreColor(attempt.score, attempt.quiz.passingScore)}`}>
-                              {attempt.score}%
-                            </div>
-                            <Badge variant={getScoreBadgeVariant(attempt.score, attempt.quiz.passingScore)}>
-                              {attempt.passed ? 'Passed' : 'Failed'}
-                            </Badge>
-                          </div>
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => shareQuizResult(attempt.quizId, attempt.score, attempt.score >= attempt.quiz.passingScore)}
+                            className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                          >
+                            <Users className="h-4 w-4 mr-1" />
+                            Share
+                          </Button>
+                          <Button
+                            size="sm"
+                            onClick={() => handleStartQuiz(attempt.quizId)}
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                          >
+                            <Play className="h-4 w-4 mr-1" />
+                            Retake
+                          </Button>
+                          <Badge variant={attempt.score >= attempt.quiz.passingScore ? 'default' : 'destructive'}>
+                            {attempt.score >= attempt.quiz.passingScore ? 'Passed' : 'Failed'}
+                          </Badge>
                           <Button
                             variant="outline"
                             size="sm"
@@ -941,6 +1303,9 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                 </CardContent>
               </Card>
             )}
+
+            {/* Progress Sharing Section */}
+            <ProgressSharingPanel studyGroups={studyGroups} userId={user.id} />
           </TabsContent>
 
           {/* Achievements Tab */}
@@ -951,6 +1316,16 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
             </div>
 
             <GamificationPanel userId={user.id} />
+          </TabsContent>
+
+          {/* Study Reminders Tab */}
+          <TabsContent value="reminders" className="space-y-6">
+            <div className="mb-6">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Study Reminders</h2>
+              <p className="text-gray-600 mt-1">Manage your study schedule and never miss important deadlines</p>
+            </div>
+
+            <StudyRemindersPanel userId={user.id} />
           </TabsContent>
             </Tabs>
           </div>

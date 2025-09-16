@@ -53,23 +53,26 @@ export default async function QuizPage({ params }: QuizPageProps) {
     redirect('/student/dashboard')
   }
 
-  // Check if user has already attempted this quiz
-  const existingAttempt = await prisma.quizAttempt.findFirst({
+  // Allow retakes - get previous attempt information for better UX
+  const previousAttempts = await prisma.quizAttempt.findMany({
     where: {
       userId: session.id,
       quizId: params.id,
       completedAt: { not: null },
     },
+    orderBy: { completedAt: 'desc' },
   })
 
-  if (existingAttempt) {
-    redirect(`/student/quiz/${params.id}/results`)
-  }
+  const isRetake = previousAttempts.length > 0
+  const bestScore = isRetake ? Math.max(...previousAttempts.map(attempt => attempt.score)) : undefined
 
   return (
     <QuizInterface
       quiz={quiz}
       userId={session.id}
+      isRetake={isRetake}
+      previousAttempts={previousAttempts.length}
+      bestScore={bestScore}
     />
   )
 }

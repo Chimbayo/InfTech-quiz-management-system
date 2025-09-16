@@ -16,14 +16,19 @@ import {
   Loader2,
   AlertTriangle,
   MessageSquare,
-  X
+  X,
+  HelpCircle
 } from 'lucide-react'
 import { QuizWithQuestions, QuestionType } from '@/types'
 import { ChatPanel } from '@/components/chat/ChatPanel'
+import { HelpRequestPanel } from '@/components/student/help-request-panel'
 
 interface QuizInterfaceProps {
   quiz: QuizWithQuestions
   userId: string
+  isRetake?: boolean
+  previousAttempts?: number
+  bestScore?: number
 }
 
 interface Answer {
@@ -31,7 +36,7 @@ interface Answer {
   selectedOptionIds: string[]
 }
 
-export function QuizInterface({ quiz, userId }: QuizInterfaceProps) {
+export function QuizInterface({ quiz, userId, isRetake = false, previousAttempts = 0, bestScore }: QuizInterfaceProps) {
   const router = useRouter()
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0)
   const [answers, setAnswers] = useState<Answer[]>([])
@@ -42,6 +47,7 @@ export function QuizInterface({ quiz, userId }: QuizInterfaceProps) {
   const [showChat, setShowChat] = useState(false)
   const [quizChatRoom, setQuizChatRoom] = useState<string | null>(null)
   const [isQuizActive, setIsQuizActive] = useState(true)
+  const [showHelpRequest, setShowHelpRequest] = useState(false)
 
   const currentQuestion = quiz.questions[currentQuestionIndex]
   const isLastQuestion = currentQuestionIndex === quiz.questions.length - 1
@@ -240,6 +246,28 @@ export function QuizInterface({ quiz, userId }: QuizInterfaceProps) {
       </header>
 
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Retake Information Banner */}
+        {isRetake && (
+          <Alert className="mb-6 border-blue-200 bg-blue-50">
+            <CheckCircle className="h-4 w-4 text-blue-600" />
+            <AlertDescription className="text-blue-800">
+              <div className="flex items-center justify-between">
+                <div>
+                  <strong>Quiz Retake</strong> - This is attempt #{previousAttempts + 1}
+                  {bestScore !== undefined && (
+                    <span className="ml-2">
+                      Your best score: <span className="font-semibold">{bestScore}%</span>
+                    </span>
+                  )}
+                </div>
+                <div className="text-sm">
+                  💪 Aim to improve your understanding and score!
+                </div>
+              </div>
+            </AlertDescription>
+          </Alert>
+        )}
+
         {error && (
           <Alert variant="destructive" className="mb-6">
             <AlertTriangle className="h-4 w-4" />
@@ -325,14 +353,25 @@ export function QuizInterface({ quiz, userId }: QuizInterfaceProps) {
 
         {/* Navigation */}
         <div className="flex justify-between">
-          <Button
-            variant="outline"
-            onClick={handlePrevious}
-            disabled={isFirstQuestion}
-          >
-            <ArrowLeft className="h-4 w-4 mr-2" />
-            Previous
-          </Button>
+          <div className="flex space-x-2">
+            <Button
+              variant="outline"
+              onClick={handlePrevious}
+              disabled={isFirstQuestion}
+            >
+              <ArrowLeft className="h-4 w-4 mr-2" />
+              Previous
+            </Button>
+            
+            <Button
+              variant="outline"
+              onClick={() => setShowHelpRequest(true)}
+              className="border-orange-200 text-orange-700 hover:bg-orange-50"
+            >
+              <HelpCircle className="h-4 w-4 mr-2" />
+              Ask Help
+            </Button>
+          </div>
 
           <div className="flex flex-col items-end space-y-2">
             {isLastQuestion && !areAllQuestionsAnswered() && (
@@ -407,6 +446,30 @@ export function QuizInterface({ quiz, userId }: QuizInterfaceProps) {
               <ChatPanel
                 roomId={quizChatRoom}
                 userId={userId}
+              />
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Help Request Panel Overlay */}
+      {showHelpRequest && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-lg shadow-xl w-full max-w-4xl h-[80vh] flex flex-col">
+            <div className="flex items-center justify-between p-4 border-b">
+              <h3 className="text-lg font-semibold">Ask for Help - {quiz.title}</h3>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowHelpRequest(false)}
+              >
+                <X className="h-4 w-4" />
+              </Button>
+            </div>
+            <div className="flex-1 overflow-auto p-4">
+              <HelpRequestPanel 
+                userId={userId}
+                selectedQuizId={quiz.id}
               />
             </div>
           </div>

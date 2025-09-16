@@ -54,21 +54,8 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Check if user has already completed this quiz
-    const existingAttempt = await prisma.quizAttempt.findFirst({
-      where: {
-        userId: data.userId,
-        quizId: data.quizId,
-        completedAt: { not: null },
-      },
-    })
-
-    if (existingAttempt) {
-      return NextResponse.json(
-        { error: 'Quiz already completed' },
-        { status: 400 }
-      )
-    }
+    // Allow retakes - no restriction on previous attempts
+    // Students can take the quiz multiple times to improve their score
 
     // Calculate score
     let correctAnswers = 0
@@ -139,6 +126,35 @@ export async function POST(request: NextRequest) {
         },
       },
     })
+
+    // Activate post-quiz review room for this quiz
+    try {
+      const postQuizRoom = await prisma.chatRoom.findFirst({
+        where: {
+          quizId: data.quizId,
+          type: 'POST_QUIZ_REVIEW'
+        }
+      })
+
+      if (postQuizRoom && !postQuizRoom.isActive) {
+        await prisma.chatRoom.update({
+          where: { id: postQuizRoom.id },
+          data: { isActive: true }
+        })
+
+        // Add activation message
+        await prisma.chatMessage.create({
+          data: {
+            roomId: postQuizRoom.id,
+            userId: data.userId,
+            content: `🎯 Post-Quiz Review is now active! The first student has completed "${quiz.title}". Join the discussion to review answers and learn together!`,
+            isSystemMessage: true
+          }
+        })
+      }
+    } catch (error) {
+      console.warn('Failed to activate post-quiz room:', error)
+    }
 
     // Broadcast quiz completion to study groups
     try {
