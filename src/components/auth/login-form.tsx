@@ -70,20 +70,20 @@ export function LoginForm({ role, redirectTo }: LoginFormProps) {
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader>
-        <CardTitle>
+    <Card className="card-inftech-mobile w-full max-w-md mx-auto">
+      <CardHeader className="padding-responsive">
+        <CardTitle className="text-responsive-xl heading-inftech-primary text-center">
           {role === 'ADMIN' ? 'Admin Login' : 'Student Login'}
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-responsive-sm text-center">
           {role === 'ADMIN' 
             ? 'Access the admin dashboard to manage quizzes'
             : 'Access your student portal to take quizzes'
           }
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <CardContent className="padding-responsive">
+        <form onSubmit={handleSubmit(onSubmit)} className="form-responsive">
           {error && (
             <Alert variant="destructive">
               <AlertDescription>{error}</AlertDescription>
@@ -91,40 +91,42 @@ export function LoginForm({ role, redirectTo }: LoginFormProps) {
           )}
           
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email" className="label-responsive">Email</Label>
             <Input
               id="email"
               type="email"
               placeholder="Enter your email"
+              className="input-responsive"
               {...register('email')}
             />
             {errors.email && (
-              <p className="text-sm text-destructive">{errors.email.message}</p>
+              <p className="text-responsive-xs text-destructive">{errors.email.message}</p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password" className="label-responsive">Password</Label>
             <Input
               id="password"
               type="password"
               placeholder="Enter your password"
+              className="input-responsive"
               {...register('password')}
             />
             {errors.password && (
-              <p className="text-sm text-destructive">{errors.password.message}</p>
+              <p className="text-responsive-xs text-destructive">{errors.password.message}</p>
             )}
           </div>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button type="submit" className="btn-inftech-mobile btn-inftech-primary" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isLoading ? 'Signing in...' : 'Sign In'}
+            <span className="text-responsive-sm">{isLoading ? 'Signing in...' : 'Sign In'}</span>
           </Button>
         </form>
 
         {role === 'ADMIN' && (
-          <div className="mt-4 text-center text-sm text-muted-foreground">
-            <p>Demo credentials:</p>
+          <div className="mt-4 text-center text-responsive-xs text-muted-foreground bg-gray-50 p-3 rounded-lg">
+            <p className="font-medium mb-2">Demo credentials:</p>
             <p>Email: admin@example.com</p>
             <p>Password: password123</p>
           </div>

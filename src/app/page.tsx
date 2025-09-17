@@ -7,6 +7,7 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-inftech-gradient">
       <div className="container mx-auto px-4 py-16">
+        {/* Hero Section */}
         <div className="text-center mb-16">
           <div className="flex justify-center mb-8">
             <div className="w-20 h-20 bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl flex items-center justify-center shadow-2xl transform hover:scale-105 transition-all duration-300">
@@ -14,14 +15,15 @@ export default function HomePage() {
             </div>
           </div>
           <h1 className="text-6xl font-bold heading-inftech-primary mb-6">
-             QUIZ MANAGEMENT SYSTEM
+            QUIZ MANAGEMENT SYSTEM
           </h1>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
             Professional quiz creation and assessment platform designed for modern educational excellence
           </p>
         </div>
 
-        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto">
+        {/* Portal Cards */}
+        <div className="grid md:grid-cols-2 gap-8 max-w-5xl mx-auto mb-16">
           <Card className="card-inftech card-inftech-hover card-inftech-primary">
             <CardHeader className="pb-4">
               <div className="flex items-center gap-4">
@@ -82,6 +84,7 @@ export default function HomePage() {
           </Card>
         </div>
 
+        {/* Features Section */}
         <div className="mt-24 text-center">
           <h2 className="text-4xl font-bold heading-inftech mb-6">Key Features</h2>
           <p className="text-xl text-slate-600 mb-16 max-w-3xl mx-auto leading-relaxed">

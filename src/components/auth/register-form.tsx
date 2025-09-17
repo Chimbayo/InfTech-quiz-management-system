@@ -77,21 +77,21 @@ export function RegisterForm() {
 
   if (success) {
     return (
-      <Card className="w-full max-w-md mx-auto">
-        <CardHeader>
-          <CardTitle className="text-center text-green-600">Registration Successful!</CardTitle>
-          <CardDescription className="text-center">
+      <Card className="card-inftech-mobile w-full max-w-md mx-auto">
+        <CardHeader className="padding-responsive">
+          <CardTitle className="text-center text-responsive-xl text-green-600">Registration Successful!</CardTitle>
+          <CardDescription className="text-center text-responsive-sm">
             Welcome to the Quiz Management System
           </CardDescription>
         </CardHeader>
-        <CardContent>
-          <div className="text-center space-y-4">
+        <CardContent className="padding-responsive">
+          <div className="text-center spacing-responsive">
             <div className="flex items-center justify-center">
-              <div className="p-3 bg-green-100 rounded-full">
-                <UserPlus className="h-8 w-8 text-green-600" />
+              <div className="p-3 sm:p-4 bg-green-100 rounded-full">
+                <UserPlus className="h-6 w-6 sm:h-8 sm:w-8 text-green-600" />
               </div>
             </div>
-            <p className="text-gray-600">
+            <p className="text-responsive-sm text-gray-600">
               Your account has been created successfully. You will be redirected to the login page shortly.
             </p>
             <div className="flex justify-center">
@@ -104,18 +104,18 @@ export function RegisterForm() {
   }
 
   return (
-    <Card className="w-full max-w-md mx-auto">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <UserPlus className="h-5 w-5" />
+    <Card className="card-inftech-mobile w-full max-w-md mx-auto">
+      <CardHeader className="padding-responsive">
+        <CardTitle className="flex items-center justify-center gap-2 text-responsive-xl heading-inftech-primary">
+          <UserPlus className="h-5 w-5 sm:h-6 sm:w-6" />
           Student Registration
         </CardTitle>
-        <CardDescription>
+        <CardDescription className="text-center text-responsive-sm">
           Create your account to start taking quizzes
         </CardDescription>
       </CardHeader>
-      <CardContent>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+      <CardContent className="padding-responsive">
+        <form onSubmit={handleSubmit(onSubmit)} className="form-responsive">
           {error && (
             <Alert variant="destructive">
               <AlertDescription>{error}</AlertDescription>
@@ -123,77 +123,81 @@ export function RegisterForm() {
           )}
           
           <div className="space-y-2">
-            <Label htmlFor="name">Full Name</Label>
+            <Label htmlFor="name" className="label-responsive">Full Name</Label>
             <Input
               id="name"
               type="text"
               placeholder="Enter your full name"
+              className="input-responsive"
               {...register('name')}
             />
             {errors.name && (
-              <p className="text-sm text-destructive">{errors.name.message}</p>
+              <p className="text-responsive-xs text-destructive">{errors.name.message}</p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="email">Email</Label>
+            <Label htmlFor="email" className="label-responsive">Email</Label>
             <Input
               id="email"
               type="email"
               placeholder="Enter your email address"
+              className="input-responsive"
               {...register('email')}
             />
             {errors.email && (
-              <p className="text-sm text-destructive">{errors.email.message}</p>
+              <p className="text-responsive-xs text-destructive">{errors.email.message}</p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
+            <Label htmlFor="password" className="label-responsive">Password</Label>
             <Input
               id="password"
               type="password"
               placeholder="Create a password (min 6 characters)"
+              className="input-responsive"
               {...register('password')}
             />
             {errors.password && (
-              <p className="text-sm text-destructive">{errors.password.message}</p>
+              <p className="text-responsive-xs text-destructive">{errors.password.message}</p>
             )}
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="confirmPassword">Confirm Password</Label>
+            <Label htmlFor="confirmPassword" className="label-responsive">Confirm Password</Label>
             <Input
               id="confirmPassword"
               type="password"
               placeholder="Confirm your password"
+              className="input-responsive"
               {...register('confirmPassword')}
             />
             {errors.confirmPassword && (
-              <p className="text-sm text-destructive">{errors.confirmPassword.message}</p>
+              <p className="text-responsive-xs text-destructive">{errors.confirmPassword.message}</p>
             )}
           </div>
 
-          <Button type="submit" className="w-full" disabled={isLoading}>
+          <Button type="submit" className="btn-inftech-mobile btn-inftech-primary" disabled={isLoading}>
             {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-            {isLoading ? 'Creating Account...' : 'Create Account'}
+            <span className="text-responsive-sm">{isLoading ? 'Creating Account...' : 'Create Account'}</span>
           </Button>
         </form>
 
-        <div className="mt-6 text-center">
-          <p className="text-sm text-gray-600">
+        <div className="mt-4 sm:mt-6 text-center">
+          <p className="text-responsive-xs text-gray-600">
             Already have an account?{' '}
-            <Link href="/student" className="text-blue-600 hover:underline">
+            <Link href="/student" className="text-blue-600 hover:underline font-medium">
               Sign in here
             </Link>
           </p>
         </div>
 
-        <div className="mt-4 text-center">
+        <div className="mt-3 sm:mt-4 text-center">
           <Link href="/">
-            <Button variant="ghost" className="text-gray-600">
-              <ArrowLeft className="mr-2 h-4 w-4" />
-              Back to Home
+            <Button variant="ghost" className="btn-inftech-responsive text-gray-600">
+              <ArrowLeft className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+              <span className="text-responsive-xs">Back to Home</span>
             </Button>
           </Link>
         </div>

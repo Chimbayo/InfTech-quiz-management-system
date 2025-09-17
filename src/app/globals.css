@@ -254,4 +254,272 @@
   .heading-inftech-admin {
     @apply font-bold bg-gradient-to-r from-emerald-700 to-green-700 bg-clip-text text-transparent;
   }
+
+  /* ========================================
+     RESPONSIVE DESIGN UTILITIES
+     ======================================== */
+  
+  /* Mobile-First Container Classes */
+  .container-responsive {
+    @apply w-full mx-auto px-4 sm:px-6 lg:px-8 xl:px-12;
+  }
+  
+  .container-narrow {
+    @apply max-w-md mx-auto px-4;
+  }
+  
+  .container-medium {
+    @apply max-w-4xl mx-auto px-4 sm:px-6 lg:px-8;
+  }
+  
+  .container-wide {
+    @apply max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 xl:px-12;
+  }
+
+  /* Responsive Grid Systems */
+  .grid-responsive-1 {
+    @apply grid grid-cols-1;
+  }
+  
+  .grid-responsive-2 {
+    @apply grid grid-cols-1 sm:grid-cols-2;
+  }
+  
+  .grid-responsive-3 {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3;
+  }
+  
+  .grid-responsive-4 {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4;
+  }
+  
+  .grid-responsive-auto {
+    @apply grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5;
+  }
+
+  /* Responsive Spacing */
+  .spacing-responsive {
+    @apply space-y-4 sm:space-y-6 lg:space-y-8;
+  }
+  
+  .gap-responsive {
+    @apply gap-4 sm:gap-6 lg:gap-8;
+  }
+  
+  .gap-responsive-sm {
+    @apply gap-2 sm:gap-3 lg:gap-4;
+  }
+
+  /* Responsive Padding */
+  .padding-responsive {
+    @apply p-4 sm:p-6 lg:p-8;
+  }
+  
+  .padding-responsive-sm {
+    @apply p-2 sm:p-3 lg:p-4;
+  }
+  
+  .padding-responsive-lg {
+    @apply p-6 sm:p-8 lg:p-12;
+  }
+
+  /* Mobile-Optimized Cards */
+  .card-inftech-mobile {
+    @apply card-inftech p-4 sm:p-6 lg:p-8 mx-2 sm:mx-0;
+  }
+  
+  .card-inftech-responsive {
+    @apply card-inftech p-3 sm:p-4 md:p-6 lg:p-8;
+  }
+
+  /* Mobile-Optimized Buttons */
+  .btn-inftech-mobile {
+    @apply w-full sm:w-auto px-4 py-3 sm:px-6 text-sm sm:text-base;
+  }
+  
+  .btn-inftech-responsive {
+    @apply px-3 py-2 sm:px-4 sm:py-2 md:px-6 md:py-3 text-xs sm:text-sm md:text-base;
+  }
+
+  /* Mobile Navigation */
+  .nav-mobile {
+    @apply fixed bottom-0 left-0 right-0 bg-white border-t border-gray-200 p-2 sm:hidden z-50;
+  }
+  
+  .nav-mobile-item {
+    @apply flex flex-col items-center justify-center p-2 rounded-lg text-xs font-medium transition-colors;
+  }
+  
+  .nav-desktop {
+    @apply hidden sm:flex;
+  }
+
+  /* Mobile Header */
+  .header-mobile {
+    @apply flex items-center justify-between p-4 bg-white border-b border-gray-200 sticky top-0 z-40;
+  }
+  
+  .header-responsive {
+    @apply flex items-center justify-between h-14 sm:h-16 lg:h-20 px-4 sm:px-6 lg:px-8;
+  }
+
+  /* Mobile Typography */
+  .text-responsive-xs {
+    @apply text-xs sm:text-sm;
+  }
+  
+  .text-responsive-sm {
+    @apply text-sm sm:text-base;
+  }
+  
+  .text-responsive-base {
+    @apply text-base sm:text-lg;
+  }
+  
+  .text-responsive-lg {
+    @apply text-lg sm:text-xl lg:text-2xl;
+  }
+  
+  .text-responsive-xl {
+    @apply text-xl sm:text-2xl lg:text-3xl;
+  }
+  
+  .text-responsive-2xl {
+    @apply text-2xl sm:text-3xl lg:text-4xl;
+  }
+
+  /* Mobile-Friendly Forms */
+  .form-responsive {
+    @apply space-y-4 sm:space-y-6;
+  }
+  
+  .input-responsive {
+    @apply input-inftech w-full text-base sm:text-sm;
+  }
+  
+  .label-responsive {
+    @apply block text-sm sm:text-base font-medium text-gray-700 mb-1 sm:mb-2;
+  }
+
+  /* Mobile Stats Cards */
+  .stat-card-mobile {
+    @apply stat-card-inftech p-4 sm:p-6;
+  }
+  
+  .stat-value-responsive {
+    @apply text-2xl sm:text-3xl lg:text-4xl font-bold;
+  }
+  
+  .stat-label-responsive {
+    @apply text-xs sm:text-sm text-gray-500;
+  }
+
+  /* Mobile Chat Interface */
+  .chat-mobile {
+    @apply fixed inset-0 bg-white z-50 sm:relative sm:inset-auto sm:z-auto;
+  }
+  
+  .chat-header-mobile {
+    @apply flex items-center justify-between p-4 border-b border-gray-200 sm:hidden;
+  }
+  
+  .chat-messages-mobile {
+    @apply flex-1 overflow-y-auto p-4 pb-20 sm:pb-4;
+  }
+  
+  .chat-input-mobile {
+    @apply fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200 sm:relative sm:bottom-auto sm:border-t-0;
+  }
+
+  /* Mobile Quiz Interface */
+  .quiz-mobile {
+    @apply p-4 sm:p-6 lg:p-8;
+  }
+  
+  .quiz-question-mobile {
+    @apply text-base sm:text-lg lg:text-xl font-semibold mb-4 sm:mb-6;
+  }
+  
+  .quiz-option-mobile {
+    @apply p-3 sm:p-4 border border-gray-200 rounded-lg mb-2 sm:mb-3 cursor-pointer hover:bg-gray-50 transition-colors;
+  }
+
+  /* Mobile Sidebar */
+  .sidebar-mobile {
+    @apply fixed inset-y-0 left-0 z-50 w-64 bg-white shadow-lg transform -translate-x-full transition-transform duration-300 ease-in-out;
+  }
+  
+  .sidebar-mobile.open {
+    @apply translate-x-0;
+  }
+  
+  .sidebar-overlay {
+    @apply fixed inset-0 bg-black bg-opacity-50 z-40;
+  }
+  
+  .sidebar-desktop {
+    @apply hidden lg:flex lg:flex-col lg:w-64 lg:fixed lg:inset-y-0;
+  }
+
+  /* Mobile Tables */
+  .table-mobile {
+    @apply block sm:table w-full;
+  }
+  
+  .table-row-mobile {
+    @apply block sm:table-row border-b border-gray-200 mb-4 sm:mb-0;
+  }
+  
+  .table-cell-mobile {
+    @apply block sm:table-cell px-2 py-1 sm:px-4 sm:py-2;
+  }
+  
+  .table-cell-mobile:before {
+    content: attr(data-label) ": ";
+    @apply font-semibold sm:hidden;
+  }
+
+  /* Responsive Visibility */
+  .mobile-only {
+    @apply block sm:hidden;
+  }
+  
+  .tablet-up {
+    @apply hidden sm:block;
+  }
+  
+  .desktop-only {
+    @apply hidden lg:block;
+  }
+  
+  .mobile-tablet {
+    @apply block lg:hidden;
+  }
+
+  /* Touch-Friendly Elements */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+  }
+  
+  .touch-button {
+    @apply touch-target px-4 py-3 rounded-lg font-medium transition-colors;
+  }
+
+  /* Mobile-Optimized Animations */
+  @media (prefers-reduced-motion: no-preference) {
+    .animate-mobile-slide-up {
+      @apply transform translate-y-full transition-transform duration-300 ease-out;
+    }
+    
+    .animate-mobile-slide-up.active {
+      @apply translate-y-0;
+    }
+  }
+
+  /* Mobile Breakpoint Utilities */
+  @media (max-width: 640px) {
+    .mobile-full-width {
+      @apply w-screen relative left-1/2 right-1/2 -ml-[50vw] -mr-[50vw];
+    }
+  }
 }

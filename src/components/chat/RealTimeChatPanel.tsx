@@ -393,30 +393,81 @@ export function RealTimeChatPanel({ roomId, userId }: RealTimeChatPanelProps) {
   }
 
   return (
-    <div className="flex flex-col h-full card-inftech shadow-lg">
-      {/* Chat Header */}
-      <div className="flex items-center justify-between p-6 border-b bg-gradient-to-r from-slate-50 to-blue-50 rounded-t-xl">
-        <div className="flex items-center space-x-4">
-          <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center shadow-md">
-            <MessageSquare className="h-6 w-6 text-white" />
+    <div className="flex flex-col h-full bg-white rounded-xl shadow-lg border border-slate-200 chat-mobile">
+      {/* Mobile Header */}
+      <div className="chat-header-mobile">
+        <button 
+          onClick={() => window.history.back()}
+          className="touch-target text-gray-600 hover:text-gray-800"
+        >
+          <svg className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+          </svg>
+        </button>
+        <div className="flex-1 text-center">
+          <h3 className="text-responsive-base font-bold text-gray-900 truncate">
+            {currentRoom?.name || 'Loading...'}
+          </h3>
+          <div className="flex items-center justify-center space-x-2 mt-1">
+            {isConnected ? (
+              <div className="flex items-center text-emerald-600">
+                <Wifi className="h-3 w-3 mr-1" />
+                <span className="text-xs font-medium">Connected</span>
+              </div>
+            ) : (
+              <div className="flex items-center text-red-600">
+                <WifiOff className="h-3 w-3 mr-1" />
+                <span className="text-xs font-medium">Connecting...</span>
+              </div>
+            )}
+            <Badge className="badge-inftech badge-inftech-primary text-xs">
+              <Users className="h-3 w-3 mr-1" />
+              {onlineUsers.length}
+            </Badge>
+          </div>
+        </div>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="touch-target p-0"
+            >
+              <MoreVertical className="h-5 w-5 text-gray-600" />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuItem onClick={fetchMessages} className="text-sm py-2">
+              <MessageSquare className="h-4 w-4 mr-2" />
+              Refresh Messages
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      </div>
+
+      {/* Desktop Header */}
+      <div className="tablet-up flex items-center justify-between p-4 sm:p-6 bg-gradient-to-r from-slate-800 to-slate-900 text-white rounded-t-xl shadow-lg">
+        <div className="flex items-center space-x-3 sm:space-x-4">
+          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center shadow-md">
+            <MessageSquare className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
           </div>
           <div>
-            <h3 className="text-xl font-bold heading-inftech-primary">
+            <h3 className="text-responsive-lg font-bold text-white">
               {currentRoom?.name || 'Loading...'}
             </h3>
             <div className="flex items-center space-x-3 mt-1">
               {isConnected ? (
-                <div className="flex items-center text-emerald-600">
+                <div className="flex items-center text-emerald-400">
                   <Wifi className="h-4 w-4 mr-1" />
-                  <span className="text-sm font-medium">Connected</span>
+                  <span className="text-responsive-xs font-medium">Connected</span>
                 </div>
               ) : (
-                <div className="flex items-center text-red-600">
+                <div className="flex items-center text-red-400">
                   <WifiOff className="h-4 w-4 mr-1" />
-                  <span className="text-sm font-medium">Connecting...</span>
+                  <span className="text-responsive-xs font-medium">Connecting...</span>
                 </div>
               )}
-              <Badge className="badge-inftech badge-inftech-primary text-sm">
+              <Badge className="badge-inftech badge-inftech-primary text-xs">
                 <Users className="h-4 w-4 mr-1" />
                 {onlineUsers.length} online
               </Badge>
@@ -428,14 +479,14 @@ export function RealTimeChatPanel({ roomId, userId }: RealTimeChatPanelProps) {
             <Button 
               variant="ghost" 
               size="sm" 
-              className="h-10 w-10 p-0 bg-slate-800 hover:bg-slate-900 shadow-lg border border-slate-600 rounded-xl"
+              className="h-8 w-8 sm:h-10 sm:w-10 p-0 bg-slate-700 hover:bg-slate-800 shadow-lg border border-slate-600 rounded-xl"
             >
-              <MoreVertical className="h-5 w-5 text-white" />
+              <MoreVertical className="h-4 w-4 sm:h-5 sm:w-5 text-white" />
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem onClick={fetchMessages} className="text-base py-3">
-              <MessageSquare className="h-4 w-4 mr-3" />
+            <DropdownMenuItem onClick={fetchMessages} className="text-responsive-sm py-2 sm:py-3">
+              <MessageSquare className="h-4 w-4 mr-2 sm:mr-3" />
               Refresh Messages
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -443,12 +494,12 @@ export function RealTimeChatPanel({ roomId, userId }: RealTimeChatPanelProps) {
       </div>
 
       {/* Messages Area */}
-      <ScrollArea className="flex-1 p-6 bg-gradient-to-b from-slate-50/30 to-white">
-        <div className="space-y-6">
+      <ScrollArea className="chat-messages-mobile flex-1 padding-responsive bg-gradient-to-b from-slate-50/30 to-white">
+        <div className="spacing-responsive">
           {messages.length === 0 ? (
-            <div className="text-center py-16">
-              <MessageSquare className="h-16 w-16 text-slate-300 mx-auto mb-6" />
-              <p className="text-slate-500 text-lg">No messages yet. Start the conversation!</p>
+            <div className="text-center padding-responsive-lg">
+              <MessageSquare className="h-12 w-12 sm:h-16 sm:w-16 text-slate-300 mx-auto mb-4 sm:mb-6" />
+              <p className="text-responsive-sm text-slate-500">No messages yet. Start the conversation!</p>
             </div>
           ) : (
             messages.map((message, index) => {
@@ -461,14 +512,14 @@ export function RealTimeChatPanel({ roomId, userId }: RealTimeChatPanelProps) {
                   key={message.id}
                   className={`flex ${isOwnMessage ? 'justify-end' : 'justify-start'} group`}
                 >
-                  <div className={`flex items-end space-x-2 max-w-xs lg:max-w-md ${isOwnMessage ? 'flex-row-reverse space-x-reverse' : ''}`}>
+                  <div className={`flex items-end space-x-2 max-w-[280px] sm:max-w-xs lg:max-w-md ${isOwnMessage ? 'flex-row-reverse space-x-reverse' : ''}`}>
                     {!isOwnMessage && showAvatar && (
-                      <div className="w-8 h-8 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white text-sm font-medium">
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 bg-gradient-to-r from-purple-400 to-pink-400 rounded-full flex items-center justify-center text-white text-xs sm:text-sm font-medium flex-shrink-0">
                         {message.user.name.charAt(0).toUpperCase()}
                       </div>
                     )}
                     {!isOwnMessage && !showAvatar && (
-                      <div className="w-8 h-8" />
+                      <div className="w-6 h-6 sm:w-8 sm:h-8 flex-shrink-0" />
                     )}
                     
                     <div className="relative">
@@ -680,16 +731,16 @@ export function RealTimeChatPanel({ roomId, userId }: RealTimeChatPanelProps) {
       </ScrollArea>
 
       {/* Message Input */}
-      <div className="p-6 border-t bg-gradient-to-r from-slate-50 to-blue-50 rounded-b-xl">
+      <div className="chat-input-mobile padding-responsive border-t bg-gradient-to-r from-slate-50 to-blue-50 rounded-b-xl">
         {/* Reply preview */}
         {replyingTo && (
-          <div className="mb-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-400 rounded-xl shadow-sm">
+          <div className="mb-3 sm:mb-4 p-3 sm:p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-400 rounded-xl shadow-sm">
             <div className="flex items-center justify-between">
-              <div>
-                <div className="text-sm font-semibold text-blue-700 mb-1">
+              <div className="flex-1 min-w-0">
+                <div className="text-responsive-xs font-semibold text-blue-700 mb-1">
                   Replying to {replyingTo.user.name}
                 </div>
-                <div className="text-base text-blue-600 truncate">
+                <div className="text-responsive-sm text-blue-600 truncate">
                   {replyingTo.content || replyingTo.message}
                 </div>
               </div>
@@ -697,7 +748,7 @@ export function RealTimeChatPanel({ roomId, userId }: RealTimeChatPanelProps) {
                 variant="ghost"
                 size="sm"
                 onClick={() => setReplyingTo(null)}
-                className="h-8 w-8 p-0 text-blue-600 hover:bg-blue-100 rounded-full"
+                className="touch-target h-8 w-8 p-0 text-blue-600 hover:bg-blue-100 rounded-full flex-shrink-0 ml-2"
               >
                 ×
               </Button>
@@ -705,29 +756,29 @@ export function RealTimeChatPanel({ roomId, userId }: RealTimeChatPanelProps) {
           </div>
         )}
         
-        <div className="flex space-x-3">
+        <div className="flex space-x-2 sm:space-x-3">
           <Input
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder={replyingTo ? "Reply to message..." : "Type a message..."}
             disabled={isLoading || !isConnected}
-            className="flex-1 bg-white border-slate-300 rounded-xl px-4 py-3 text-base shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+            className="input-responsive flex-1 bg-white border-slate-300 rounded-xl shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
           <Button
             onClick={handleSendMessage}
             disabled={!newMessage.trim() || isLoading || !isConnected}
-            className="btn-inftech-primary px-6 py-3 rounded-xl"
+            className="btn-inftech-primary touch-target px-4 py-3 sm:px-6 rounded-xl flex-shrink-0"
           >
             {isLoading ? (
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <div className="w-4 h-4 sm:w-5 sm:h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
-              <Send className="h-5 w-5" />
+              <Send className="h-4 w-4 sm:h-5 sm:w-5" />
             )}
           </Button>
         </div>
         {!isConnected && (
-          <p className="text-sm text-red-600 mt-3 font-medium">
+          <p className="text-responsive-xs text-red-600 mt-2 sm:mt-3 font-medium">
             Connection lost. Trying to reconnect...
           </p>
         )}
