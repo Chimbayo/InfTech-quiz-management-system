@@ -556,57 +556,9 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
             </div>
 
             {/* Quick Actions */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {/* Upcoming Quizzes */}
-              <Card className="card-inftech card-inftech-hover">
-                <CardHeader className="pb-4">
-                  <CardTitle className="flex items-center gap-3 text-xl heading-inftech-primary">
-                    <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center">
-                      <Calendar className="h-5 w-5 text-white" />
-                    </div>
-                    Upcoming Quizzes
-                  </CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  {upcomingQuizzes.length === 0 ? (
-                    <div className="text-center py-8">
-                      <BookOpen className="h-12 w-12 text-slate-300 mx-auto mb-3" />
-                      <p className="text-slate-500 text-lg">No upcoming quizzes</p>
-                    </div>
-                  ) : (
-                    upcomingQuizzes.map((quiz) => (
-                      <div key={quiz.id} className="flex items-center justify-between p-4 bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl border border-slate-200 hover:shadow-md transition-all duration-300">
-                        <div>
-                          <h4 className="font-semibold text-slate-900 text-lg">{quiz.title}</h4>
-                          <p className="text-slate-600">{quiz._count.questions} questions</p>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          {quiz.enableChat && quiz.chatRooms && quiz.chatRooms.length > 0 && (
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleJoinChatRoom(quiz.chatRooms![0].id)}
-                              className="btn-inftech-secondary"
-                            >
-                              <MessageSquare className="h-4 w-4" />
-                            </Button>
-                          )}
-                          <Button
-                            size="sm"
-                            onClick={() => handleStartQuiz(quiz.id)}
-                            className="btn-inftech-primary"
-                          >
-                            Start Quiz
-                          </Button>
-                        </div>
-                      </div>
-                    ))
-                  )}
-                </CardContent>
-              </Card>
-
+            <div className="w-full">
               {/* Study Milestones */}
-              <Card className="card-inftech card-inftech-hover">
+              <Card className="card-inftech card-inftech-hover w-full">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3 text-xl heading-inftech-primary">
                     <div className="w-10 h-10 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center">
