@@ -512,7 +512,6 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                 </CardHeader>
                 <CardContent>
                   <div className="text-4xl font-bold text-white mb-1">{allQuizzes.length}</div>
-                  <p className="text-sm text-white/80">Ready to take</p>
                 </CardContent>
               </Card>
 
