@@ -14,7 +14,7 @@ export default function HomePage() {
             </div>
           </div>
           <h1 className="text-6xl font-bold heading-inftech-primary mb-6">
-            InfTech Quiz System
+             QUIZ MANAGEMENT SYSTEM
           </h1>
           <p className="text-xl text-slate-600 max-w-3xl mx-auto leading-relaxed">
             Professional quiz creation and assessment platform designed for modern educational excellence

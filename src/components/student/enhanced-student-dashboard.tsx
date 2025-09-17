@@ -374,7 +374,7 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
               </div>
               <div>
                 <h1 className="text-2xl font-bold text-white">
-                  InfTech Student Portal
+                  Quiz Student Portal
                 </h1>
                 <p className="text-blue-100 text-sm">Comprehensive Learning Dashboard</p>
               </div>
@@ -443,7 +443,7 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
               }`}
             >
               <MessageSquare className="h-5 w-5" />
-              Study Chat
+              Study Chat Rooms
             </Button>
             <Button
               onClick={() => setActiveTab('study-groups')}

@@ -35,6 +35,18 @@ app.prepare().then(() => {
   const connectedUsers = new Map()
   const roomUsers = new Map()
 
+  // Function to broadcast global online users count
+  const broadcastGlobalOnlineUsers = () => {
+    const onlineUsers = Array.from(connectedUsers.values())
+    const totalStudents = onlineUsers.filter(user => user.userRole === 'STUDENT').length
+    const allUsers = onlineUsers.map(user => user.userName)
+    
+    io.emit('global-online-users', {
+      totalStudents,
+      allUsers
+    })
+  }
+
   io.on('connection', (socket) => {
     console.log('User connected:', socket.id)
 
@@ -49,6 +61,9 @@ app.prepare().then(() => {
         userName: data.name,
         userRole: data.role
       })
+      
+      // Broadcast updated online users count
+      broadcastGlobalOnlineUsers()
       
       console.log(`User authenticated: ${data.name} (${data.role})`)
     })
@@ -262,6 +277,18 @@ app.prepare().then(() => {
       })
     })
 
+    // Handle global online users request
+    socket.on('get-global-online-users', () => {
+      const onlineUsers = Array.from(connectedUsers.values())
+      const totalStudents = onlineUsers.filter(user => user.userRole === 'STUDENT').length
+      const allUsers = onlineUsers.map(user => user.userName)
+      
+      socket.emit('global-online-users', {
+        totalStudents,
+        allUsers
+      })
+    })
+
     // Handle disconnection
     socket.on('disconnect', () => {
       console.log('User disconnected:', socket.id)
@@ -278,6 +305,9 @@ app.prepare().then(() => {
       })
       
       connectedUsers.delete(socket.id)
+      
+      // Broadcast updated online users count
+      broadcastGlobalOnlineUsers()
     })
   })
 

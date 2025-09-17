@@ -1,7 +1,8 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { MessageCircle, Users, BookOpen, Plus, Search } from 'lucide-react'
+import { MessageCircle, Users, BookOpen, Plus, Search, Wifi } from 'lucide-react'
+import { useWebSocket } from '@/hooks/useWebSocket'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Badge } from '@/components/ui/badge'
@@ -61,11 +62,15 @@ export function ChatRoomList({ selectedRoomId, onRoomSelect, userRole }: ChatRoo
   const [searchTerm, setSearchTerm] = useState('')
   const [isLoading, setIsLoading] = useState(true)
   const [isCreateDialogOpen, setIsCreateDialogOpen] = useState(false)
+  const [onlineUsers, setOnlineUsers] = useState<string[]>([])
+  const [totalOnlineStudents, setTotalOnlineStudents] = useState(0)
   const [newRoomData, setNewRoomData] = useState({
     name: '',
     type: 'general',
     quizId: ''
   })
+  
+  const { socket, isConnected } = useWebSocket()
 
   useEffect(() => {
     loadRooms()
@@ -73,6 +78,24 @@ export function ChatRoomList({ selectedRoomId, onRoomSelect, userRole }: ChatRoo
       loadQuizzes()
     }
   }, [userRole])
+
+  // WebSocket listeners for online users
+  useEffect(() => {
+    if (!socket || !isConnected) return
+
+    // Listen for global online users updates
+    socket.on('global-online-users', (data: { totalStudents: number, allUsers: string[] }) => {
+      setTotalOnlineStudents(data.totalStudents)
+      setOnlineUsers(data.allUsers)
+    })
+
+    // Request initial online users count
+    socket.emit('get-global-online-users')
+
+    return () => {
+      socket.off('global-online-users')
+    }
+  }, [socket, isConnected])
 
   const loadRooms = async () => {
     try {
@@ -158,9 +181,26 @@ export function ChatRoomList({ selectedRoomId, onRoomSelect, userRole }: ChatRoo
   return (
     <div className="flex flex-col h-full bg-white border rounded-lg">
       {/* Header */}
-      <div className="p-4 border-b">
+      <div className="p-4 border-b bg-gradient-to-r from-slate-50 to-blue-50">
         <div className="flex items-center justify-between mb-3">
-          <h2 className="text-lg font-semibold text-gray-900">Chat Rooms</h2>
+          <div>
+            <h2 className="text-lg font-semibold text-gray-900">Chat Rooms</h2>
+            <div className="flex items-center gap-2 mt-1">
+              <div className="flex items-center gap-1">
+                <Wifi className={`h-4 w-4 ${isConnected ? 'text-green-500' : 'text-red-500'}`} />
+                <span className={`text-sm font-medium ${isConnected ? 'text-green-600' : 'text-red-600'}`}>
+                  {isConnected ? 'Connected' : 'Connecting...'}
+                </span>
+              </div>
+              <div className="h-4 w-px bg-slate-300"></div>
+              <div className="flex items-center gap-1">
+                <Users className="h-4 w-4 text-blue-500" />
+                <span className="text-sm font-semibold text-blue-600">
+                  {totalOnlineStudents} Students Online
+                </span>
+              </div>
+            </div>
+          </div>
           {(userRole === 'ADMIN' || userRole === 'TEACHER') && (
             <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
               <DialogTrigger asChild>

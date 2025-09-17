@@ -1,10 +1,8 @@
 {
-  "/_not-found/page": "app/_not-found/page.js",
   "/page": "app/page.js",
   "/student/page": "app/student/page.js",
   "/student/dashboard/page": "app/student/dashboard/page.js",
-  "/api/quizzes/route": "app/api/quizzes/route.js",
-  "/api/chat/rooms/route": "app/api/chat/rooms/route.js",
-  "/api/study-groups/route": "app/api/study-groups/route.js",
-  "/api/announcements/route": "app/api/announcements/route.js"
+  "/student/quiz/[id]/page": "app/student/quiz/[id]/page.js",
+  "/api/study-sessions/route": "app/api/study-sessions/route.js",
+  "/api/study-sessions/[id]/route": "app/api/study-sessions/[id]/route.js"
 }

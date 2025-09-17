@@ -1,15 +1,19 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Button } from '@/components/ui/button'
+import { Badge } from '@/components/ui/badge'
 import { ChatLayout } from '@/components/chat/ChatLayout'
 import { useAuth } from '@/hooks/useAuth'
-import { ArrowLeft, Home, MessageSquare } from 'lucide-react'
+import { useWebSocket } from '@/hooks/useWebSocket'
+import { ArrowLeft, Home, MessageSquare, Users, Wifi } from 'lucide-react'
 
 export default function ChatPage() {
   const router = useRouter()
   const { user, loading } = useAuth()
+  const { socket, isConnected } = useWebSocket()
+  const [totalOnlineStudents, setTotalOnlineStudents] = useState(0)
 
   const handleBackToDashboard = () => {
     if (!user) {
@@ -32,6 +36,23 @@ export default function ChatPage() {
         router.push('/')
     }
   }
+
+  // WebSocket listeners for online users
+  useEffect(() => {
+    if (!socket || !isConnected) return
+
+    // Listen for global online users updates
+    socket.on('global-online-users', (data: { totalStudents: number, allUsers: string[] }) => {
+      setTotalOnlineStudents(data.totalStudents)
+    })
+
+    // Request initial online users count
+    socket.emit('get-global-online-users')
+
+    return () => {
+      socket.off('global-online-users')
+    }
+  }, [socket, isConnected])
 
   if (loading) {
     return (
@@ -65,8 +86,23 @@ export default function ChatPage() {
                   <MessageSquare className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-2xl font-bold heading-inftech-primary">Chat & Study Groups</h1>
-                  <p className="text-slate-600">Real-time collaboration platform</p>
+                  <h1 className="text-2xl font-bold heading-inftech-primary">Chat & Study Groups Rooms</h1>
+                  <div className="flex items-center gap-4 mt-1">
+                    <p className="text-slate-600">Real-time collaboration platform</p>
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1">
+                        <Wifi className={`h-4 w-4 ${isConnected ? 'text-green-500' : 'text-red-500'}`} />
+                        <span className={`text-sm font-medium ${isConnected ? 'text-green-600' : 'text-red-600'}`}>
+                          {isConnected ? 'Connected' : 'Connecting...'}
+                        </span>
+                      </div>
+                      <div className="h-4 w-px bg-slate-300"></div>
+                      <Badge className="badge-inftech badge-inftech-primary">
+                        <Users className="h-4 w-4 mr-1" />
+                        {totalOnlineStudents} Students Online
+                      </Badge>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
