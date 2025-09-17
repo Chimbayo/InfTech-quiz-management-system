@@ -163,13 +163,13 @@ export default function NotificationBell({ userId, userName, userRole }: Notific
         variant="ghost"
         size="sm"
         onClick={() => setIsOpen(!isOpen)}
-        className="relative p-2 hover:bg-blue-50"
+        className="relative p-3 hover:bg-white/20 rounded-xl border border-white/20 bg-white/10 backdrop-blur-sm"
       >
-        <Bell className="h-5 w-5 text-blue-600" />
+        <Bell className="h-6 w-6 text-white" />
         {unreadCount > 0 && (
           <Badge 
             variant="destructive" 
-            className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 text-xs"
+            className="absolute -top-1 -right-1 h-6 w-6 flex items-center justify-center p-0 text-xs font-bold bg-red-500 text-white border-2 border-white"
           >
             {unreadCount > 9 ? '9+' : unreadCount}
           </Badge>

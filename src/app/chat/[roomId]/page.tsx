@@ -61,10 +61,10 @@ export default function ChatRoomPage({ params }: { params: { roomId: string } })
 
   if (loading || roomLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-inftech-gradient flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading chat room...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-blue-600 mx-auto mb-6"></div>
+          <p className="text-slate-600 text-lg">Loading chat room...</p>
         </div>
       </div>
     )
@@ -77,40 +77,40 @@ export default function ChatRoomPage({ params }: { params: { roomId: string } })
 
   if (!room) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+      <div className="min-h-screen bg-inftech-gradient flex items-center justify-center">
         <div className="text-center">
-          <MessageSquare className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Room Not Found</h3>
-          <p className="text-gray-600 mb-4">The chat room you're looking for doesn't exist.</p>
-          <Button onClick={handleBackToChat}>Back to Chat</Button>
+          <MessageSquare className="h-20 w-20 text-slate-300 mx-auto mb-6" />
+          <h3 className="text-2xl font-bold text-slate-900 mb-3">Room Not Found</h3>
+          <p className="text-slate-600 text-lg mb-6">The chat room you're looking for doesn't exist.</p>
+          <Button onClick={handleBackToChat} className="btn-inftech-primary">Back to Chat</Button>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-inftech-gradient flex flex-col">
       {/* Header */}
-      <header className="bg-white shadow-sm border-b sticky top-0 z-50">
+      <header className="header-inftech sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
-            <div className="flex items-center space-x-4">
+          <div className="flex justify-between items-center h-20">
+            <div className="flex items-center space-x-6">
               <Button
                 variant="ghost"
                 onClick={handleBackToChat}
-                className="flex items-center gap-2 text-gray-600 hover:text-gray-900"
+                className="btn-inftech-secondary"
               >
-                <ArrowLeft className="h-4 w-4" />
+                <ArrowLeft className="h-4 w-4 mr-2" />
                 Back to Rooms
               </Button>
-              <div className="h-6 w-px bg-gray-300"></div>
-              <div className="flex items-center space-x-3">
-                <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-blue-700 rounded-full flex items-center justify-center">
-                  <MessageSquare className="h-5 w-5 text-white" />
+              <div className="h-8 w-px bg-slate-200"></div>
+              <div className="flex items-center space-x-4">
+                <div className="w-12 h-12 bg-gradient-to-r from-blue-600 to-indigo-600 rounded-2xl flex items-center justify-center shadow-lg">
+                  <MessageSquare className="h-6 w-6 text-white" />
                 </div>
                 <div>
-                  <h1 className="text-xl font-bold text-gray-900">{room.name}</h1>
-                  <div className="flex items-center space-x-2 text-sm text-gray-600">
+                  <h1 className="text-2xl font-bold heading-inftech-primary">{room.name}</h1>
+                  <div className="flex items-center space-x-3 text-base text-slate-600">
                     <Users className="h-4 w-4" />
                     <span>Created by {room.creator.name}</span>
                     {room.quiz && (
@@ -128,8 +128,8 @@ export default function ChatRoomPage({ params }: { params: { roomId: string } })
       </header>
 
       {/* Chat Area */}
-      <div className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-6">
-        <div className="h-[calc(100vh-140px)]">
+      <div className="flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8">
+        <div className="h-[calc(100vh-180px)]">
           <RealTimeChatPanel roomId={params.roomId} userId={user.id} />
         </div>
       </div>

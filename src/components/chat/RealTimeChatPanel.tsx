@@ -393,31 +393,31 @@ export function RealTimeChatPanel({ roomId, userId }: RealTimeChatPanelProps) {
   }
 
   return (
-    <div className="flex flex-col h-full bg-white rounded-lg border shadow-sm">
+    <div className="flex flex-col h-full card-inftech shadow-lg">
       {/* Chat Header */}
-      <div className="flex items-center justify-between p-4 border-b bg-gray-50 rounded-t-lg">
-        <div className="flex items-center space-x-3">
-          <div className="w-10 h-10 bg-blue-100 rounded-full flex items-center justify-center">
-            <MessageSquare className="h-5 w-5 text-blue-600" />
+      <div className="flex items-center justify-between p-6 border-b bg-gradient-to-r from-slate-50 to-blue-50 rounded-t-xl">
+        <div className="flex items-center space-x-4">
+          <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center shadow-md">
+            <MessageSquare className="h-6 w-6 text-white" />
           </div>
           <div>
-            <h3 className="font-semibold text-gray-900">
+            <h3 className="text-xl font-bold heading-inftech-primary">
               {currentRoom?.name || 'Loading...'}
             </h3>
-            <div className="flex items-center space-x-2">
+            <div className="flex items-center space-x-3 mt-1">
               {isConnected ? (
-                <div className="flex items-center text-green-600">
-                  <Wifi className="h-3 w-3 mr-1" />
-                  <span className="text-xs">Connected</span>
+                <div className="flex items-center text-emerald-600">
+                  <Wifi className="h-4 w-4 mr-1" />
+                  <span className="text-sm font-medium">Connected</span>
                 </div>
               ) : (
                 <div className="flex items-center text-red-600">
-                  <WifiOff className="h-3 w-3 mr-1" />
-                  <span className="text-xs">Connecting...</span>
+                  <WifiOff className="h-4 w-4 mr-1" />
+                  <span className="text-sm font-medium">Connecting...</span>
                 </div>
               )}
-              <Badge variant="secondary" className="text-xs">
-                <Users className="h-3 w-3 mr-1" />
+              <Badge className="badge-inftech badge-inftech-primary text-sm">
+                <Users className="h-4 w-4 mr-1" />
                 {onlineUsers.length} online
               </Badge>
             </div>
@@ -425,12 +425,17 @@ export function RealTimeChatPanel({ roomId, userId }: RealTimeChatPanelProps) {
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="sm">
-              <MoreVertical className="h-4 w-4" />
+            <Button 
+              variant="ghost" 
+              size="sm" 
+              className="h-10 w-10 p-0 bg-slate-800 hover:bg-slate-900 shadow-lg border border-slate-600 rounded-xl"
+            >
+              <MoreVertical className="h-5 w-5 text-white" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuItem onClick={fetchMessages}>
+          <DropdownMenuContent align="end" className="w-48">
+            <DropdownMenuItem onClick={fetchMessages} className="text-base py-3">
+              <MessageSquare className="h-4 w-4 mr-3" />
               Refresh Messages
             </DropdownMenuItem>
           </DropdownMenuContent>
@@ -438,12 +443,12 @@ export function RealTimeChatPanel({ roomId, userId }: RealTimeChatPanelProps) {
       </div>
 
       {/* Messages Area */}
-      <ScrollArea className="flex-1 p-4">
-        <div className="space-y-4">
+      <ScrollArea className="flex-1 p-6 bg-gradient-to-b from-slate-50/30 to-white">
+        <div className="space-y-6">
           {messages.length === 0 ? (
-            <div className="text-center py-8">
-              <MessageSquare className="h-12 w-12 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500">No messages yet. Start the conversation!</p>
+            <div className="text-center py-16">
+              <MessageSquare className="h-16 w-16 text-slate-300 mx-auto mb-6" />
+              <p className="text-slate-500 text-lg">No messages yet. Start the conversation!</p>
             </div>
           ) : (
             messages.map((message, index) => {
@@ -494,11 +499,15 @@ export function RealTimeChatPanel({ roomId, userId }: RealTimeChatPanelProps) {
                       >
                         {/* Message actions dropdown */}
                         {!message.isSystemMessage && !message.isDeleted && (
-                          <div className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <div className="absolute -top-2 -right-2 opacity-0 group-hover:opacity-100 transition-all duration-200">
                             <DropdownMenu>
                               <DropdownMenuTrigger asChild>
-                                <Button variant="ghost" size="sm" className="h-6 w-6 p-0">
-                                  <MoreVertical className="h-3 w-3" />
+                                <Button 
+                                  variant="ghost" 
+                                  size="sm" 
+                                  className="h-8 w-8 p-0 bg-slate-800 hover:bg-slate-900 shadow-lg border border-slate-600 rounded-full"
+                                >
+                                  <MoreVertical className="h-4 w-4 text-white" />
                                 </Button>
                               </DropdownMenuTrigger>
                               <DropdownMenuContent align="end">
@@ -671,16 +680,16 @@ export function RealTimeChatPanel({ roomId, userId }: RealTimeChatPanelProps) {
       </ScrollArea>
 
       {/* Message Input */}
-      <div className="p-4 border-t bg-gray-50 rounded-b-lg">
+      <div className="p-6 border-t bg-gradient-to-r from-slate-50 to-blue-50 rounded-b-xl">
         {/* Reply preview */}
         {replyingTo && (
-          <div className="mb-3 p-3 bg-blue-50 border-l-4 border-blue-400 rounded">
+          <div className="mb-4 p-4 bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-400 rounded-xl shadow-sm">
             <div className="flex items-center justify-between">
               <div>
-                <div className="text-xs font-medium text-blue-700">
+                <div className="text-sm font-semibold text-blue-700 mb-1">
                   Replying to {replyingTo.user.name}
                 </div>
-                <div className="text-sm text-blue-600 truncate">
+                <div className="text-base text-blue-600 truncate">
                   {replyingTo.content || replyingTo.message}
                 </div>
               </div>
@@ -688,7 +697,7 @@ export function RealTimeChatPanel({ roomId, userId }: RealTimeChatPanelProps) {
                 variant="ghost"
                 size="sm"
                 onClick={() => setReplyingTo(null)}
-                className="h-6 w-6 p-0 text-blue-600"
+                className="h-8 w-8 p-0 text-blue-600 hover:bg-blue-100 rounded-full"
               >
                 ×
               </Button>
@@ -696,29 +705,29 @@ export function RealTimeChatPanel({ roomId, userId }: RealTimeChatPanelProps) {
           </div>
         )}
         
-        <div className="flex space-x-2">
+        <div className="flex space-x-3">
           <Input
             value={newMessage}
             onChange={(e) => setNewMessage(e.target.value)}
             onKeyPress={handleKeyPress}
             placeholder={replyingTo ? "Reply to message..." : "Type a message..."}
             disabled={isLoading || !isConnected}
-            className="flex-1 bg-white"
+            className="flex-1 bg-white border-slate-300 rounded-xl px-4 py-3 text-base shadow-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
           />
           <Button
             onClick={handleSendMessage}
             disabled={!newMessage.trim() || isLoading || !isConnected}
-            className="bg-blue-600 hover:bg-blue-700"
+            className="btn-inftech-primary px-6 py-3 rounded-xl"
           >
             {isLoading ? (
-              <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : (
-              <Send className="h-4 w-4" />
+              <Send className="h-5 w-5" />
             )}
           </Button>
         </div>
         {!isConnected && (
-          <p className="text-xs text-red-600 mt-2">
+          <p className="text-sm text-red-600 mt-3 font-medium">
             Connection lost. Trying to reconnect...
           </p>
         )}

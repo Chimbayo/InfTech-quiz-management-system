@@ -35,7 +35,6 @@ import {
 import { GamificationPanel } from '@/components/student/gamification-panel'
 import { StudySchedulingPanel } from '@/components/student/study-scheduling-panel'
 import { HelpRequestPanel } from '@/components/student/help-request-panel'
-import { ProgressSharingPanel } from '@/components/student/progress-sharing-panel'
 import { StudyRemindersPanel } from '@/components/student/study-reminders-panel'
 import { SessionUser } from '@/lib/auth'
 import NotificationBell from '@/components/NotificationBell'
@@ -364,18 +363,21 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-inftech-student">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-sm shadow-lg border-b border-blue-100">
+      <header className="header-inftech-student">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-16">
+          <div className="flex justify-between items-center h-20">
             <div className="flex items-center">
-              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-2 rounded-lg mr-3">
-                <BookOpen className="h-6 w-6 text-white" />
+              <div className="w-12 h-12 bg-gradient-to-r from-white/20 to-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center mr-4 shadow-lg">
+                <BookOpen className="h-7 w-7 text-white" />
               </div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-700 to-indigo-700 bg-clip-text text-transparent">
-                Student Dashboard
-              </h1>
+              <div>
+                <h1 className="text-2xl font-bold text-white">
+                  InfTech Student Portal
+                </h1>
+                <p className="text-blue-100 text-sm">Comprehensive Learning Dashboard</p>
+              </div>
             </div>
             <div className="flex items-center space-x-4">
               <NotificationBell
@@ -383,18 +385,18 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                 userName={user.name}
                 userRole={user.role}
               />
-              <div className="flex items-center space-x-2 bg-blue-50 px-3 py-2 rounded-lg">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="text-sm font-medium text-blue-700">Welcome, {user.name}</span>
+              <div className="flex items-center space-x-3 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-xl border border-white/20">
+                <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
+                <span className="text-sm font-semibold text-white">Welcome, {user.name}</span>
               </div>
               <Button
                 onClick={handleLogout}
                 variant="outline"
                 size="sm"
                 disabled={isLoggingOut}
-                className="flex items-center gap-2 border-blue-200 text-blue-700 hover:bg-blue-50 hover:border-blue-300"
+                className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20 hover:border-white/30 transition-all duration-300"
               >
-                <LogOut className="h-4 w-4" />
+                <LogOut className="h-4 w-4 mr-2" />
                 {isLoggingOut ? 'Logging out...' : 'Logout'}
               </Button>
             </div>
@@ -404,91 +406,91 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
 
       <div className="flex h-[calc(100vh-80px)]">
         {/* Left Sidebar Navigation */}
-        <div className="w-64 bg-white/70 backdrop-blur-sm border-r border-blue-100 p-4 flex flex-col">
-          <h3 className="text-lg font-semibold bg-gradient-to-r from-blue-700 to-indigo-700 bg-clip-text text-transparent mb-4">Navigation</h3>
-          <nav className="space-y-2 flex-1">
+        <div className="w-72 nav-inftech p-6 flex flex-col">
+          <h3 className="text-xl font-bold heading-inftech-primary mb-6">Navigation</h3>
+          <nav className="space-y-3 flex-1">
             <Button
               onClick={() => setActiveTab('dashboard')}
-              variant={activeTab === 'dashboard' ? 'default' : 'ghost'}
-              className={`w-full justify-start ${
+              variant="ghost"
+              className={`nav-item-inftech w-full justify-start ${
                 activeTab === 'dashboard' 
-                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' 
-                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
+                  ? 'nav-item-inftech-active' 
+                  : 'text-slate-700 hover:bg-blue-50 hover:text-blue-800'
               }`}
             >
-              <BarChart3 className="h-4 w-4 mr-2" />
+              <BarChart3 className="h-5 w-5" />
               Dashboard
             </Button>
             <Button
               onClick={() => setActiveTab('quizzes')}
-              variant={activeTab === 'quizzes' ? 'default' : 'ghost'}
-              className={`w-full justify-start ${
+              variant="ghost"
+              className={`nav-item-inftech w-full justify-start ${
                 activeTab === 'quizzes' 
-                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' 
-                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
+                  ? 'nav-item-inftech-active' 
+                  : 'text-slate-700 hover:bg-blue-50 hover:text-blue-800'
               }`}
             >
-              <BookOpen className="h-4 w-4 mr-2" />
+              <BookOpen className="h-5 w-5" />
               Quizzes
             </Button>
             <Button
               onClick={() => setActiveTab('study-chat')}
-              variant={activeTab === 'study-chat' ? 'default' : 'ghost'}
-              className={`w-full justify-start ${
+              variant="ghost"
+              className={`nav-item-inftech w-full justify-start ${
                 activeTab === 'study-chat' 
-                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' 
-                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
+                  ? 'nav-item-inftech-active' 
+                  : 'text-slate-700 hover:bg-blue-50 hover:text-blue-800'
               }`}
             >
-              <MessageSquare className="h-4 w-4 mr-2" />
+              <MessageSquare className="h-5 w-5" />
               Study Chat
             </Button>
             <Button
               onClick={() => setActiveTab('study-groups')}
-              variant={activeTab === 'study-groups' ? 'default' : 'ghost'}
-              className={`w-full justify-start ${
+              variant="ghost"
+              className={`nav-item-inftech w-full justify-start ${
                 activeTab === 'study-groups' 
-                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' 
-                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
+                  ? 'nav-item-inftech-active' 
+                  : 'text-slate-700 hover:bg-blue-50 hover:text-blue-800'
               }`}
             >
-              <Users className="h-4 w-4 mr-2" />
+              <Users className="h-5 w-5" />
               Study Groups
             </Button>
             <Button
               onClick={() => setActiveTab('progress')}
-              variant={activeTab === 'progress' ? 'default' : 'ghost'}
-              className={`w-full justify-start ${
+              variant="ghost"
+              className={`nav-item-inftech w-full justify-start ${
                 activeTab === 'progress' 
-                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' 
-                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
+                  ? 'nav-item-inftech-active' 
+                  : 'text-slate-700 hover:bg-blue-50 hover:text-blue-800'
               }`}
             >
-              <TrendingUp className="h-4 w-4 mr-2" />
+              <TrendingUp className="h-5 w-5" />
               Progress
             </Button>
             <Button
               onClick={() => setActiveTab('achievements')}
-              variant={activeTab === 'achievements' ? 'default' : 'ghost'}
-              className={`w-full justify-start ${
+              variant="ghost"
+              className={`nav-item-inftech w-full justify-start ${
                 activeTab === 'achievements' 
-                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' 
-                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
+                  ? 'nav-item-inftech-active' 
+                  : 'text-slate-700 hover:bg-blue-50 hover:text-blue-800'
               }`}
             >
-              <Trophy className="h-4 w-4 mr-2" />
+              <Trophy className="h-5 w-5" />
               Achievements
             </Button>
             <Button
               onClick={() => setActiveTab('reminders')}
-              variant={activeTab === 'reminders' ? 'default' : 'ghost'}
-              className={`w-full justify-start ${
+              variant="ghost"
+              className={`nav-item-inftech w-full justify-start ${
                 activeTab === 'reminders' 
-                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' 
-                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
+                  ? 'nav-item-inftech-active' 
+                  : 'text-slate-700 hover:bg-blue-50 hover:text-blue-800'
               }`}
             >
-              <Bell className="h-4 w-4 mr-2" />
+              <Bell className="h-5 w-5" />
               Study Reminders
             </Button>
           </nav>
@@ -500,85 +502,91 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
             <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
 
           {/* Dashboard Tab */}
-          <TabsContent value="dashboard" className="space-y-6">
+          <TabsContent value="dashboard" className="space-y-8">
             {/* Stats Cards */}
             <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-              <Card className="bg-gradient-to-r from-blue-50 to-blue-100 border-blue-200">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-blue-800">Available Quizzes</CardTitle>
-                  <BookOpen className="h-5 w-5 text-blue-600" />
+              <Card className="stat-card-inftech stat-card-primary">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                  <CardTitle className="text-sm font-semibold text-white/90">Available Quizzes</CardTitle>
+                  <BookOpen className="h-6 w-6 text-white/80" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-blue-900">{allQuizzes.length}</div>
-                  <p className="text-xs text-blue-600 mt-1">Ready to take</p>
+                  <div className="text-4xl font-bold text-white mb-1">{allQuizzes.length}</div>
+                  <p className="text-sm text-white/80">Ready to take</p>
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-r from-green-50 to-green-100 border-green-200">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-green-800">Completed</CardTitle>
-                  <CheckCircle className="h-5 w-5 text-green-600" />
+              <Card className="stat-card-inftech stat-card-success">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                  <CardTitle className="text-sm font-semibold text-white/90">Completed</CardTitle>
+                  <CheckCircle className="h-6 w-6 text-white/80" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-green-900">{attempts.length}</div>
-                  <p className="text-xs text-green-600 mt-1">Quiz attempts</p>
+                  <div className="text-4xl font-bold text-white mb-1">{attempts.length}</div>
+                  <p className="text-sm text-white/80">Quiz attempts</p>
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-r from-purple-50 to-purple-100 border-purple-200">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-purple-800">Average Score</CardTitle>
-                  <TrendingUp className="h-5 w-5 text-purple-600" />
+              <Card className="stat-card-inftech stat-card-warning">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                  <CardTitle className="text-sm font-semibold text-white/90">Average Score</CardTitle>
+                  <TrendingUp className="h-6 w-6 text-white/80" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-purple-900">
+                  <div className="text-4xl font-bold text-white mb-1">
                     {attempts.length > 0 
                       ? Math.round(attempts.reduce((sum, attempt) => sum + attempt.score, 0) / attempts.length)
                       : 0
                     }%
                   </div>
-                  <p className="text-xs text-purple-600 mt-1">Performance</p>
+                  <p className="text-sm text-white/80">Performance</p>
                 </CardContent>
               </Card>
 
-              <Card className="bg-gradient-to-r from-orange-50 to-orange-100 border-orange-200">
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium text-orange-800">Study Groups</CardTitle>
-                  <Users className="h-5 w-5 text-orange-600" />
+              <Card className="stat-card-inftech stat-card-info">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                  <CardTitle className="text-sm font-semibold text-white/90">Study Groups</CardTitle>
+                  <Users className="h-6 w-6 text-white/80" />
                 </CardHeader>
                 <CardContent>
-                  <div className="text-3xl font-bold text-orange-900">{studyGroups.length}</div>
-                  <p className="text-xs text-orange-600 mt-1">Active groups</p>
+                  <div className="text-4xl font-bold text-white mb-1">{studyGroups.length}</div>
+                  <p className="text-sm text-white/80">Active groups</p>
                 </CardContent>
               </Card>
             </div>
 
             {/* Quick Actions */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
               {/* Upcoming Quizzes */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Calendar className="h-5 w-5 text-blue-600" />
+              <Card className="card-inftech card-inftech-hover">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center gap-3 text-xl heading-inftech-primary">
+                    <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center">
+                      <Calendar className="h-5 w-5 text-white" />
+                    </div>
                     Upcoming Quizzes
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
+                <CardContent className="space-y-4">
                   {upcomingQuizzes.length === 0 ? (
-                    <p className="text-gray-500 text-center py-4">No upcoming quizzes</p>
+                    <div className="text-center py-8">
+                      <BookOpen className="h-12 w-12 text-slate-300 mx-auto mb-3" />
+                      <p className="text-slate-500 text-lg">No upcoming quizzes</p>
+                    </div>
                   ) : (
                     upcomingQuizzes.map((quiz) => (
-                      <div key={quiz.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
+                      <div key={quiz.id} className="flex items-center justify-between p-4 bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl border border-slate-200 hover:shadow-md transition-all duration-300">
                         <div>
-                          <h4 className="font-medium text-gray-900">{quiz.title}</h4>
-                          <p className="text-sm text-gray-600">{quiz._count.questions} questions</p>
+                          <h4 className="font-semibold text-slate-900 text-lg">{quiz.title}</h4>
+                          <p className="text-slate-600">{quiz._count.questions} questions</p>
                         </div>
-                        <div className="flex items-center gap-2">
+                        <div className="flex items-center gap-3">
                           {quiz.enableChat && quiz.chatRooms && quiz.chatRooms.length > 0 && (
                             <Button
                               variant="outline"
                               size="sm"
                               onClick={() => handleJoinChatRoom(quiz.chatRooms![0].id)}
+                              className="btn-inftech-secondary"
                             >
                               <MessageSquare className="h-4 w-4" />
                             </Button>
@@ -586,9 +594,9 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                           <Button
                             size="sm"
                             onClick={() => handleStartQuiz(quiz.id)}
-                            className="bg-blue-600 hover:bg-blue-700"
+                            className="btn-inftech-primary"
                           >
-                            Start
+                            Start Quiz
                           </Button>
                         </div>
                       </div>
@@ -598,83 +606,93 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
               </Card>
 
               {/* Study Milestones */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2">
-                    <Star className="h-5 w-5 text-yellow-600" />
+              <Card className="card-inftech card-inftech-hover">
+                <CardHeader className="pb-4">
+                  <CardTitle className="flex items-center gap-3 text-xl heading-inftech-primary">
+                    <div className="w-10 h-10 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center">
+                      <Star className="h-5 w-5 text-white" />
+                    </div>
                     Recent Achievements
                   </CardTitle>
                 </CardHeader>
-                <CardContent className="space-y-3">
-                  {studyMilestones.map((milestone) => (
-                    <div key={milestone.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                      <div className={`w-8 h-8 rounded-full flex items-center justify-center ${
-                        milestone.type === 'completion' ? 'bg-green-100' :
-                        milestone.type === 'social' ? 'bg-blue-100' : 'bg-yellow-100'
-                      }`}>
-                        {milestone.type === 'completion' ? <CheckCircle className="h-4 w-4 text-green-600" /> :
-                         milestone.type === 'social' ? <Users className="h-4 w-4 text-blue-600" /> :
-                         <Star className="h-4 w-4 text-yellow-600" />}
-                      </div>
-                      <div className="flex-1">
-                        <p className="font-medium text-gray-900">{milestone.title}</p>
-                        <p className="text-sm text-gray-500">{milestone.date?.toLocaleDateString()}</p>
-                      </div>
+                <CardContent className="space-y-4">
+                  {studyMilestones.length === 0 ? (
+                    <div className="text-center py-8">
+                      <Trophy className="h-12 w-12 text-slate-300 mx-auto mb-3" />
+                      <p className="text-slate-500 text-lg">No achievements yet</p>
                     </div>
-                  ))}
+                  ) : (
+                    studyMilestones.map((milestone) => (
+                      <div key={milestone.id} className="flex items-center gap-4 p-4 bg-gradient-to-r from-slate-50 to-yellow-50 rounded-xl border border-slate-200 hover:shadow-md transition-all duration-300">
+                        <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-md ${
+                          milestone.type === 'completion' ? 'bg-gradient-to-r from-emerald-500 to-green-500' :
+                          milestone.type === 'social' ? 'bg-gradient-to-r from-blue-500 to-indigo-500' : 
+                          'bg-gradient-to-r from-yellow-500 to-orange-500'
+                        }`}>
+                          {milestone.type === 'completion' ? <CheckCircle className="h-6 w-6 text-white" /> :
+                           milestone.type === 'social' ? <Users className="h-6 w-6 text-white" /> :
+                           <Star className="h-6 w-6 text-white" />}
+                        </div>
+                        <div className="flex-1">
+                          <p className="font-semibold text-slate-900 text-lg">{milestone.title}</p>
+                          <p className="text-slate-600">{milestone.date?.toLocaleDateString()}</p>
+                        </div>
+                      </div>
+                    ))
+                  )}
                 </CardContent>
               </Card>
             </div>
           </TabsContent>
 
           {/* Quizzes Tab */}
-          <TabsContent value="quizzes" className="space-y-6">
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">Available Quizzes</h2>
-              <p className="text-gray-600 mt-1">Choose a quiz to test your knowledge and join study discussions</p>
+          <TabsContent value="quizzes" className="space-y-8">
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold heading-inftech-primary mb-3">Available Quizzes</h2>
+              <p className="text-slate-600 text-lg">Choose a quiz to test your knowledge and join collaborative study discussions</p>
             </div>
             
             {allQuizzes.length === 0 ? (
-              <Card>
-                <CardContent className="text-center py-16">
-                  <BookOpen className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">No quizzes available</h3>
-                  <p className="text-gray-600">Check back later for new quizzes from your instructors</p>
+              <Card className="card-inftech">
+                <CardContent className="text-center py-20">
+                  <BookOpen className="h-20 w-20 text-slate-300 mx-auto mb-6" />
+                  <h3 className="text-2xl font-bold text-slate-900 mb-3">No quizzes available</h3>
+                  <p className="text-slate-600 text-lg">Check back later for new quizzes from your instructors</p>
                 </CardContent>
               </Card>
             ) : (
-              <div className="grid gap-6">
+              <div className="grid gap-8">
                 {allQuizzes.map((quiz) => (
-                  <Card key={quiz.id} className="hover:shadow-lg transition-shadow">
-                    <CardHeader>
+                  <Card key={quiz.id} className="card-inftech card-inftech-hover">
+                    <CardHeader className="pb-4">
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
-                          <CardTitle className="flex items-center gap-3 text-lg">
-                            <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-lg flex items-center justify-center">
-                              <BookOpen className="h-4 w-4 text-white" />
+                          <CardTitle className="flex items-center gap-4 text-xl mb-3">
+                            <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center shadow-lg">
+                              <BookOpen className="h-6 w-6 text-white" />
                             </div>
-                            {quiz.title}
+                            <span className="heading-inftech-primary">{quiz.title}</span>
                             {quiz.enableChat && (
-                              <Badge className="bg-green-100 text-green-800 hover:bg-green-200">
+                              <Badge className="badge-inftech badge-inftech-success">
                                 <MessageSquare className="h-3 w-3 mr-1" />
                                 Chat Available
                               </Badge>
                             )}
                           </CardTitle>
-                          <CardDescription className="mt-2">
-                            {quiz.description || 'Test your knowledge with this quiz'}
+                          <CardDescription className="text-base text-slate-600 mb-3">
+                            {quiz.description || 'Test your knowledge with this comprehensive quiz'}
                           </CardDescription>
-                          <p className="text-sm text-gray-500 mt-2">
+                          <p className="text-sm text-slate-500">
                             Created by {quiz.creator.name}
                           </p>
                         </div>
-                        <div className="flex items-center space-x-2 ml-4">
+                        <div className="flex items-center space-x-3 ml-6">
                           {quiz.enableChat && quiz.chatRooms && quiz.chatRooms.length > 0 && (
                             <Button
                               variant="outline"
                               size="sm"
                               onClick={() => handleJoinChatRoom(quiz.chatRooms![0].id)}
-                              className="border-green-200 text-green-700 hover:bg-green-50"
+                              className="btn-inftech-success"
                             >
                               <MessageSquare className="h-4 w-4 mr-2" />
                               Study Chat
@@ -684,7 +702,7 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                             variant="outline"
                             size="sm"
                             onClick={() => setSelectedQuizForHelp(quiz.id)}
-                            className="border-orange-200 text-orange-700 hover:bg-orange-50"
+                            className="btn-inftech-warning"
                           >
                             <HelpCircle className="h-4 w-4 mr-2" />
                             Ask Help
@@ -693,7 +711,7 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                             variant="outline"
                             size="sm"
                             onClick={() => setSelectedQuizForSession(quiz.id)}
-                            className="border-purple-200 text-purple-700 hover:bg-purple-50"
+                            className="btn-inftech-secondary"
                           >
                             <Calendar className="h-4 w-4 mr-2" />
                             Schedule
@@ -701,7 +719,7 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                           <Button
                             onClick={() => handleStartQuiz(quiz.id)}
                             disabled={!quiz.isActive}
-                            className="bg-blue-600 hover:bg-blue-700"
+                            className="btn-inftech-primary"
                           >
                             <Play className="h-4 w-4 mr-2" />
                             {attempts.some(attempt => attempt.quizId === quiz.id) ? 'Retake Quiz' : 'Start Quiz'}
@@ -710,62 +728,27 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                        <div className="text-center p-3 bg-blue-50 rounded-lg">
-                          <div className="text-2xl font-bold text-blue-600">{quiz._count.questions}</div>
-                          <div className="text-sm text-blue-700">Questions</div>
+                      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+                        <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200 shadow-sm">
+                          <div className="text-3xl font-bold text-blue-600 mb-1">{quiz._count.questions}</div>
+                          <div className="text-sm font-medium text-blue-700">Questions</div>
                         </div>
-                        <div className="text-center p-3 bg-purple-50 rounded-lg">
-                          <div className="text-2xl font-bold text-purple-600">{quiz.passingScore}%</div>
-                          <div className="text-sm text-purple-700">Pass Score</div>
+                        <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-violet-50 rounded-xl border border-purple-200 shadow-sm">
+                          <div className="text-3xl font-bold text-purple-600 mb-1">{quiz.passingScore}%</div>
+                          <div className="text-sm font-medium text-purple-700">Pass Score</div>
                         </div>
-                        <div className="text-center p-3 bg-orange-50 rounded-lg">
-                          <div className="text-2xl font-bold text-orange-600">
+                        <div className="text-center p-4 bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl border border-orange-200 shadow-sm">
+                          <div className="text-3xl font-bold text-orange-600 mb-1">
                             {quiz.timeLimit ? `${quiz.timeLimit}` : '∞'}
                           </div>
-                          <div className="text-sm text-orange-700">
+                          <div className="text-sm font-medium text-orange-700">
                             {quiz.timeLimit ? 'Minutes' : 'No Limit'}
                           </div>
                         </div>
-                        <div className="text-center p-3 bg-green-50 rounded-lg">
-                          <div className="text-2xl font-bold text-green-600">{quiz._count.attempts}</div>
-                          <div className="text-sm text-green-700">Total Attempts</div>
+                        <div className="text-center p-4 bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl border border-emerald-200 shadow-sm">
+                          <div className="text-3xl font-bold text-emerald-600 mb-1">{quiz._count.attempts}</div>
+                          <div className="text-sm font-medium text-emerald-700">Total Attempts</div>
                         </div>
-                        {(() => {
-                          const userAttempts = attempts.filter(attempt => attempt.quizId === quiz.id)
-                          const bestScore = userAttempts.length > 0 ? Math.max(...userAttempts.map(a => a.score)) : null
-                          const lastAttempt = userAttempts.length > 0 ? userAttempts[userAttempts.length - 1] : null
-                          
-                          if (userAttempts.length > 0) {
-                            return (
-                              <div className="col-span-2 md:col-span-4 mt-2 p-3 bg-yellow-50 rounded-lg border-l-4 border-yellow-400">
-                                <div className="flex items-center justify-between">
-                                  <div>
-                                    <div className="text-sm font-medium text-yellow-800">
-                                      Your Progress: {userAttempts.length} attempt{userAttempts.length > 1 ? 's' : ''}
-                                    </div>
-                                    <div className="text-xs text-yellow-600">
-                                      Best Score: <span className="font-semibold">{bestScore}%</span>
-                                      {lastAttempt && (
-                                        <span className="ml-2">
-                                          Last: {lastAttempt.score}% 
-                                          {lastAttempt.passed ? ' ✅' : ' ❌'}
-                                        </span>
-                                      )}
-                                    </div>
-                                  </div>
-                                  {bestScore && bestScore >= quiz.passingScore && (
-                                    <Badge className="bg-green-100 text-green-800">
-                                      <CheckCircle className="h-3 w-3 mr-1" />
-                                      Passed
-                                    </Badge>
-                                  )}
-                                </div>
-                              </div>
-                            )
-                          }
-                          return null
-                        })()}
                       </div>
                     </CardContent>
                   </Card>
@@ -775,279 +758,90 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
           </TabsContent>
 
           {/* Study Chat Tab */}
-          <TabsContent value="study-chat" className="space-y-6">
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold text-gray-900">Study Chat Rooms</h2>
-              <p className="text-gray-600 mt-1">Join quiz discussions and general study rooms</p>
+          <TabsContent value="study-chat" className="space-y-8">
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold heading-inftech-primary mb-3">Study Chat Rooms</h2>
+              <p className="text-slate-600 text-lg">Connect with peers, discuss quizzes, and collaborate in real-time study sessions</p>
             </div>
 
-            {/* Pre-Quiz Discussion Rooms */}
+
+            {/* Active Quiz Discussions */}
             <div className="mb-8">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <BookOpen className="h-5 w-5 text-green-600" />
-                Pre-Quiz Discussion Rooms
-              </h3>
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center">
+                  <BookOpen className="h-5 w-5 text-white" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold heading-inftech-primary">Quiz Discussion Rooms</h3>
+                  <p className="text-slate-600">Join discussions related to specific quizzes and get help from peers</p>
+                </div>
+              </div>
               
-              {getPreQuizRooms().length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {getPreQuizRooms().map((room) => (
-                    <Card key={room.id} className="hover:shadow-lg transition-shadow cursor-pointer border-l-4 border-l-green-500"
+              {getQuizChatRooms().length > 0 ? (
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {getQuizChatRooms().map((room) => (
+                    <Card key={room.id} className="card-inftech card-inftech-hover cursor-pointer"
                           onClick={() => handleJoinChatRoom(room.id)}>
-                      <CardHeader className="pb-3">
-                        <CardTitle className="flex items-center gap-2 text-base">
-                          <MessageSquare className="h-4 w-4 text-green-600" />
+                      <CardHeader className="pb-4">
+                        <CardTitle className="flex items-center gap-3 text-lg">
+                          <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-lg flex items-center justify-center">
+                            <MessageSquare className="h-4 w-4 text-white" />
+                          </div>
                           {room.name}
                         </CardTitle>
-                        <CardDescription className="text-sm">
-                          {room.quiz ? `Prepare for: ${room.quiz.title}` : 'Pre-Quiz Preparation'}
+                        <CardDescription className="text-base">
+                          {room.quiz ? `Quiz: ${room.quiz.title}` : 'Quiz Discussion'}
                         </CardDescription>
                       </CardHeader>
-                      <CardContent className="pt-0">
-                        <div className="flex items-center justify-between">
-                          <Badge className="bg-green-100 text-green-800">
-                            Pre-Quiz Prep
+                      <CardContent>
+                        <div className="flex items-center justify-between mb-3">
+                          <Badge className="badge-inftech badge-inftech-primary">
+                            Quiz Discussion
                           </Badge>
-                          <Button size="sm" className="bg-green-600 hover:bg-green-700">
+                          <Button size="sm" className="btn-inftech-primary">
                             Join Discussion
                           </Button>
                         </div>
                         {room._count?.messages && (
-                          <p className="text-xs text-gray-500 mt-2">
-                            {room._count.messages} messages
-                          </p>
+                          <div className="flex items-center gap-2 text-sm text-slate-600">
+                            <MessageSquare className="h-4 w-4" />
+                            <span>{room._count.messages} messages</span>
+                          </div>
                         )}
                       </CardContent>
                     </Card>
                   ))}
                 </div>
               ) : (
-                <Card className="border-dashed border-2 border-gray-200">
-                  <CardContent className="text-center py-6">
-                    <BookOpen className="h-10 w-10 text-gray-300 mx-auto mb-2" />
-                    <h4 className="text-base font-medium text-gray-900 mb-1">No Pre-Quiz Rooms</h4>
-                    <p className="text-gray-600 text-sm">
-                      Pre-quiz discussion rooms will appear here
+                <Card className="card-inftech">
+                  <CardContent className="text-center py-12">
+                    <BookOpen className="h-16 w-16 text-slate-300 mx-auto mb-4" />
+                    <h4 className="text-xl font-bold text-slate-900 mb-2">No Quiz Discussion Rooms</h4>
+                    <p className="text-slate-600 text-lg">
+                      Quiz discussion rooms will appear when instructors enable chat for quizzes
                     </p>
                   </CardContent>
                 </Card>
               )}
             </div>
 
-            {/* Post-Quiz Review Rooms */}
-            <div className="mb-8">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <Target className="h-5 w-5 text-purple-600" />
-                Post-Quiz Review Rooms
-              </h3>
-              
-              {getPostQuizRooms().length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {getPostQuizRooms().map((room) => (
-                    <Card key={room.id} className="hover:shadow-lg transition-shadow cursor-pointer border-l-4 border-l-purple-500"
-                          onClick={() => handleJoinChatRoom(room.id)}>
-                      <CardHeader className="pb-3">
-                        <CardTitle className="flex items-center gap-2 text-base">
-                          <MessageSquare className="h-4 w-4 text-purple-600" />
-                          {room.name}
-                        </CardTitle>
-                        <CardDescription className="text-sm">
-                          {room.quiz ? `Review: ${room.quiz.title}` : 'Post-Quiz Review'}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="pt-0">
-                        <div className="flex items-center justify-between">
-                          <Badge className="bg-purple-100 text-purple-800">
-                            Post-Quiz Review
-                          </Badge>
-                          <Button size="sm" className="bg-purple-600 hover:bg-purple-700">
-                            Join Review
-                          </Button>
-                        </div>
-                        {room._count?.messages && (
-                          <p className="text-xs text-gray-500 mt-2">
-                            {room._count.messages} messages
-                          </p>
-                        )}
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              ) : (
-                <Card className="border-dashed border-2 border-gray-200">
-                  <CardContent className="text-center py-6">
-                    <Target className="h-10 w-10 text-gray-300 mx-auto mb-2" />
-                    <h4 className="text-base font-medium text-gray-900 mb-1">No Post-Quiz Rooms</h4>
-                    <p className="text-gray-600 text-sm">
-                      Post-quiz review rooms will appear after completing quizzes
-                    </p>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
 
-            {/* General Quiz Discussion Rooms */}
-            <div className="mb-8">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <MessageSquare className="h-5 w-5 text-blue-600" />
-                General Quiz Discussion
-              </h3>
-              
-              {getGeneralQuizRooms().length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {getGeneralQuizRooms().map((room) => (
-                    <Card key={room.id} className="hover:shadow-lg transition-shadow cursor-pointer border-l-4 border-l-blue-500"
-                          onClick={() => handleJoinChatRoom(room.id)}>
-                      <CardHeader className="pb-3">
-                        <CardTitle className="flex items-center gap-2 text-base">
-                          <MessageSquare className="h-4 w-4 text-blue-600" />
-                          {room.name}
-                        </CardTitle>
-                        <CardDescription className="text-sm">
-                          {room.quiz ? `Quiz: ${room.quiz.title}` : 'General Quiz Discussion'}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="pt-0">
-                        <div className="flex items-center justify-between">
-                          <Badge className="bg-blue-100 text-blue-800">
-                            General Discussion
-                          </Badge>
-                          <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-                            Join Chat
-                          </Button>
-                        </div>
-                        {room._count?.messages && (
-                          <p className="text-xs text-gray-500 mt-2">
-                            {room._count.messages} messages
-                          </p>
-                        )}
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              ) : (
-                <Card className="border-dashed border-2 border-gray-200">
-                  <CardContent className="text-center py-6">
-                    <MessageSquare className="h-10 w-10 text-gray-300 mx-auto mb-2" />
-                    <h4 className="text-base font-medium text-gray-900 mb-1">No General Quiz Rooms</h4>
-                    <p className="text-gray-600 text-sm">
-                      General quiz discussion rooms will appear here
-                    </p>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
 
-            {/* Subject-Based Chat Rooms */}
-            <div className="mb-8">
-              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <BookOpen className="h-5 w-5 text-indigo-600" />
-                Subject-Based Study Rooms
-              </h3>
-              
-              {getSubjectBasedRooms().length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {getSubjectBasedRooms().map((room) => (
-                    <Card key={room.id} className="hover:shadow-lg transition-shadow cursor-pointer border-l-4 border-l-indigo-500"
-                          onClick={() => handleJoinChatRoom(room.id)}>
-                      <CardHeader className="pb-3">
-                        <CardTitle className="flex items-center gap-2 text-base">
-                          <BookOpen className="h-4 w-4 text-indigo-600" />
-                          {room.name}
-                        </CardTitle>
-                        <CardDescription className="text-sm">
-                          {room.quiz ? `Subject: ${extractSubject(room.quiz.title)}` : 'Subject-based discussion'}
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="pt-0">
-                        <div className="flex items-center justify-between">
-                          <Badge className="bg-indigo-100 text-indigo-800">
-                            {room.quiz ? extractSubject(room.quiz.title) : 'General Subject'}
-                          </Badge>
-                          <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700">
-                            Join Subject Chat
-                          </Button>
-                        </div>
-                        {room._count?.messages && (
-                          <p className="text-xs text-gray-500 mt-2">
-                            {room._count.messages} messages
-                          </p>
-                        )}
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              ) : (
-                <Card className="border-dashed border-2 border-gray-200">
-                  <CardContent className="text-center py-6">
-                    <BookOpen className="h-10 w-10 text-gray-300 mx-auto mb-2" />
-                    <h4 className="text-base font-medium text-gray-900 mb-1">No Subject Rooms</h4>
-                    <p className="text-gray-600 text-sm">
-                      Subject-based study rooms will appear here
-                    </p>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
-
-            {/* General Chat Rooms Section */}
-            <div>
-              <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
-                <Users className="h-5 w-5 text-green-600" />
-                General Study Rooms
-              </h3>
-              
-              {getGeneralChatRooms().length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {getGeneralChatRooms().map((room) => (
-                    <Card key={room.id} className="hover:shadow-lg transition-shadow cursor-pointer border-l-4 border-l-green-500"
-                          onClick={() => handleJoinChatRoom(room.id)}>
-                      <CardHeader className="pb-3">
-                        <CardTitle className="flex items-center gap-2 text-base">
-                          <MessageSquare className="h-4 w-4 text-green-600" />
-                          {room.name}
-                        </CardTitle>
-                        <CardDescription className="text-sm">
-                          General study discussion
-                        </CardDescription>
-                      </CardHeader>
-                      <CardContent className="pt-0">
-                        <div className="flex items-center justify-between">
-                          <Badge variant="secondary" className="bg-green-100 text-green-800">
-                            General Study
-                          </Badge>
-                          <Button size="sm" className="bg-green-600 hover:bg-green-700">
-                            Join Chat
-                          </Button>
-                        </div>
-                        {room._count?.messages && (
-                          <p className="text-xs text-gray-500 mt-2">
-                            {room._count.messages} messages
-                          </p>
-                        )}
-                      </CardContent>
-                    </Card>
-                  ))}
-                </div>
-              ) : (
-                <Card className="border-dashed border-2 border-gray-200">
-                  <CardContent className="text-center py-8">
-                    <Users className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                    <h4 className="text-lg font-medium text-gray-900 mb-2">No General Chat Rooms</h4>
-                    <p className="text-gray-600 text-sm">
-                      General study rooms will appear here when created by instructors
-                    </p>
-                  </CardContent>
-                </Card>
-              )}
-            </div>
-
-            {/* Empty state when no rooms at all */}
-            {getQuizChatRooms().length === 0 && getGeneralChatRooms().length === 0 && getStudyGroupChatRooms().length === 0 && (
-              <Card className="mt-8">
-                <CardContent className="text-center py-16">
-                  <MessageSquare className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                  <h3 className="text-xl font-semibold text-gray-900 mb-2">No chat rooms available</h3>
-                  <p className="text-gray-600">Chat rooms will appear here when quizzes with chat are created or when you join study groups</p>
+            {/* Global Empty State */}
+            {getQuizChatRooms().length === 0 && (
+              <Card className="card-inftech mt-8">
+                <CardContent className="text-center py-20">
+                  <MessageSquare className="h-20 w-20 text-slate-300 mx-auto mb-6" />
+                  <h3 className="text-2xl font-bold text-slate-900 mb-4">No Quiz Chat Rooms Available</h3>
+                  <p className="text-slate-600 text-lg mb-6">
+                    Quiz discussion rooms will appear here when instructors enable chat for their quizzes
+                  </p>
+                  <div className="flex gap-4 justify-center">
+                    <Button onClick={() => setActiveTab('quizzes')} className="btn-inftech-primary">
+                      <BookOpen className="h-4 w-4 mr-2" />
+                      Browse Available Quizzes
+                    </Button>
+                  </div>
                 </CardContent>
               </Card>
             )}
@@ -1304,8 +1098,6 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
               </Card>
             )}
 
-            {/* Progress Sharing Section */}
-            <ProgressSharingPanel studyGroups={studyGroups} userId={user.id} />
           </TabsContent>
 
           {/* Achievements Tab */}
@@ -1319,10 +1111,10 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
           </TabsContent>
 
           {/* Study Reminders Tab */}
-          <TabsContent value="reminders" className="space-y-6">
-            <div className="mb-6">
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Study Reminders</h2>
-              <p className="text-gray-600 mt-1">Manage your study schedule and never miss important deadlines</p>
+          <TabsContent value="reminders" className="space-y-8">
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold heading-inftech-primary mb-3">Study Reminders</h2>
+              <p className="text-slate-600 text-lg">Manage your study schedule and never miss important deadlines with smart notifications</p>
             </div>
 
             <StudyRemindersPanel userId={user.id} />

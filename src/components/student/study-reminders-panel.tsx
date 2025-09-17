@@ -167,19 +167,35 @@ export function StudyRemindersPanel({ userId }: StudyRemindersPanelProps) {
 
   const getReminderIcon = (type: string) => {
     switch (type) {
-      case 'QUIZ_DEADLINE': return <BookOpen className="h-5 w-5 text-blue-600" />
-      case 'STUDY_SESSION': return <Users className="h-5 w-5 text-green-600" />
-      case 'PROGRESS_CHECK': return <Target className="h-5 w-5 text-purple-600" />
-      default: return <Bell className="h-5 w-5 text-gray-600" />
+      case 'QUIZ_DEADLINE': return (
+        <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center shadow-md">
+          <BookOpen className="h-5 w-5 text-white" />
+        </div>
+      )
+      case 'STUDY_SESSION': return (
+        <div className="w-10 h-10 bg-gradient-to-r from-emerald-500 to-green-500 rounded-xl flex items-center justify-center shadow-md">
+          <Users className="h-5 w-5 text-white" />
+        </div>
+      )
+      case 'PROGRESS_CHECK': return (
+        <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-violet-500 rounded-xl flex items-center justify-center shadow-md">
+          <Target className="h-5 w-5 text-white" />
+        </div>
+      )
+      default: return (
+        <div className="w-10 h-10 bg-gradient-to-r from-slate-500 to-gray-500 rounded-xl flex items-center justify-center shadow-md">
+          <Bell className="h-5 w-5 text-white" />
+        </div>
+      )
     }
   }
 
   const getReminderColor = (type: string) => {
     switch (type) {
-      case 'QUIZ_DEADLINE': return 'bg-blue-100 text-blue-800'
-      case 'STUDY_SESSION': return 'bg-green-100 text-green-800'
-      case 'PROGRESS_CHECK': return 'bg-purple-100 text-purple-800'
-      default: return 'bg-gray-100 text-gray-800'
+      case 'QUIZ_DEADLINE': return 'badge-inftech badge-inftech-primary'
+      case 'STUDY_SESSION': return 'badge-inftech badge-inftech-success'
+      case 'PROGRESS_CHECK': return 'badge-inftech badge-inftech-warning'
+      default: return 'badge-inftech bg-slate-100 text-slate-800 border-slate-200'
     }
   }
 
@@ -197,62 +213,64 @@ export function StudyRemindersPanel({ userId }: StudyRemindersPanelProps) {
 
   if (isLoading) {
     return (
-      <div className="flex items-center justify-center py-8">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
-        <span className="ml-2">Loading reminders...</span>
+      <div className="flex items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600"></div>
+        <span className="ml-3 text-lg text-slate-600">Loading reminders...</span>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-8">
       <div className="flex justify-between items-center">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900">Study Reminders</h3>
-          <p className="text-gray-600">Stay on track with personalized study notifications</p>
+          <h3 className="text-2xl font-bold heading-inftech-primary">Your Study Reminders</h3>
+          <p className="text-slate-600 text-lg mt-1">Stay on track with personalized study notifications and smart scheduling</p>
         </div>
         
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="bg-blue-600 hover:bg-blue-700">
+            <Button className="btn-inftech-primary">
               <Plus className="h-4 w-4 mr-2" />
               Add Reminder
             </Button>
           </DialogTrigger>
-          <DialogContent className="sm:max-w-[500px]">
-            <DialogHeader>
-              <DialogTitle>Create Study Reminder</DialogTitle>
-              <DialogDescription>
-                Set up a personalized reminder to stay on track with your studies
+          <DialogContent className="sm:max-w-[600px] card-inftech">
+            <DialogHeader className="pb-6">
+              <DialogTitle className="text-2xl heading-inftech-primary">Create Study Reminder</DialogTitle>
+              <DialogDescription className="text-base text-slate-600">
+                Set up a personalized reminder to stay on track with your studies and never miss important deadlines
               </DialogDescription>
             </DialogHeader>
             
-            <div className="space-y-4">
+            <div className="space-y-6">
               <div>
-                <Label htmlFor="title">Title</Label>
+                <Label htmlFor="title" className="text-base font-semibold text-slate-700">Title</Label>
                 <Input
                   id="title"
                   value={formData.title}
                   onChange={(e) => setFormData(prev => ({ ...prev, title: e.target.value }))}
                   placeholder="e.g., Study for Math Quiz"
+                  className="input-inftech mt-2"
                 />
               </div>
               
               <div>
-                <Label htmlFor="description">Description</Label>
+                <Label htmlFor="description" className="text-base font-semibold text-slate-700">Description</Label>
                 <Textarea
                   id="description"
                   value={formData.description}
                   onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
                   placeholder="Additional details about this reminder..."
                   rows={3}
+                  className="input-inftech mt-2"
                 />
               </div>
               
               <div>
-                <Label htmlFor="type">Reminder Type</Label>
+                <Label htmlFor="type" className="text-base font-semibold text-slate-700">Reminder Type</Label>
                 <Select value={formData.type} onValueChange={(value: any) => setFormData(prev => ({ ...prev, type: value }))}>
-                  <SelectTrigger>
+                  <SelectTrigger className="input-inftech mt-2">
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
@@ -265,21 +283,22 @@ export function StudyRemindersPanel({ userId }: StudyRemindersPanelProps) {
               </div>
               
               <div>
-                <Label htmlFor="reminderTime">Reminder Time</Label>
+                <Label htmlFor="reminderTime" className="text-base font-semibold text-slate-700">Reminder Time</Label>
                 <Input
                   id="reminderTime"
                   type="datetime-local"
                   value={formData.reminderTime}
                   onChange={(e) => setFormData(prev => ({ ...prev, reminderTime: e.target.value }))}
+                  className="input-inftech mt-2"
                 />
               </div>
             </div>
             
-            <div className="flex justify-end gap-2 mt-6">
-              <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)}>
+            <div className="flex justify-end gap-3 mt-8">
+              <Button variant="outline" onClick={() => setIsCreateDialogOpen(false)} className="btn-inftech-secondary">
                 Cancel
               </Button>
-              <Button onClick={createReminder} disabled={!formData.title || !formData.reminderTime}>
+              <Button onClick={createReminder} disabled={!formData.title || !formData.reminderTime} className="btn-inftech-primary">
                 Create Reminder
               </Button>
             </div>
@@ -288,18 +307,23 @@ export function StudyRemindersPanel({ userId }: StudyRemindersPanelProps) {
       </div>
 
       {/* Notification Settings */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Settings className="h-5 w-5 text-gray-600" />
+      <Card className="card-inftech card-inftech-hover">
+        <CardHeader className="pb-4">
+          <CardTitle className="flex items-center gap-3 text-xl heading-inftech-primary">
+            <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-violet-500 rounded-xl flex items-center justify-center">
+              <Settings className="h-5 w-5 text-white" />
+            </div>
             Notification Settings
           </CardTitle>
+          <CardDescription className="text-base text-slate-600">
+            Customize how and when you receive study reminders
+          </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between">
+        <CardContent className="space-y-6">
+          <div className="flex items-center justify-between p-4 bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl border border-slate-200">
             <div>
-              <Label htmlFor="email-notifications">Email Notifications</Label>
-              <p className="text-sm text-gray-600">Receive reminders via email</p>
+              <Label htmlFor="email-notifications" className="text-base font-semibold text-slate-700">Email Notifications</Label>
+              <p className="text-sm text-slate-600 mt-1">Receive reminders via email</p>
             </div>
             <Switch
               id="email-notifications"
@@ -308,10 +332,10 @@ export function StudyRemindersPanel({ userId }: StudyRemindersPanelProps) {
             />
           </div>
           
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between p-4 bg-gradient-to-r from-slate-50 to-green-50 rounded-xl border border-slate-200">
             <div>
-              <Label htmlFor="push-notifications">Push Notifications</Label>
-              <p className="text-sm text-gray-600">Receive browser notifications</p>
+              <Label htmlFor="push-notifications" className="text-base font-semibold text-slate-700">Push Notifications</Label>
+              <p className="text-sm text-slate-600 mt-1">Receive browser notifications</p>
             </div>
             <Switch
               id="push-notifications"
@@ -320,10 +344,10 @@ export function StudyRemindersPanel({ userId }: StudyRemindersPanelProps) {
             />
           </div>
           
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between p-4 bg-gradient-to-r from-slate-50 to-purple-50 rounded-xl border border-slate-200">
             <div>
-              <Label htmlFor="auto-reminders">Auto Reminders</Label>
-              <p className="text-sm text-gray-600">Automatically create quiz deadline reminders</p>
+              <Label htmlFor="auto-reminders" className="text-base font-semibold text-slate-700">Auto Reminders</Label>
+              <p className="text-sm text-slate-600 mt-1">Automatically create quiz deadline reminders</p>
             </div>
             <Switch
               id="auto-reminders"
@@ -332,13 +356,13 @@ export function StudyRemindersPanel({ userId }: StudyRemindersPanelProps) {
             />
           </div>
           
-          <div>
-            <Label htmlFor="reminder-frequency">Default Reminder Frequency</Label>
+          <div className="p-4 bg-gradient-to-r from-slate-50 to-amber-50 rounded-xl border border-slate-200">
+            <Label htmlFor="reminder-frequency" className="text-base font-semibold text-slate-700">Default Reminder Frequency</Label>
             <Select 
               value={notificationSettings.reminderFrequency} 
               onValueChange={(value) => updateNotificationSettings({ reminderFrequency: value })}
             >
-              <SelectTrigger className="mt-1">
+              <SelectTrigger className="input-inftech mt-3">
                 <SelectValue />
               </SelectTrigger>
               <SelectContent>
@@ -354,34 +378,34 @@ export function StudyRemindersPanel({ userId }: StudyRemindersPanelProps) {
       </Card>
 
       {/* Active Reminders */}
-      <div className="grid gap-4">
+      <div className="grid gap-6">
         {reminders.length === 0 ? (
-          <Card>
-            <CardContent className="text-center py-12">
-              <Bell className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-              <h4 className="text-lg font-medium text-gray-900 mb-2">No Reminders Set</h4>
-              <p className="text-gray-600 mb-4">Create your first reminder to stay on track with your studies</p>
-              <Button onClick={() => setIsCreateDialogOpen(true)}>
+          <Card className="card-inftech">
+            <CardContent className="text-center py-16">
+              <Bell className="h-16 w-16 text-slate-300 mx-auto mb-6" />
+              <h4 className="text-2xl font-bold text-slate-900 mb-3">No Reminders Set</h4>
+              <p className="text-slate-600 text-lg mb-6">Create your first reminder to stay on track with your studies and never miss important deadlines</p>
+              <Button onClick={() => setIsCreateDialogOpen(true)} className="btn-inftech-primary">
                 <Plus className="h-4 w-4 mr-2" />
-                Add Reminder
+                Add Your First Reminder
               </Button>
             </CardContent>
           </Card>
         ) : (
           reminders.map((reminder) => (
-            <Card key={reminder.id} className={`hover:shadow-md transition-shadow ${isUpcoming(reminder.reminderTime) ? 'ring-2 ring-orange-200' : ''}`}>
-              <CardHeader>
+            <Card key={reminder.id} className={`card-inftech card-inftech-hover ${isUpcoming(reminder.reminderTime) ? 'ring-2 ring-orange-300 shadow-lg' : ''}`}>
+              <CardHeader className="pb-4">
                 <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
+                  <div className="flex items-center gap-4">
                     {getReminderIcon(reminder.type)}
                     <div>
-                      <CardTitle className="text-base">{reminder.title}</CardTitle>
-                      <CardDescription>{reminder.description}</CardDescription>
+                      <CardTitle className="text-xl heading-inftech-primary">{reminder.title}</CardTitle>
+                      <CardDescription className="text-base text-slate-600 mt-1">{reminder.description}</CardDescription>
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-3">
                     {isUpcoming(reminder.reminderTime) && (
-                      <Badge className="bg-orange-100 text-orange-800">
+                      <Badge className="badge-inftech badge-inftech-warning">
                         <AlertCircle className="h-3 w-3 mr-1" />
                         Upcoming
                       </Badge>
@@ -397,7 +421,7 @@ export function StudyRemindersPanel({ userId }: StudyRemindersPanelProps) {
                       variant="ghost"
                       size="sm"
                       onClick={() => deleteReminder(reminder.id)}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                      className="btn-inftech-error"
                     >
                       <X className="h-4 w-4" />
                     </Button>
@@ -405,18 +429,20 @@ export function StudyRemindersPanel({ userId }: StudyRemindersPanelProps) {
                 </div>
               </CardHeader>
               <CardContent>
-                <div className="flex items-center gap-4 text-sm text-gray-600">
-                  <div className="flex items-center gap-1">
-                    <Clock className="h-4 w-4" />
-                    {formatReminderTime(reminder.reminderTime)}
+                <div className="flex items-center gap-6 text-base">
+                  <div className="flex items-center gap-2 text-slate-600">
+                    <Clock className="h-5 w-5 text-blue-500" />
+                    <span className="font-medium">{formatReminderTime(reminder.reminderTime)}</span>
                   </div>
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-2">
                     {reminder.isActive ? (
-                      <CheckCircle className="h-4 w-4 text-green-600" />
+                      <CheckCircle className="h-5 w-5 text-emerald-500" />
                     ) : (
-                      <X className="h-4 w-4 text-red-600" />
+                      <X className="h-5 w-5 text-red-500" />
                     )}
-                    {reminder.isActive ? 'Active' : 'Inactive'}
+                    <span className={`font-medium ${reminder.isActive ? 'text-emerald-600' : 'text-red-600'}`}>
+                      {reminder.isActive ? 'Active' : 'Inactive'}
+                    </span>
                   </div>
                 </div>
               </CardContent>

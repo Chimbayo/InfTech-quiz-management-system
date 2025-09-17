@@ -1,15 +1,13 @@
 {
-  "/page": "app/page.js",
   "/admin/page": "app/admin/page.js",
   "/admin/dashboard/page": "app/admin/dashboard/page.js",
-  "/admin/quizzes/create/page": "app/admin/quizzes/create/page.js",
+  "/student/page": "app/student/page.js",
+  "/student/dashboard/page": "app/student/dashboard/page.js",
   "/chat/[roomId]/page": "app/chat/[roomId]/page.js",
+  "/api/auth/session/route": "app/api/auth/session/route.js",
+  "/api/chat/rooms/[id]/route": "app/api/chat/rooms/[id]/route.js",
   "/api/chat/rooms/[id]/messages/route": "app/api/chat/rooms/[id]/messages/route.js",
   "/chat/page": "app/chat/page.js",
-  "/api/auth/session/route": "app/api/auth/session/route.js",
   "/api/chat/rooms/route": "app/api/chat/rooms/route.js",
-  "/api/quizzes/route": "app/api/quizzes/route.js",
-  "/api/chat/monitor/route": "app/api/chat/monitor/route.js",
-  "/api/users/students/route": "app/api/users/students/route.js",
-  "/api/study-groups/route": "app/api/study-groups/route.js"
+  "/page": "app/page.js"
 }
