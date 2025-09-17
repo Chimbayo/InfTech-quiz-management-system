@@ -29,9 +29,9 @@ export async function POST(request: NextRequest) {
     }
 
     // Simple password check (in production, use bcrypt or similar)
-    // For demo purposes, we'll accept 'password123' for demo users
+    // For now, we'll check against the stored password directly
     // In a real app, you'd check hashed passwords
-    if (password !== 'password123') {
+    if (password !== user.password) {
       return NextResponse.json(
         { error: 'Invalid credentials' },
         { status: 401 }

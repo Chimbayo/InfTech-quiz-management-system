@@ -63,9 +63,9 @@ export function RegisterForm() {
       }
 
       setSuccess(true)
-      // Redirect to student dashboard after successful registration
+      // Redirect to login page after successful registration
       setTimeout(() => {
-        router.push('/student/dashboard')
+        router.push('/student')
         router.refresh()
       }, 2000)
     } catch (err) {
@@ -92,7 +92,7 @@ export function RegisterForm() {
               </div>
             </div>
             <p className="text-gray-600">
-              Your account has been created successfully. You will be redirected to your dashboard shortly.
+              Your account has been created successfully. You will be redirected to the login page shortly.
             </p>
             <div className="flex justify-center">
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600"></div>

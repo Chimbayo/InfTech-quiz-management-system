@@ -38,8 +38,9 @@ export async function POST(request: NextRequest) {
       },
     })
 
-    // Create a simple session (in production, use proper session management)
-    const response = NextResponse.json({
+    // Return success message without creating session
+    // User will need to login separately after registration
+    return NextResponse.json({
       user: {
         id: user.id,
         email: user.email,
@@ -48,22 +49,6 @@ export async function POST(request: NextRequest) {
       },
       message: 'Registration successful',
     })
-
-    // Set a simple cookie for session (in production, use secure session tokens)
-    response.cookies.set('user-session', JSON.stringify({
-      id: user.id,
-      email: user.email,
-      name: user.name,
-      role: user.role,
-    }), {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax',
-      path: '/',
-      maxAge: 60 * 60 * 24 * 7, // 7 days
-    })
-
-    return response
   } catch (error) {
     console.error('Registration error:', error)
     if (error instanceof z.ZodError) {
