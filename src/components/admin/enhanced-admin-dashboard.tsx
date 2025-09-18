@@ -613,9 +613,6 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
                     </CardHeader>
                     <CardContent>
                       <div className="text-2xl font-bold text-blue-800">{stats.totalQuizzes}</div>
-                      <p className="text-xs text-blue-600 mt-1">
-                        +2 from last month
-                      </p>
                     </CardContent>
                   </Card>
 
@@ -628,9 +625,6 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
                     </CardHeader>
                     <CardContent>
                       <div className="text-2xl font-bold text-emerald-800">{stats.totalAttempts}</div>
-                      <p className="text-xs text-emerald-600 mt-1">
-                        +12% from last week
-                      </p>
                     </CardContent>
                   </Card>
 
@@ -642,10 +636,7 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
                       </div>
                     </CardHeader>
                     <CardContent>
-                      <div className="text-2xl font-bold text-purple-800">{stats.averageScore}%</div>
-                      <p className="text-xs text-purple-600 mt-1">
-                        +5% from last month
-                      </p>
+                      <div className="text-2xl font-bold text-purple-800">{stats.averageScore.toFixed(2)}%</div>
                     </CardContent>
                   </Card>
 

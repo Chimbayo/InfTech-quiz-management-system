@@ -284,7 +284,7 @@ export function StudentsManagement({ user }: StudentsManagementProps) {
             </div>
           </CardHeader>
           <CardContent>
-            <div className="text-3xl font-bold text-gray-900">{averageClassScore}%</div>
+            <div className="text-3xl font-bold text-gray-900">{averageClassScore.toFixed(2)}%</div>
             <p className="text-xs text-gray-500 mt-1">Overall performance</p>
           </CardContent>
         </Card>
