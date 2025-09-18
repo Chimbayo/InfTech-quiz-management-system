@@ -5,9 +5,23 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { Database, ExternalLink, Shield, AlertTriangle, RefreshCw, Download, Upload } from 'lucide-react'
 
+interface DatabaseStats {
+  users: number
+  quizzes: number
+  submissions: number
+  chatRooms: number
+  messages: number
+  size: string
+  lastBackup: string
+  recentActivity?: {
+    users: any[]
+    quizzes: any[]
+  }
+}
+
 export default function DatabaseManagementPage() {
   const [isStudioRunning, setIsStudioRunning] = useState(false)
-  const [dbStats, setDbStats] = useState(null)
+  const [dbStats, setDbStats] = useState<DatabaseStats | null>(null)
   const [loading, setLoading] = useState(false)
 
   useEffect(() => {

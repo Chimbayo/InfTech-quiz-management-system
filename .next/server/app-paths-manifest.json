@@ -2,9 +2,13 @@
   "/page": "app/page.js",
   "/admin/page": "app/admin/page.js",
   "/admin/dashboard/page": "app/admin/dashboard/page.js",
+  "/api/quizzes/route": "app/api/quizzes/route.js",
+  "/api/reports/academic-integrity/route": "app/api/reports/academic-integrity/route.js",
   "/admin/database/page": "app/admin/database/page.js",
   "/api/admin/database/studio/route": "app/api/admin/database/studio/route.js",
   "/api/admin/database/stats/route": "app/api/admin/database/stats/route.js",
-  "/admin/database/viewer/page": "app/admin/database/viewer/page.js",
-  "/api/admin/database/viewer/route": "app/api/admin/database/viewer/route.js"
+  "/api/users/students/route": "app/api/users/students/route.js",
+  "/api/chat/rooms/route": "app/api/chat/rooms/route.js",
+  "/api/chat/monitor/route": "app/api/chat/monitor/route.js",
+  "/api/study-groups/route": "app/api/study-groups/route.js"
 }

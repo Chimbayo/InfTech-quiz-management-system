@@ -26,7 +26,7 @@ export async function GET(request: NextRequest) {
       headers.set('Content-Disposition', `attachment; filename="database-backup-${new Date().toISOString().split('T')[0]}.db"`)
       headers.set('Content-Length', dbFile.length.toString())
 
-      return new NextResponse(dbFile, {
+      return new Response(new Uint8Array(dbFile), {
         status: 200,
         headers
       })
