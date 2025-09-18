@@ -1,0 +1,139 @@
+// Production Prisma schema with PostgreSQL
+// To use this: rename to schema.prisma and update your environment
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String   // In production, this should be hashed
+  role      String   @default("STUDENT") // ADMIN, TEACHER, or STUDENT
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  quizzes        Quiz[]
+  submissions    QuizSubmission[]
+  chatMessages   ChatMessage[]
+  studySessions  StudySession[]
+  helpRequests   HelpRequest[]
+  analytics      UserAnalytics[]
+
+  @@map("users")
+}
+
+model Quiz {
+  id          String   @id @default(cuid())
+  title       String
+  description String?
+  questions   Json     // Store questions as JSON
+  timeLimit   Int?     // in minutes
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  createdBy   String
+  
+  // Relations
+  creator     User             @relation(fields: [createdBy], references: [id])
+  submissions QuizSubmission[]
+
+  @@map("quizzes")
+}
+
+model QuizSubmission {
+  id          String   @id @default(cuid())
+  quizId      String
+  userId      String
+  answers     Json     // Store answers as JSON
+  score       Float?
+  completedAt DateTime?
+  startedAt   DateTime @default(now())
+  
+  // Relations
+  quiz        Quiz     @relation(fields: [quizId], references: [id])
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@unique([quizId, userId])
+  @@map("quiz_submissions")
+}
+
+model ChatRoom {
+  id          String   @id @default(cuid())
+  name        String
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  
+  // Relations
+  messages    ChatMessage[]
+
+  @@map("chat_rooms")
+}
+
+model ChatMessage {
+  id        String   @id @default(cuid())
+  content   String
+  roomId    String
+  userId    String
+  createdAt DateTime @default(now())
+  
+  // Relations
+  room      ChatRoom @relation(fields: [roomId], references: [id])
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@map("chat_messages")
+}
+
+model StudySession {
+  id        String   @id @default(cuid())
+  userId    String
+  topic     String
+  duration  Int      // in minutes
+  createdAt DateTime @default(now())
+  
+  // Relations
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@map("study_sessions")
+}
+
+model HelpRequest {
+  id          String   @id @default(cuid())
+  userId      String
+  subject     String
+  description String
+  status      String   @default("OPEN") // OPEN, IN_PROGRESS, RESOLVED
+  priority    String   @default("MEDIUM") // LOW, MEDIUM, HIGH
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  
+  // Relations
+  user        User     @relation(fields: [userId], references: [id])
+
+  @@map("help_requests")
+}
+
+model UserAnalytics {
+  id              String   @id @default(cuid())
+  userId          String
+  totalQuizzes    Int      @default(0)
+  averageScore    Float    @default(0)
+  studyTime       Int      @default(0) // in minutes
+  lastActive      DateTime @default(now())
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  
+  // Relations
+  user            User     @relation(fields: [userId], references: [id])
+
+  @@unique([userId])
+  @@map("user_analytics")
+}

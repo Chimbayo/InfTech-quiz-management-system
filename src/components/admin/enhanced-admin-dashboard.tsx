@@ -13,16 +13,13 @@ import { Alert, AlertDescription } from '@/components/ui/alert'
 import { 
   Plus, 
   BarChart3, 
-  BookOpen, 
   Users, 
-  TrendingUp,
-  Edit,
-  Trash2,
+  BookOpen, 
+  MessageSquare, 
+  TrendingUp, 
   Eye,
-  LogOut,
-  MessageSquare,
-  Shield,
-  Clock,
+  Trash2,
+  Edit,
   AlertTriangle,
   Settings,
   Calendar,
@@ -31,7 +28,10 @@ import {
   Megaphone,
   Brain,
   Target,
-  Award
+  Award,
+  Database,
+  Shield,
+  LogOut
 } from 'lucide-react'
 import { SessionUser } from '@/lib/auth'
 import { Quiz } from '@prisma/client'
@@ -591,6 +591,14 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
             >
               <Target className="h-4 w-4 mr-2" />
               Integrity Report
+            </Button>
+            <Button
+              onClick={() => router.push('/admin/database')}
+              variant="ghost"
+              className="w-full justify-start text-blue-700 hover:bg-blue-50 hover:text-blue-800"
+            >
+              <Database className="h-4 w-4 mr-2" />
+              Database Management
             </Button>
           </div>
         </div>
