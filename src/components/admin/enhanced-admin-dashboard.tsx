@@ -545,18 +545,6 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
               Announcements
             </Button>
             <Button
-              onClick={() => setActiveTab('monitoring')}
-              variant={activeTab === 'monitoring' ? 'default' : 'ghost'}
-              className={`w-full justify-start ${
-                activeTab === 'monitoring' 
-                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' 
-                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
-              }`}
-            >
-              <Shield className="h-4 w-4 mr-2" />
-              Monitoring
-            </Button>
-            <Button
               onClick={() => setActiveTab('analytics')}
               variant={activeTab === 'analytics' ? 'default' : 'ghost'}
               className={`w-full justify-start ${

@@ -273,9 +273,9 @@ export function LearningAnalyticsDashboard() {
                 <p className="text-xs text-gray-500">users</p>
               </div>
               <div className="text-center p-4 bg-green-50 rounded-lg">
-                <p className="text-sm text-gray-600">High Performers (&gt;80% avg)</p>
+                <p className="text-sm text-gray-600">High Performers (&gt;70% avg)</p>
                 <p className="text-2xl font-bold text-green-600">
-                  {data.engagementCorrelation.filter(u => u.averageScore > 80).length}
+                  {data.engagementCorrelation.filter(u => u.averageScore > 70).length}
                 </p>
                 <p className="text-xs text-gray-500">users</p>
               </div>
@@ -333,126 +333,6 @@ export function LearningAnalyticsDashboard() {
                 </div>
               </div>
             ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Peer Learning Insights */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Brain className="h-5 w-5" />
-            Peer Learning Insights
-          </CardTitle>
-          <CardDescription>
-            Questions asked and help provided by students
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-            <div>
-              <h4 className="font-semibold mb-3">Most Active Help Seekers</h4>
-              <div className="space-y-2">
-                {Object.entries(data.peerInteractions)
-                  .sort(([,a], [,b]) => b.questionsAsked - a.questionsAsked)
-                  .slice(0, 5)
-                  .map(([userId, user]) => (
-                    <div key={userId} className="flex justify-between items-center p-2 bg-gray-50 rounded">
-                      <span className="font-medium">{user.userName}</span>
-                      <Badge variant="outline">{user.questionsAsked} questions</Badge>
-                    </div>
-                  ))}
-              </div>
-            </div>
-            
-            <div>
-              <h4 className="font-semibold mb-3">Top Peer Helpers</h4>
-              <div className="space-y-2">
-                {Object.entries(data.peerInteractions)
-                  .sort(([,a], [,b]) => b.helpProvided - a.helpProvided)
-                  .slice(0, 5)
-                  .map(([userId, user]) => (
-                    <div key={userId} className="flex justify-between items-center p-2 bg-gray-50 rounded">
-                      <span className="font-medium">{user.userName}</span>
-                      <Badge variant="outline">{user.helpProvided} helps</Badge>
-                    </div>
-                  ))}
-              </div>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Teacher Intervention Analysis */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Award className="h-5 w-5" />
-            Teacher Intervention Analysis
-          </CardTitle>
-          <CardDescription>
-            Teacher engagement and intervention patterns
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="mb-4">
-            <p className="text-2xl font-bold">{data.teacherInterventions.total}</p>
-            <p className="text-sm text-gray-600">Total teacher interventions</p>
-          </div>
-          
-          <div className="space-y-3">
-            {Object.entries(data.teacherInterventions.byTeacher).map(([teacherId, teacher]) => (
-              <div key={teacherId} className="flex justify-between items-center p-3 border rounded-lg">
-                <div>
-                  <p className="font-semibold">{teacher.name}</p>
-                  <p className="text-sm text-gray-600">
-                    Active in {Array.from(teacher.rooms).length} rooms
-                  </p>
-                </div>
-                <Badge>{teacher.interventions} interventions</Badge>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
-
-      {/* Study Pattern Analysis */}
-      <Card>
-        <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Clock className="h-5 w-5" />
-            Study Pattern Analysis
-          </CardTitle>
-          <CardDescription>
-            When and how students engage in discussions
-          </CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {Object.entries(data.userStudyPatterns)
-              .slice(0, 6)
-              .map(([userId, pattern]) => (
-                <div key={userId} className="border rounded-lg p-4">
-                  <div className="space-y-2">
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Total Messages</span>
-                      <span className="font-semibold">{pattern.totalMessages}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Quiz Discussions</span>
-                      <span className="font-semibold">{pattern.quizDiscussionMessages}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Study Groups</span>
-                      <span className="font-semibold">{pattern.studyGroupMessages}</span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className="text-sm text-gray-600">Peak Hour</span>
-                      <span className="font-semibold">{getMostActiveHour(pattern.peakHours)}</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
           </div>
         </CardContent>
       </Card>

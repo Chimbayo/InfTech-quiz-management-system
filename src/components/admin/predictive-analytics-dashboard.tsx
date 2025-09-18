@@ -358,42 +358,6 @@ export function PredictiveAnalyticsDashboard() {
             </div>
           </CardContent>
         </Card>
-
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <MessageSquare className="h-5 w-5" />
-              Engagement Insights
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-4">
-              <div className="text-center p-4 bg-blue-50 rounded-lg">
-                <p className="text-sm text-gray-600">Chat-Performance Correlation</p>
-                <p className="text-2xl font-bold text-blue-600">
-                  {(data.cohortInsights.correlation.chatEngagementVsPerformance * 100).toFixed(0)}%
-                </p>
-                <p className="text-xs text-gray-500">{data.cohortInsights.correlation.strength} correlation</p>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                <div className="text-center p-3 bg-green-50 rounded-lg">
-                  <p className="text-xs text-gray-600">Study Group Participation</p>
-                  <p className="text-lg font-bold text-green-600">
-                    {Math.round(data.cohortInsights.trends.studyGroupParticipation * 100)}%
-                  </p>
-                </div>
-                <div className="text-center p-3 bg-purple-50 rounded-lg">
-                  <p className="text-xs text-gray-600">Avg Improvement</p>
-                  <p className="text-lg font-bold text-purple-600">
-                    {data.cohortInsights.trends.averageImprovement > 0 ? '+' : ''}
-                    {data.cohortInsights.trends.averageImprovement.toFixed(1)}%
-                  </p>
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
       </div>
 
       {/* Student Predictions */}
