@@ -6,6 +6,5 @@
   "/page": "app/page.js",
   "/admin/page": "app/admin/page.js",
   "/admin/dashboard/page": "app/admin/dashboard/page.js",
-  "/api/announcements/route": "app/api/announcements/route.js",
-  "/api/quizzes/route": "app/api/quizzes/route.js"
+  "/api/auth/logout/route": "app/api/auth/logout/route.js"
 }
