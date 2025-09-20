@@ -439,30 +439,30 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+    <div className="min-h-screen bg-inftech-admin">
       {/* Professional Header */}
-      <header className="bg-white/80 backdrop-blur-sm shadow-lg border-b border-blue-100 sticky top-0 z-50">
+      <header className="header-inftech-admin sticky top-0 z-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
-              <div className="bg-gradient-to-r from-blue-600 to-indigo-600 p-2 rounded-lg mr-3">
+              <div className="bg-white/20 p-2 rounded-lg mr-3">
                 <Shield className="h-6 w-6 text-white" />
               </div>
-              <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-700 to-indigo-700 bg-clip-text text-transparent">
+              <h1 className="text-2xl font-bold text-white">
                 Admin Dashboard
               </h1>
             </div>
             <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2 bg-blue-50 px-3 py-2 rounded-lg">
-                <div className="w-2 h-2 bg-green-500 rounded-full"></div>
-                <span className="text-sm font-medium text-blue-700">Welcome, {user.name}</span>
+              <div className="flex items-center space-x-2 bg-white/20 px-3 py-2 rounded-lg">
+                <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                <span className="text-sm font-medium text-white">Welcome, {user.name}</span>
               </div>
               <Button
                 onClick={handleLogout}
                 variant="outline"
                 size="sm"
                 disabled={isLoggingOut}
-                className="flex items-center gap-2 border-blue-200 text-blue-700 hover:bg-blue-50 hover:border-blue-300"
+                className="flex items-center gap-2 border-white/30 text-white hover:bg-white/20 hover:border-white/50"
               >
                 <LogOut className="h-4 w-4" />
                 {isLoggingOut ? 'Logging out...' : 'Logout'}
@@ -474,15 +474,15 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
 
       <div className="flex h-[calc(100vh-80px)]">
         {/* Sidebar Navigation */}
-        <div className="w-64 bg-white/70 backdrop-blur-sm border-r border-blue-100 p-6">
+        <div className="w-64 bg-white/90 backdrop-blur-sm border-r border-emerald-100 p-6">
           <div className="space-y-2">
             <Button
               onClick={() => setActiveTab('dashboard')}
               variant={activeTab === 'dashboard' ? 'default' : 'ghost'}
-              className={`w-full justify-start ${
+              className={`w-full justify-start nav-inftech ${
                 activeTab === 'dashboard' 
-                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' 
-                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
+                  ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-lg' 
+                  : 'text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800'
               }`}
             >
               <BarChart3 className="h-4 w-4 mr-2" />
@@ -491,10 +491,10 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
             <Button
               onClick={() => setActiveTab('quizzes')}
               variant={activeTab === 'quizzes' ? 'default' : 'ghost'}
-              className={`w-full justify-start ${
+              className={`w-full justify-start nav-inftech ${
                 activeTab === 'quizzes' 
-                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' 
-                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
+                  ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-lg' 
+                  : 'text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800'
               }`}
             >
               <BookOpen className="h-4 w-4 mr-2" />
@@ -503,10 +503,10 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
             <Button
               onClick={() => setActiveTab('students')}
               variant={activeTab === 'students' ? 'default' : 'ghost'}
-              className={`w-full justify-start ${
+              className={`w-full justify-start nav-inftech ${
                 activeTab === 'students' 
-                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' 
-                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
+                  ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-lg' 
+                  : 'text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800'
               }`}
             >
               <Users className="h-4 w-4 mr-2" />
@@ -515,10 +515,10 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
             <Button
               onClick={() => setActiveTab('chat')}
               variant={activeTab === 'chat' ? 'default' : 'ghost'}
-              className={`w-full justify-start ${
+              className={`w-full justify-start nav-inftech ${
                 activeTab === 'chat'
-                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg'
-                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
+                  ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-lg'
+                  : 'text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800'
               }`}
             >
               <MessageSquare className="h-4 w-4 mr-2" />
@@ -527,10 +527,10 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
             <Button
               onClick={() => setActiveTab('groups')}
               variant={activeTab === 'groups' ? 'default' : 'ghost'}
-              className={`w-full justify-start ${
+              className={`w-full justify-start nav-inftech ${
                 activeTab === 'groups'
-                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg'
-                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
+                  ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-lg'
+                  : 'text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800'
               }`}
             >
               <Users className="h-4 w-4 mr-2" />
@@ -539,10 +539,10 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
             <Button
               onClick={() => setActiveTab('announcements')}
               variant={activeTab === 'announcements' ? 'default' : 'ghost'}
-              className={`w-full justify-start ${
+              className={`w-full justify-start nav-inftech ${
                 activeTab === 'announcements'
-                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg'
-                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
+                  ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-lg'
+                  : 'text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800'
               }`}
             >
               <Megaphone className="h-4 w-4 mr-2" />
@@ -551,10 +551,10 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
             <Button
               onClick={() => setActiveTab('help-requests')}
               variant={activeTab === 'help-requests' ? 'default' : 'ghost'}
-              className={`w-full justify-start ${
+              className={`w-full justify-start nav-inftech ${
                 activeTab === 'help-requests'
-                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg'
-                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
+                  ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-lg'
+                  : 'text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800'
               }`}
             >
               <HelpCircle className="h-4 w-4 mr-2" />
@@ -563,10 +563,10 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
             <Button
               onClick={() => setActiveTab('analytics')}
               variant={activeTab === 'analytics' ? 'default' : 'ghost'}
-              className={`w-full justify-start ${
+              className={`w-full justify-start nav-inftech ${
                 activeTab === 'analytics' 
-                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' 
-                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
+                  ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-lg' 
+                  : 'text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800'
               }`}
             >
               <BarChart3 className="h-4 w-4 mr-2" />
@@ -575,10 +575,10 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
             <Button
               onClick={() => setActiveTab('predictive')}
               variant={activeTab === 'predictive' ? 'default' : 'ghost'}
-              className={`w-full justify-start ${
+              className={`w-full justify-start nav-inftech ${
                 activeTab === 'predictive' 
-                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' 
-                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
+                  ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-lg' 
+                  : 'text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800'
               }`}
             >
               <Brain className="h-4 w-4 mr-2" />
@@ -587,10 +587,10 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
             <Button
               onClick={() => setActiveTab('integrity')}
               variant={activeTab === 'integrity' ? 'default' : 'ghost'}
-              className={`w-full justify-start ${
+              className={`w-full justify-start nav-inftech ${
                 activeTab === 'integrity' 
-                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' 
-                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
+                  ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-lg' 
+                  : 'text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800'
               }`}
             >
               <Target className="h-4 w-4 mr-2" />
@@ -599,7 +599,7 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
             <Button
               onClick={() => router.push('/admin/database')}
               variant="ghost"
-              className="w-full justify-start text-blue-700 hover:bg-blue-50 hover:text-blue-800"
+              className="w-full justify-start nav-inftech text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800"
             >
               <Database className="h-4 w-4 mr-2" />
               Database Management
@@ -614,60 +614,53 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
             <TabsContent value="dashboard" className="space-y-6 p-6">
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-700 to-indigo-700 bg-clip-text text-transparent">Dashboard Overview</h2>
-                  <p className="text-blue-600 mt-2">Manage your quiz system and monitor student activity</p>
+                  <h2 className="text-3xl font-bold heading-inftech-admin">Dashboard Overview</h2>
+                  <p className="text-emerald-600 mt-2">Manage your quiz system and monitor student activity</p>
                 </div>
 
                 {/* Stats Cards */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                  <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200 shadow-lg hover:shadow-xl transition-all duration-300">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium text-blue-700">Total Quizzes</CardTitle>
-                      <div className="bg-blue-100 p-2 rounded-lg">
-                        <BookOpen className="h-4 w-4 text-blue-600" />
-                      </div>
+                  <Card className="stat-card-inftech stat-card-success">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                      <CardTitle className="text-sm font-semibold text-white/90">Total Quizzes</CardTitle>
+                      <BookOpen className="h-6 w-6 text-white/80" />
                     </CardHeader>
                     <CardContent>
-                      <div className="text-2xl font-bold text-blue-800">{stats.totalQuizzes}</div>
+                      <div className="text-3xl font-bold text-white mb-2">{stats.totalQuizzes}</div>
+                      <div className="text-emerald-100 text-sm font-medium">Active Assessments</div>
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-200 shadow-lg hover:shadow-xl transition-all duration-300">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium text-emerald-700">Total Attempts</CardTitle>
-                      <div className="bg-emerald-100 p-2 rounded-lg">
-                        <TrendingUp className="h-4 w-4 text-emerald-600" />
-                      </div>
+                  <Card className="stat-card-inftech stat-card-primary">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                      <CardTitle className="text-sm font-semibold text-white/90">Total Attempts</CardTitle>
+                      <TrendingUp className="h-6 w-6 text-white/80" />
                     </CardHeader>
                     <CardContent>
-                      <div className="text-2xl font-bold text-emerald-800">{stats.totalAttempts}</div>
+                      <div className="text-3xl font-bold text-white mb-2">{stats.totalAttempts}</div>
+                      <div className="text-blue-100 text-sm font-medium">Student Submissions</div>
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-gradient-to-br from-purple-50 to-violet-50 border-purple-200 shadow-lg hover:shadow-xl transition-all duration-300">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium text-purple-700">Average Score</CardTitle>
-                      <div className="bg-purple-100 p-2 rounded-lg">
-                        <BarChart3 className="h-4 w-4 text-purple-600" />
-                      </div>
+                  <Card className="stat-card-inftech stat-card-warning">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                      <CardTitle className="text-sm font-semibold text-white/90">Average Score</CardTitle>
+                      <BarChart3 className="h-6 w-6 text-white/80" />
                     </CardHeader>
                     <CardContent>
-                      <div className="text-2xl font-bold text-purple-800">{stats.averageScore.toFixed(2)}%</div>
+                      <div className="text-3xl font-bold text-white mb-2">{stats.averageScore.toFixed(1)}%</div>
+                      <div className="text-amber-100 text-sm font-medium">Overall Performance</div>
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-gradient-to-br from-orange-50 to-amber-50 border-orange-200 shadow-lg hover:shadow-xl transition-all duration-300">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium text-orange-700">Chat Rooms</CardTitle>
-                      <div className="bg-orange-100 p-2 rounded-lg">
-                        <MessageSquare className="h-4 w-4 text-orange-600" />
-                      </div>
+                  <Card className="stat-card-inftech stat-card-info">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                      <CardTitle className="text-sm font-semibold text-white/90">Chat Rooms</CardTitle>
+                      <MessageSquare className="h-6 w-6 text-white/80" />
                     </CardHeader>
                     <CardContent>
-                      <div className="text-2xl font-bold text-orange-800">{stats.totalChatRooms}</div>
-                      <p className="text-xs text-orange-600 mt-1">
-                        Active discussions
-                      </p>
+                      <div className="text-3xl font-bold text-white mb-2">{stats.totalChatRooms}</div>
+                      <div className="text-cyan-100 text-sm font-medium">Active Discussions</div>
                     </CardContent>
                   </Card>
 
@@ -791,58 +784,52 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
               <div className="space-y-6">
                 <div className="flex justify-between items-center">
                   <div>
-                    <h2 className="text-3xl font-bold bg-gradient-to-r from-blue-700 to-indigo-700 bg-clip-text text-transparent">Student Management</h2>
-                    <p className="text-blue-600 mt-2">Monitor student performance and manage accounts</p>
+                    <h2 className="text-3xl font-bold heading-inftech-admin">Student Management</h2>
+                    <p className="text-emerald-600 mt-2">Monitor student performance and manage accounts</p>
                   </div>
                 </div>
 
                 {/* Student Stats Overview */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                  <Card className="bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200 shadow-lg">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium text-blue-700">Total Students</CardTitle>
-                      <div className="bg-blue-100 p-2 rounded-lg">
-                        <Users className="h-4 w-4 text-blue-600" />
-                      </div>
+                  <Card className="stat-card-inftech stat-card-success">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                      <CardTitle className="text-sm font-semibold text-white/90">Total Students</CardTitle>
+                      <Users className="h-6 w-6 text-white/80" />
                     </CardHeader>
                     <CardContent>
-                      <div className="text-2xl font-bold text-blue-800">{students.length}</div>
-                      <p className="text-xs text-blue-600 mt-1">Active accounts</p>
+                      <div className="text-3xl font-bold text-white mb-2">{students.length}</div>
+                      <div className="text-emerald-100 text-sm font-medium">Active Accounts</div>
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-200 shadow-lg">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium text-emerald-700">Active This Week</CardTitle>
-                      <div className="bg-emerald-100 p-2 rounded-lg">
-                        <TrendingUp className="h-4 w-4 text-emerald-600" />
-                      </div>
+                  <Card className="stat-card-inftech stat-card-primary">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                      <CardTitle className="text-sm font-semibold text-white/90">Active This Week</CardTitle>
+                      <TrendingUp className="h-6 w-6 text-white/80" />
                     </CardHeader>
                     <CardContent>
-                      <div className="text-2xl font-bold text-emerald-800">{Math.floor(students.length * 0.8)}</div>
-                      <p className="text-xs text-emerald-600 mt-1">80% engagement</p>
+                      <div className="text-3xl font-bold text-white mb-2">{Math.floor(students.length * 0.8)}</div>
+                      <div className="text-blue-100 text-sm font-medium">80% Engagement</div>
                     </CardContent>
                   </Card>
 
-                  <Card className="bg-gradient-to-br from-purple-50 to-violet-50 border-purple-200 shadow-lg">
-                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                      <CardTitle className="text-sm font-medium text-purple-700">Avg Performance</CardTitle>
-                      <div className="bg-purple-100 p-2 rounded-lg">
-                        <BarChart3 className="h-4 w-4 text-purple-600" />
-                      </div>
+                  <Card className="stat-card-inftech stat-card-warning">
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
+                      <CardTitle className="text-sm font-semibold text-white/90">Avg Performance</CardTitle>
+                      <BarChart3 className="h-6 w-6 text-white/80" />
                     </CardHeader>
                     <CardContent>
-                      <div className="text-2xl font-bold text-purple-800">{stats.averageScore}%</div>
-                      <p className="text-xs text-purple-600 mt-1">Class average</p>
+                      <div className="text-3xl font-bold text-white mb-2">{stats.averageScore.toFixed(1)}%</div>
+                      <div className="text-amber-100 text-sm font-medium">Class Average</div>
                     </CardContent>
                   </Card>
                 </div>
 
                 {/* Students List */}
-                <Card className="shadow-lg border-blue-100">
-                  <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100">
-                    <CardTitle className="text-blue-800">Student Directory</CardTitle>
-                    <CardDescription className="text-blue-600">
+                <Card className="card-inftech">
+                  <CardHeader className="bg-gradient-to-r from-emerald-50 to-green-50 border-b border-emerald-100">
+                    <CardTitle className="text-emerald-800">Student Directory</CardTitle>
+                    <CardDescription className="text-emerald-600">
                       View and manage all student accounts
                     </CardDescription>
                   </CardHeader>
@@ -868,11 +855,11 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
                               : 0
                             
                             return (
-                              <tr key={student.id} className="hover:bg-blue-50 transition-colors">
+                              <tr key={student.id} className="hover:bg-emerald-50 transition-colors">
                                 <td className="px-6 py-4 whitespace-nowrap">
                                   <div className="flex items-center">
                                     <div className="flex-shrink-0 h-10 w-10">
-                                      <div className="h-10 w-10 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 flex items-center justify-center">
+                                      <div className="h-10 w-10 rounded-full bg-gradient-to-r from-emerald-400 to-green-500 flex items-center justify-center">
                                         <span className="text-sm font-medium text-white">
                                           {student.name.charAt(0).toUpperCase()}
                                         </span>
@@ -920,7 +907,7 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
                                     <Button
                                       variant="outline"
                                       size="sm"
-                                      className="text-blue-600 border-blue-200 hover:bg-blue-50"
+                                      className="text-emerald-600 border-emerald-200 hover:bg-emerald-50"
                                     >
                                       View Details
                                     </Button>
@@ -1026,10 +1013,10 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
             <TabsContent value="chat" className="space-y-6 p-6">
               <div className="space-y-6">
                 <div>
-                  <h2 className="text-2xl font-bold text-gray-900">Chat Participation</h2>
-                  <p className="text-gray-600 mt-1">Join quiz discussions and monitor chat activity</p>
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
-                    <p className="text-sm text-blue-800">
+                  <h2 className="text-3xl font-bold heading-inftech-admin">Chat Participation</h2>
+                  <p className="text-emerald-600 mt-2">Join quiz discussions and monitor chat activity</p>
+                  <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mt-4">
+                    <p className="text-sm text-emerald-800">
                       <strong>Note:</strong> Chat rooms are automatically created when quizzes with chat are published. No manual creation needed.
                     </p>
                   </div>
@@ -1073,7 +1060,7 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
                                   variant="default"
                                   size="sm"
                                   onClick={() => window.open(`/chat/${room.id}`, '_blank')}
-                                  className="bg-blue-600 hover:bg-blue-700"
+                                  className="btn-inftech-success"
                                 >
                                   <MessageSquare className="h-4 w-4 mr-2" />
                                   Join Chat
