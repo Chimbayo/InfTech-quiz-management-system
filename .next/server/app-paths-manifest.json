@@ -1,5 +1,11 @@
 {
+  "/_not-found/page": "app/_not-found/page.js",
   "/api/direct-messages/route": "app/api/direct-messages/route.js",
   "/api/direct-messages/unread/route": "app/api/direct-messages/unread/route.js",
-  "/api/chat/rooms/route": "app/api/chat/rooms/route.js"
+  "/api/chat/rooms/route": "app/api/chat/rooms/route.js",
+  "/page": "app/page.js",
+  "/admin/page": "app/admin/page.js",
+  "/admin/dashboard/page": "app/admin/dashboard/page.js",
+  "/api/announcements/route": "app/api/announcements/route.js",
+  "/api/quizzes/route": "app/api/quizzes/route.js"
 }

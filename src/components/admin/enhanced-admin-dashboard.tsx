@@ -471,7 +471,7 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
                 variant="outline"
                 size="sm"
                 disabled={isLoggingOut}
-                className="flex items-center gap-2 border-white/30 text-white hover:bg-white/20 hover:border-white/50"
+                className="flex items-center gap-2 border-white/50 text-white hover:bg-white/20 hover:border-white/70 bg-white/10 backdrop-blur-sm"
               >
                 <LogOut className="h-4 w-4" />
                 <span className="hidden sm:inline">{isLoggingOut ? 'Logging out...' : 'Logout'}</span>
@@ -558,8 +558,8 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
               variant={activeTab === 'chat' ? 'default' : 'ghost'}
               className={`w-full justify-start nav-inftech ${
                 activeTab === 'chat'
-                  ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-lg'
-                  : 'text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800'
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg'
+                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
               }`}
             >
               <MessageSquare className="h-4 w-4 mr-2" />
@@ -570,8 +570,8 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
               variant={activeTab === 'groups' ? 'default' : 'ghost'}
               className={`w-full justify-start nav-inftech ${
                 activeTab === 'groups'
-                  ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-lg'
-                  : 'text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800'
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg'
+                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
               }`}
             >
               <Users className="h-4 w-4 mr-2" />
@@ -582,8 +582,8 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
               variant={activeTab === 'announcements' ? 'default' : 'ghost'}
               className={`w-full justify-start nav-inftech ${
                 activeTab === 'announcements'
-                  ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-lg'
-                  : 'text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800'
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg'
+                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
               }`}
             >
               <Megaphone className="h-4 w-4 mr-2" />
@@ -594,8 +594,8 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
               variant={activeTab === 'help-requests' ? 'default' : 'ghost'}
               className={`w-full justify-start nav-inftech ${
                 activeTab === 'help-requests'
-                  ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-lg'
-                  : 'text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800'
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg'
+                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
               }`}
             >
               <HelpCircle className="h-4 w-4 mr-2" />
@@ -826,7 +826,7 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
                 <div className="flex justify-between items-center">
                   <div>
                     <h2 className="text-3xl font-bold heading-inftech-admin">Student Management</h2>
-                    <p className="text-emerald-600 mt-2">Monitor student performance and manage accounts</p>
+                    <p className="text-blue-600 mt-2">Monitor student performance and manage accounts</p>
                   </div>
                 </div>
 
@@ -839,7 +839,7 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
                     </CardHeader>
                     <CardContent>
                       <div className="text-3xl font-bold text-white mb-2">{students.length}</div>
-                      <div className="text-emerald-100 text-sm font-medium">Active Accounts</div>
+                      <div className="text-blue-100 text-sm font-medium">Active Accounts</div>
                     </CardContent>
                   </Card>
 
@@ -868,9 +868,9 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
 
                 {/* Students List */}
                 <Card className="card-inftech">
-                  <CardHeader className="bg-gradient-to-r from-emerald-50 to-green-50 border-b border-emerald-100">
-                    <CardTitle className="text-emerald-800">Student Directory</CardTitle>
-                    <CardDescription className="text-emerald-600">
+                  <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100">
+                    <CardTitle className="text-blue-800">Student Directory</CardTitle>
+                    <CardDescription className="text-blue-600">
                       View and manage all student accounts
                     </CardDescription>
                   </CardHeader>
@@ -896,11 +896,11 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
                               : 0
                             
                             return (
-                              <tr key={student.id} className="hover:bg-emerald-50 transition-colors">
+                              <tr key={student.id} className="hover:bg-blue-50 transition-colors">
                                 <td className="px-6 py-4 whitespace-nowrap">
                                   <div className="flex items-center">
                                     <div className="flex-shrink-0 h-10 w-10">
-                                      <div className="h-10 w-10 rounded-full bg-gradient-to-r from-emerald-400 to-green-500 flex items-center justify-center">
+                                      <div className="h-10 w-10 rounded-full bg-gradient-to-r from-blue-400 to-indigo-500 flex items-center justify-center">
                                         <span className="text-sm font-medium text-white">
                                           {student.name.charAt(0).toUpperCase()}
                                         </span>
@@ -924,7 +924,7 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
                                     <div className={`ml-2 w-16 bg-gray-200 rounded-full h-2`}>
                                       <div 
                                         className={`h-2 rounded-full ${
-                                          avgScore >= 80 ? 'bg-green-500' : 
+                                          avgScore >= 80 ? 'bg-blue-500' : 
                                           avgScore >= 60 ? 'bg-yellow-500' : 'bg-red-500'
                                         }`}
                                         style={{ width: `${Math.min(avgScore, 100)}%` }}
@@ -938,7 +938,7 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
                                 <td className="px-6 py-4 whitespace-nowrap">
                                   <Badge 
                                     variant={avgScore >= 60 ? "default" : "destructive"}
-                                    className={avgScore >= 60 ? "bg-green-100 text-green-800" : ""}
+                                    className={avgScore >= 60 ? "bg-blue-100 text-blue-800" : ""}
                                   >
                                     {avgScore >= 60 ? 'Good Standing' : 'Needs Support'}
                                   </Badge>
@@ -948,7 +948,7 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
                                     <Button
                                       variant="outline"
                                       size="sm"
-                                      className="text-emerald-600 border-emerald-200 hover:bg-emerald-50"
+                                      className="text-blue-600 border-blue-200 hover:bg-blue-50"
                                     >
                                       View Details
                                     </Button>
@@ -971,9 +971,9 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
                 {/* Performance Analytics */}
                 <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                   <Card className="shadow-lg border-blue-100">
-                    <CardHeader className="bg-gradient-to-r from-emerald-50 to-teal-50 border-b border-emerald-100">
-                      <CardTitle className="text-emerald-800">Top Performers</CardTitle>
-                      <CardDescription className="text-emerald-600">Students with highest average scores</CardDescription>
+                    <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100">
+                      <CardTitle className="text-blue-800">Top Performers</CardTitle>
+                      <CardDescription className="text-blue-600">Students with highest average scores</CardDescription>
                     </CardHeader>
                     <CardContent className="p-4">
                       <div className="space-y-3">
@@ -988,10 +988,10 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
                           .map((student, index) => {
                             const avgScore = Math.round(student.quizAttempts.reduce((sum: number, attempt: any) => sum + attempt.score, 0) / student.quizAttempts.length)
                             return (
-                              <div key={student.id} className="flex items-center justify-between p-3 bg-emerald-50 rounded-lg">
+                              <div key={student.id} className="flex items-center justify-between p-3 bg-blue-50 rounded-lg">
                                 <div className="flex items-center space-x-3">
                                   <div className="flex-shrink-0">
-                                    <Badge variant="outline" className="bg-emerald-100 text-emerald-800">
+                                    <Badge variant="outline" className="bg-blue-100 text-blue-800">
                                       #{index + 1}
                                     </Badge>
                                   </div>
@@ -1000,7 +1000,7 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
                                     <div className="text-xs text-gray-500">{student.quizAttempts.length} attempts</div>
                                   </div>
                                 </div>
-                                <div className="text-lg font-bold text-emerald-600">{avgScore}%</div>
+                                <div className="text-lg font-bold text-blue-600">{avgScore}%</div>
                               </div>
                             )
                           })}
@@ -1055,9 +1055,9 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
               <div className="space-y-6">
                 <div>
                   <h2 className="text-3xl font-bold heading-inftech-admin">Chat Participation</h2>
-                  <p className="text-emerald-600 mt-2">Join quiz discussions and monitor chat activity</p>
-                  <div className="bg-emerald-50 border border-emerald-200 rounded-lg p-4 mt-4">
-                    <p className="text-sm text-emerald-800">
+                  <p className="text-blue-600 mt-2">Join quiz discussions and monitor chat activity</p>
+                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mt-4">
+                    <p className="text-sm text-blue-800">
                       <strong>Note:</strong> Chat rooms are automatically created when quizzes with chat are published. No manual creation needed.
                     </p>
                   </div>
