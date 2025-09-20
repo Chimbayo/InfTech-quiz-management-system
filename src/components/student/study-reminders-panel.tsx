@@ -222,12 +222,7 @@ export function StudyRemindersPanel({ userId }: StudyRemindersPanelProps) {
 
   return (
     <div className="space-y-8">
-      <div className="flex justify-between items-center">
-        <div>
-          <h3 className="text-2xl font-bold heading-inftech-primary">Your Study Reminders</h3>
-          <p className="text-slate-600 text-lg mt-1">Stay on track with personalized study notifications and smart scheduling</p>
-        </div>
-        
+      <div className="flex justify-end items-center">
         <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
           <DialogTrigger asChild>
             <Button className="btn-inftech-primary">
@@ -331,31 +326,6 @@ export function StudyRemindersPanel({ userId }: StudyRemindersPanelProps) {
               onCheckedChange={(checked) => updateNotificationSettings({ emailNotifications: checked })}
             />
           </div>
-          
-          <div className="flex items-center justify-between p-4 bg-gradient-to-r from-slate-50 to-green-50 rounded-xl border border-slate-200">
-            <div>
-              <Label htmlFor="push-notifications" className="text-base font-semibold text-slate-700">Push Notifications</Label>
-              <p className="text-sm text-slate-600 mt-1">Receive browser notifications</p>
-            </div>
-            <Switch
-              id="push-notifications"
-              checked={notificationSettings.pushNotifications}
-              onCheckedChange={(checked) => updateNotificationSettings({ pushNotifications: checked })}
-            />
-          </div>
-          
-          <div className="flex items-center justify-between p-4 bg-gradient-to-r from-slate-50 to-purple-50 rounded-xl border border-slate-200">
-            <div>
-              <Label htmlFor="auto-reminders" className="text-base font-semibold text-slate-700">Auto Reminders</Label>
-              <p className="text-sm text-slate-600 mt-1">Automatically create quiz deadline reminders</p>
-            </div>
-            <Switch
-              id="auto-reminders"
-              checked={notificationSettings.autoReminders}
-              onCheckedChange={(checked) => updateNotificationSettings({ autoReminders: checked })}
-            />
-          </div>
-          
           <div className="p-4 bg-gradient-to-r from-slate-50 to-amber-50 rounded-xl border border-slate-200">
             <Label htmlFor="reminder-frequency" className="text-base font-semibold text-slate-700">Default Reminder Frequency</Label>
             <Select 

@@ -24,7 +24,11 @@ import { ChatPanel } from '@/components/chat/ChatPanel'
 import { HelpRequestPanel } from '@/components/student/help-request-panel'
 
 interface QuizInterfaceProps {
-  quiz: QuizWithQuestions
+  quiz: QuizWithQuestions & { 
+    isExam?: boolean
+    examEndTime?: Date | null
+    examDuration?: number | null
+  }
   userId: string
   isRetake?: boolean
   previousAttempts?: number
@@ -85,14 +89,34 @@ export function QuizInterface({ quiz, userId, isRetake = false, previousAttempts
     loadQuizChatRoom()
   }, [quiz.id])
 
-  // Timer setup
+  // Timer setup - enhanced for exams
   useEffect(() => {
-    if (quiz.timeLimit) {
-      setTimeRemaining(quiz.timeLimit * 60) // Convert minutes to seconds
+    let initialTime = null
+    
+    if (quiz.isExam && quiz.examEndTime) {
+      // For exams, calculate time remaining until exam end time
+      const examEndTime = new Date(quiz.examEndTime).getTime()
+      const currentTime = Date.now()
+      const timeUntilEnd = Math.max(0, Math.floor((examEndTime - currentTime) / 1000))
+      
+      if (quiz.timeLimit) {
+        // Use the smaller of quiz time limit or time until exam ends
+        initialTime = Math.min(quiz.timeLimit * 60, timeUntilEnd)
+      } else {
+        initialTime = timeUntilEnd
+      }
+    } else if (quiz.timeLimit) {
+      // Regular quiz with time limit
+      initialTime = quiz.timeLimit * 60
+    }
+    
+    if (initialTime !== null) {
+      setTimeRemaining(initialTime)
       
       const timer = setInterval(() => {
         setTimeRemaining(prev => {
           if (prev === null || prev <= 1) {
+            // Auto-submit when time runs out
             handleSubmitQuiz()
             return 0
           }
@@ -102,7 +126,7 @@ export function QuizInterface({ quiz, userId, isRetake = false, previousAttempts
 
       return () => clearInterval(timer)
     }
-  }, [quiz.timeLimit])
+  }, [quiz.timeLimit, quiz.isExam, quiz.examEndTime])
 
   const formatTime = (seconds: number) => {
     const minutes = Math.floor(seconds / 60)

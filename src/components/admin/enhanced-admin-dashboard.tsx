@@ -31,7 +31,8 @@ import {
   Award,
   Database,
   Shield,
-  LogOut
+  LogOut,
+  HelpCircle
 } from 'lucide-react'
 import { SessionUser } from '@/lib/auth'
 import { Quiz } from '@prisma/client'
@@ -42,6 +43,9 @@ import { LearningAnalyticsDashboard } from '@/components/admin/learning-analytic
 import { PredictiveAnalyticsDashboard } from '@/components/admin/predictive-analytics-dashboard'
 import { AcademicIntegrityReport } from '@/components/admin/academic-integrity-report'
 import { QuizAnnouncementManager } from '@/components/admin/quiz-announcement-manager'
+import { DirectMessageModal } from '@/components/admin/direct-message-modal'
+import { StudyGroupEditModal } from '@/components/admin/study-group-edit-modal'
+import { HelpRequestManager } from '@/components/admin/help-request-manager'
 
 interface QuizWithCounts extends Omit<Quiz, 'enableChat' | 'chatSettings'> {
   enableChat?: boolean
@@ -211,7 +215,7 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
 
   const fetchAllQuizzes = async () => {
     try {
-      const response = await fetch('/api/quizzes')
+      const response = await fetch('/api/quizzes?role=admin')
       if (response.ok) {
         const data = await response.json()
         setAllQuizzes(data)
@@ -543,6 +547,18 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
             >
               <Megaphone className="h-4 w-4 mr-2" />
               Announcements
+            </Button>
+            <Button
+              onClick={() => setActiveTab('help-requests')}
+              variant={activeTab === 'help-requests' ? 'default' : 'ghost'}
+              className={`w-full justify-start ${
+                activeTab === 'help-requests'
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg'
+                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
+              }`}
+            >
+              <HelpCircle className="h-4 w-4 mr-2" />
+              Help Requests
             </Button>
             <Button
               onClick={() => setActiveTab('analytics')}
@@ -908,13 +924,11 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
                                     >
                                       View Details
                                     </Button>
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      className="text-gray-600 border-gray-200 hover:bg-gray-50"
-                                    >
-                                      Message
-                                    </Button>
+                                    <DirectMessageModal
+                                      studentId={student.id}
+                                      studentName={student.name}
+                                      studentEmail={student.email}
+                                    />
                                   </div>
                                 </td>
                               </tr>
@@ -1251,21 +1265,11 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
                                     <MessageSquare className="h-4 w-4 mr-2" />
                                     View Chat
                                   </Button>
-                                  <Button
-                                    variant="outline"
-                                    size="sm"
-                                    onClick={() => {
-                                      // Simple edit - prompt for new name
-                                      const newName = prompt('Enter new group name:', group.name)
-                                      if (newName && newName !== group.name) {
-                                        editStudyGroup(group.id, { name: newName })
-                                      }
-                                    }}
-                                    className="border-blue-200 text-blue-700 hover:bg-blue-50"
-                                  >
-                                    <Edit className="h-4 w-4 mr-2" />
-                                    Edit
-                                  </Button>
+                                  <StudyGroupEditModal
+                                    group={group}
+                                    quizzes={allQuizzes}
+                                    onUpdate={fetchStudyGroups}
+                                  />
                                   <Button
                                     variant="outline"
                                     size="sm"
@@ -1419,6 +1423,11 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
                   </CardContent>
                 </Card>
               </div>
+            </TabsContent>
+
+            {/* Help Requests Tab */}
+            <TabsContent value="help-requests" className="space-y-6 p-6">
+              <HelpRequestManager userRole={user.role as 'TEACHER' | 'ADMIN'} />
             </TabsContent>
           </Tabs>
         </div>

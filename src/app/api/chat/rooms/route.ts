@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/auth'
+import { filterAccessibleRooms } from '@/lib/chat-access-control'
 
 // GET /api/chat/rooms - Get all rooms or rooms for a user
 export async function GET(request: NextRequest) {
@@ -53,7 +54,10 @@ export async function GET(request: NextRequest) {
       orderBy: { createdAt: 'desc' }
     })
 
-    return NextResponse.json(rooms)
+    // Filter rooms based on user's access permissions
+    const filteredRooms = await filterAccessibleRooms(rooms, session.id, session.role)
+
+    return NextResponse.json(filteredRooms)
   } catch (error) {
     console.error('Error fetching rooms:', error)
     return NextResponse.json(

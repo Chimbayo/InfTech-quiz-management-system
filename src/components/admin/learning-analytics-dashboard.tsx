@@ -81,7 +81,7 @@ export function LearningAnalyticsDashboard() {
 
   const fetchQuizzes = async () => {
     try {
-      const response = await fetch('/api/quizzes')
+      const response = await fetch('/api/quizzes?role=admin')
       if (response.ok) {
         const quizzesData = await response.json()
         setQuizzes(quizzesData)

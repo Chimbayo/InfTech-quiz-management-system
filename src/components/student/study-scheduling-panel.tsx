@@ -92,7 +92,7 @@ export function StudySchedulingPanel({ studyGroups, userId, selectedQuizId }: St
 
   const fetchQuizzes = async () => {
     try {
-      const response = await fetch('/api/quizzes')
+      const response = await fetch('/api/quizzes?role=student')
       if (response.ok) {
         const data = await response.json()
         setQuizzes(data)

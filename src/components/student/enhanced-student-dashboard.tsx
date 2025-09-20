@@ -30,12 +30,15 @@ import {
   Bell,
   TrendingDown,
   Activity,
-  HelpCircle
+  HelpCircle,
+  Mail
 } from 'lucide-react'
 import { GamificationPanel } from '@/components/student/gamification-panel'
 import { StudySchedulingPanel } from '@/components/student/study-scheduling-panel'
 import { HelpRequestPanel } from '@/components/student/help-request-panel'
+import { PeerHelpPanel } from '@/components/student/peer-help-panel'
 import { StudyRemindersPanel } from '@/components/student/study-reminders-panel'
+import { DirectMessagesPanel } from '@/components/student/direct-messages-panel'
 import { SessionUser } from '@/lib/auth'
 import NotificationBell from '@/components/NotificationBell'
 import { useWebSocket } from '@/hooks/useWebSocket'
@@ -44,8 +47,7 @@ import QuizStatusBroadcast from '@/components/realtime/QuizStatusBroadcast'
 import InstructorPresence from '@/components/realtime/InstructorPresence'
 import StudyProgressUpdates from '@/components/realtime/StudyProgressUpdates'
 
-interface QuizWithCounts extends Omit<Quiz, 'enableChat'> {
-  enableChat?: boolean
+interface QuizWithCounts extends Quiz {
   creator: {
     name: string
   }
@@ -107,6 +109,8 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
   const [recentNotifications, setRecentNotifications] = useState<any[]>([])
   const [selectedQuizForHelp, setSelectedQuizForHelp] = useState<string | null>(null)
   const [selectedQuizForSession, setSelectedQuizForSession] = useState<string | null>(null)
+  const [searchTerm, setSearchTerm] = useState('')
+  const [filterStatus, setFilterStatus] = useState<'all' | 'passed' | 'failed'>('all')
   const { socket, isConnected } = useWebSocket()
 
   const fetchQuizzes = useCallback(async () => {
@@ -207,44 +211,74 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
 
   // Real-time notifications effect
   useEffect(() => {
-    if (!socket || !isConnected) return
-
-    const handleQuizNotification = (notification: any) => {
-      setRecentNotifications(prev => [notification, ...prev.slice(0, 4)])
-    }
-
-    const handleNewQuiz = (data: any) => {
-      console.log('New quiz notification received:', data)
-      handleQuizNotification({
-        type: 'quiz-created',
-        message: `New quiz available: ${data.title}`,
-        timestamp: new Date()
+    if (socket && isConnected) {
+      socket.on('notification', (notification) => {
+        setRecentNotifications(prev => [notification, ...prev.slice(0, 4)])
       })
-      fetchQuizzes()
-    }
 
-    const handleQuizUpdate = (data: any) => {
-      console.log('Quiz update received:', data)
-      handleQuizNotification({
-        type: 'quiz-updated',
-        message: `Quiz updated: ${data.title}`,
-        timestamp: new Date()
+      // Listen for new chat room creation (especially post-exam rooms)
+      socket.on('chatRoomCreated', (data) => {
+        console.log('New chat room created:', data)
+        fetchChatRooms()
       })
-      fetchQuizzes()
-    }
 
-    socket.on('new-quiz-notification', handleNewQuiz)
-    socket.on('quiz-broadcast', handleQuizUpdate)
+      // Listen for exam end events
+      socket.on('examEnded', (data) => {
+        console.log('Exam ended:', data)
+        setTimeout(() => {
+          fetchChatRooms()
+        }, 2000)
+      })
 
-    return () => {
-      socket.off('new-quiz-notification', handleNewQuiz)
-      socket.off('quiz-broadcast', handleQuizUpdate)
+      const handleQuizNotification = (notification: any) => {
+        setRecentNotifications(prev => [notification, ...prev.slice(0, 4)])
+      }
+
+      const handleNewQuiz = (data: any) => {
+        console.log('New quiz notification received:', data)
+        handleQuizNotification({
+          type: 'new-quiz',
+          message: `New quiz available: ${data.title}`,
+          timestamp: new Date()
+        })
+        fetchQuizzes()
+      }
+
+      const handleQuizUpdate = (data: any) => {
+        console.log('Quiz update received:', data)
+        handleQuizNotification({
+          type: 'quiz-updated',
+          message: `Quiz updated: ${data.title}`,
+          timestamp: new Date()
+        })
+        fetchQuizzes()
+      }
+
+      socket.on('new-quiz-notification', handleNewQuiz)
+      socket.on('quiz-broadcast', handleQuizUpdate)
+
+      return () => {
+        socket.off('notification')
+        socket.off('chatRoomCreated')
+        socket.off('examEnded')
+        socket.off('new-quiz-notification', handleNewQuiz)
+        socket.off('quiz-broadcast', handleQuizUpdate)
+      }
     }
-  }, [socket, isConnected, fetchQuizzes])
+  }, [socket, isConnected, fetchQuizzes, fetchChatRooms])
 
   useEffect(() => {
     setUpcomingQuizzes(allQuizzes.slice(0, 3)) // Show next 3 quizzes
   }, [allQuizzes])
+
+  // Periodic refresh for chat rooms to catch post-exam room creation
+  useEffect(() => {
+    const refreshInterval = setInterval(() => {
+      fetchChatRooms()
+    }, 60000) // Refresh every minute
+
+    return () => clearInterval(refreshInterval)
+  }, [fetchChatRooms])
 
 
   const handleLogout = async () => {
@@ -271,7 +305,10 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
     return chatRooms.filter(room => 
       room.type === 'QUIZ_DISCUSSION' || 
       room.type === 'PRE_QUIZ_DISCUSSION' || 
-      room.type === 'POST_QUIZ_REVIEW'
+      room.type === 'POST_QUIZ_DISCUSSION' ||
+      room.type === 'POST_QUIZ_REVIEW' ||
+      room.type === 'POST_EXAM_DISCUSSION' ||
+      room.type === 'EXAM_GENERAL_DISCUSSION'
     )
   }
 
@@ -458,6 +495,18 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
               Study Groups
             </Button>
             <Button
+              onClick={() => setActiveTab('help')}
+              variant="ghost"
+              className={`nav-item-inftech w-full justify-start ${
+                activeTab === 'help' 
+                  ? 'nav-item-inftech-active' 
+                  : 'text-slate-700 hover:bg-blue-50 hover:text-blue-800'
+              }`}
+            >
+              <HelpCircle className="h-5 w-5" />
+              Help & Support
+            </Button>
+            <Button
               onClick={() => setActiveTab('progress')}
               variant="ghost"
               className={`nav-item-inftech w-full justify-start ${
@@ -492,6 +541,18 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
             >
               <Bell className="h-5 w-5" />
               Study Reminders
+            </Button>
+            <Button
+              onClick={() => setActiveTab('messages')}
+              variant="ghost"
+              className={`nav-item-inftech w-full justify-start ${
+                activeTab === 'messages' 
+                  ? 'nav-item-inftech-active' 
+                  : 'text-slate-700 hover:bg-blue-50 hover:text-blue-800'
+              }`}
+            >
+              <Mail className="h-5 w-5" />
+              Direct Messages
             </Button>
           </nav>
         </div>
@@ -619,14 +680,30 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                       <div className="flex justify-between items-start">
                         <div className="flex-1">
                           <CardTitle className="flex items-center gap-4 text-xl mb-3">
-                            <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-2xl flex items-center justify-center shadow-lg">
+                            <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg ${
+                              quiz.isExam 
+                                ? 'bg-gradient-to-r from-red-500 to-red-600' 
+                                : 'bg-gradient-to-r from-blue-500 to-indigo-500'
+                            }`}>
                               <BookOpen className="h-6 w-6 text-white" />
                             </div>
                             <span className="heading-inftech-primary">{quiz.title}</span>
-                            {quiz.enableChat && (
+                            {quiz.isExam && (
+                              <Badge className="badge-inftech badge-inftech-error">
+                                <Target className="h-3 w-3 mr-1" />
+                                EXAM
+                              </Badge>
+                            )}
+                            {quiz.enableChat && !quiz.isExam && (
                               <Badge className="badge-inftech badge-inftech-success">
                                 <MessageSquare className="h-3 w-3 mr-1" />
                                 Chat Available
+                              </Badge>
+                            )}
+                            {quiz.isExam && quiz.examEndTime && new Date() > new Date(quiz.examEndTime) && (
+                              <Badge className="badge-inftech badge-inftech-info">
+                                <MessageSquare className="h-3 w-3 mr-1" />
+                                Post-Exam Chat Available
                               </Badge>
                             )}
                           </CardTitle>
@@ -638,7 +715,8 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                           </p>
                         </div>
                         <div className="flex items-center space-x-3 ml-6">
-                          {quiz.enableChat && quiz.chatRooms && quiz.chatRooms.length > 0 && (
+                          {/* Chat button - only show for regular quizzes or post-exam */}
+                          {!quiz.isExam && quiz.enableChat && quiz.chatRooms && quiz.chatRooms.length > 0 && (
                             <Button
                               variant="outline"
                               size="sm"
@@ -649,59 +727,32 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                               Study Chat
                             </Button>
                           )}
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setSelectedQuizForHelp(quiz.id)}
-                            className="btn-inftech-warning"
-                          >
-                            <HelpCircle className="h-4 w-4 mr-2" />
-                            Ask Help
-                          </Button>
-                          <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setSelectedQuizForSession(quiz.id)}
-                            className="btn-inftech-secondary"
-                          >
-                            <Calendar className="h-4 w-4 mr-2" />
-                            Schedule
-                          </Button>
+                          {/* Post-exam chat button */}
+                          {quiz.isExam && quiz.examEndTime && new Date() > new Date(quiz.examEndTime) && quiz.chatRooms && quiz.chatRooms.length > 0 && (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => handleJoinChatRoom(quiz.chatRooms![0].id)}
+                              className="btn-inftech-info"
+                            >
+                              <MessageSquare className="h-4 w-4 mr-2" />
+                              Post-Exam Discussion
+                            </Button>
+                          )}
                           <Button
                             onClick={() => handleStartQuiz(quiz.id)}
-                            disabled={!quiz.isActive}
-                            className="btn-inftech-primary"
+                            disabled={!quiz.isActive || (quiz.isExam && attempts.some(attempt => attempt.quizId === quiz.id))}
+                            className={quiz.isExam ? "btn-inftech-error" : "btn-inftech-primary"}
                           >
                             <Play className="h-4 w-4 mr-2" />
-                            {attempts.some(attempt => attempt.quizId === quiz.id) ? 'Retake Quiz' : 'Start Quiz'}
+                            {quiz.isExam 
+                              ? (attempts.some(attempt => attempt.quizId === quiz.id) ? 'Exam Completed' : 'Start Exam')
+                              : (attempts.some(attempt => attempt.quizId === quiz.id) ? 'Retake Quiz' : 'Start Quiz')
+                            }
                           </Button>
                         </div>
                       </div>
                     </CardHeader>
-                    <CardContent>
-                      <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-                        <div className="text-center p-4 bg-gradient-to-br from-blue-50 to-indigo-50 rounded-xl border border-blue-200 shadow-sm">
-                          <div className="text-3xl font-bold text-blue-600 mb-1">{quiz._count.questions}</div>
-                          <div className="text-sm font-medium text-blue-700">Questions</div>
-                        </div>
-                        <div className="text-center p-4 bg-gradient-to-br from-purple-50 to-violet-50 rounded-xl border border-purple-200 shadow-sm">
-                          <div className="text-3xl font-bold text-purple-600 mb-1">{quiz.passingScore}%</div>
-                          <div className="text-sm font-medium text-purple-700">Pass Score</div>
-                        </div>
-                        <div className="text-center p-4 bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl border border-orange-200 shadow-sm">
-                          <div className="text-3xl font-bold text-orange-600 mb-1">
-                            {quiz.timeLimit ? `${quiz.timeLimit}` : '∞'}
-                          </div>
-                          <div className="text-sm font-medium text-orange-700">
-                            {quiz.timeLimit ? 'Minutes' : 'No Limit'}
-                          </div>
-                        </div>
-                        <div className="text-center p-4 bg-gradient-to-br from-emerald-50 to-green-50 rounded-xl border border-emerald-200 shadow-sm">
-                          <div className="text-3xl font-bold text-emerald-600 mb-1">{quiz._count.attempts}</div>
-                          <div className="text-sm font-medium text-emerald-700">Total Attempts</div>
-                        </div>
-                      </div>
-                    </CardContent>
                   </Card>
                 ))}
               </div>
@@ -944,18 +995,34 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      <MessageSquare className="h-5 w-5 text-green-600" />
-                      Question Clarification
+                      <HelpCircle className="h-5 w-5 text-purple-600" />
+                      Need Help?
                     </CardTitle>
                     <CardDescription>
-                      Get help with quiz topics and clarify doubts with peers and teachers
+                      Get assistance from teachers and peers, or help others with their questions
                     </CardDescription>
                   </CardHeader>
-                  <CardContent>
-                    <HelpRequestPanel 
-              userId={user.id} 
-              selectedQuizId={selectedQuizForHelp || undefined}
-            />
+                  <CardContent className="text-center py-8">
+                    <div className="space-y-4">
+                      <div className="flex justify-center">
+                        <div className="bg-purple-100 p-4 rounded-full">
+                          <HelpCircle className="h-8 w-8 text-purple-600" />
+                        </div>
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900 mb-2">Help & Support Center</h4>
+                        <p className="text-sm text-gray-600 mb-4">
+                          Ask questions, get help from teachers and peers, or help your classmates
+                        </p>
+                        <Button 
+                          onClick={() => setActiveTab('help')}
+                          className="bg-purple-600 hover:bg-purple-700"
+                        >
+                          <HelpCircle className="h-4 w-4 mr-2" />
+                          Go to Help Center
+                        </Button>
+                      </div>
+                    </div>
                   </CardContent>
                 </Card>
               </div>
@@ -973,12 +1040,93 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
             {attempts.length > 0 && (
               <Card>
                 <CardHeader>
-                  <CardTitle>Quiz History</CardTitle>
+                  <CardTitle className="flex items-center justify-between">
+                    <span>Quiz History</span>
+                    <Badge variant="secondary" className="bg-blue-100 text-blue-800">
+                      {attempts.length} attempts
+                    </Badge>
+                  </CardTitle>
+                  <CardDescription>
+                    Complete history of all your quiz attempts
+                  </CardDescription>
                 </CardHeader>
                 <CardContent>
-                  <div className="space-y-4">
-                    {attempts.slice(0, 5).map((attempt) => (
-                      <div key={attempt.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
+                  {/* Search and Filter Controls */}
+                  <div className="flex flex-col sm:flex-row gap-4 mb-6 p-4 bg-gray-50 rounded-lg">
+                    <div className="flex-1">
+                      <input
+                        type="text"
+                        placeholder="Search quiz attempts..."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                      />
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        variant={filterStatus === 'all' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setFilterStatus('all')}
+                        className="whitespace-nowrap"
+                      >
+                        All ({attempts.length})
+                      </Button>
+                      <Button
+                        variant={filterStatus === 'passed' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setFilterStatus('passed')}
+                        className="whitespace-nowrap text-green-600 border-green-200 hover:bg-green-50"
+                      >
+                        Passed ({attempts.filter(a => a.passed).length})
+                      </Button>
+                      <Button
+                        variant={filterStatus === 'failed' ? 'default' : 'outline'}
+                        size="sm"
+                        onClick={() => setFilterStatus('failed')}
+                        className="whitespace-nowrap text-red-600 border-red-200 hover:bg-red-50"
+                      >
+                        Failed ({attempts.filter(a => !a.passed).length})
+                      </Button>
+                    </div>
+                  </div>
+
+                  <div className="max-h-96 overflow-y-auto space-y-4 pr-2 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100 hover:scrollbar-thumb-gray-400">
+                    {(() => {
+                      const filteredAttempts = attempts.filter(attempt => {
+                        const matchesSearch = attempt.quiz.title.toLowerCase().includes(searchTerm.toLowerCase())
+                        const matchesFilter = filterStatus === 'all' || 
+                          (filterStatus === 'passed' && attempt.passed) ||
+                          (filterStatus === 'failed' && !attempt.passed)
+                        return matchesSearch && matchesFilter
+                      })
+
+                      if (filteredAttempts.length === 0) {
+                        return (
+                          <div className="text-center py-8">
+                            <History className="h-12 w-12 text-gray-300 mx-auto mb-4" />
+                            <h3 className="text-lg font-medium text-gray-900 mb-2">No attempts found</h3>
+                            <p className="text-gray-600">
+                              {searchTerm ? 'Try adjusting your search terms' : 'No attempts match the selected filter'}
+                            </p>
+                            {(searchTerm || filterStatus !== 'all') && (
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => {
+                                  setSearchTerm('')
+                                  setFilterStatus('all')
+                                }}
+                                className="mt-3"
+                              >
+                                Clear filters
+                              </Button>
+                            )}
+                          </div>
+                        )
+                      }
+
+                      return filteredAttempts.map((attempt) => (
+                        <div key={attempt.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
                         <div className="flex items-center space-x-4">
                           <div className="flex-shrink-0">
                             {attempt.passed ? (
@@ -989,11 +1137,34 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                           </div>
                           <div className="flex-1">
                             <h4 className="font-medium text-gray-900">{attempt.quiz.title}</h4>
-                            <p className="text-sm text-gray-600">
-                              Score: <span className={getScoreColor(attempt.score, attempt.quiz.passingScore)}>
-                                {attempt.score}%
+                            <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-4 text-sm text-gray-600">
+                              <span>
+                                Score: <span className={getScoreColor(attempt.score, attempt.quiz.passingScore)}>
+                                  {attempt.score}%
+                                </span>
                               </span>
-                            </p>
+                              <span className="hidden sm:inline">•</span>
+                              <span>
+                                {attempt.completedAt 
+                                  ? new Date(attempt.completedAt).toLocaleDateString('en-US', {
+                                      month: 'short',
+                                      day: 'numeric',
+                                      year: 'numeric',
+                                      hour: '2-digit',
+                                      minute: '2-digit'
+                                    })
+                                  : 'In Progress'
+                                }
+                              </span>
+                              {attempt.timeSpent && (
+                                <>
+                                  <span className="hidden sm:inline">•</span>
+                                  <span>
+                                    Time: {Math.floor(attempt.timeSpent / 60)}m {attempt.timeSpent % 60}s
+                                  </span>
+                                </>
+                              )}
+                            </div>
                           </div>
                         </div>
                         <div className="flex items-center gap-2">
@@ -1026,7 +1197,8 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                           </Button>
                         </div>
                       </div>
-                    ))}
+                      ))
+                    })()}
                   </div>
                 </CardContent>
               </Card>
@@ -1069,6 +1241,56 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
             </div>
 
             <StudyRemindersPanel userId={user.id} />
+          </TabsContent>
+
+          {/* Direct Messages Tab */}
+          <TabsContent value="messages" className="space-y-8">
+            <DirectMessagesPanel userId={user.id} />
+          </TabsContent>
+
+          {/* Help & Support Tab */}
+          <TabsContent value="help" className="space-y-8">
+            <div className="mb-8">
+              <h2 className="text-3xl font-bold heading-inftech-primary mb-3">Help & Support</h2>
+              <p className="text-slate-600 text-lg">Get help from teachers and peers, or help others with their questions</p>
+            </div>
+
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+              {/* Ask for Help Section */}
+              <Card className="border-blue-200 shadow-lg">
+                <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100">
+                  <CardTitle className="flex items-center gap-2 text-blue-800">
+                    <MessageSquare className="h-5 w-5" />
+                    Ask for Help
+                  </CardTitle>
+                  <CardDescription className="text-blue-600">
+                    Submit questions and get assistance from teachers and peers
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <HelpRequestPanel 
+                    userId={user.id} 
+                    selectedQuizId={selectedQuizForHelp || undefined}
+                  />
+                </CardContent>
+              </Card>
+
+              {/* Peer Help Section */}
+              <Card className="border-green-200 shadow-lg">
+                <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 border-b border-green-100">
+                  <CardTitle className="flex items-center gap-2 text-green-800">
+                    <Users className="h-5 w-5" />
+                    Help Your Peers
+                  </CardTitle>
+                  <CardDescription className="text-green-600">
+                    Answer questions from classmates and earn peer helper badges
+                  </CardDescription>
+                </CardHeader>
+                <CardContent className="p-6">
+                  <PeerHelpPanel userId={user.id} />
+                </CardContent>
+              </Card>
+            </div>
           </TabsContent>
             </Tabs>
           </div>

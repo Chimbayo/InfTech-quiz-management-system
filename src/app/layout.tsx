@@ -2,6 +2,10 @@ import type { Metadata } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 
+// Import schedulers to ensure they start
+import '@/lib/exam-scheduler'
+import '@/lib/reminder-scheduler'
+
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {

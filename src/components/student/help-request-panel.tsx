@@ -78,7 +78,7 @@ export function HelpRequestPanel({ userId, selectedQuizId }: HelpRequestPanelPro
 
   const fetchQuizzes = async () => {
     try {
-      const response = await fetch('/api/quizzes')
+      const response = await fetch('/api/quizzes?role=student')
       if (response.ok) {
         const data = await response.json()
         setQuizzes(data)
@@ -299,7 +299,14 @@ export function HelpRequestPanel({ userId, selectedQuizId }: HelpRequestPanelPro
             </CardContent>
           </Card>
         ) : (
-          filteredRequests.map((request) => (
+          filteredRequests.map((request) => {
+            // Ensure responses is always an array
+            const safeRequest = {
+              ...request,
+              responses: request.responses || []
+            }
+            
+            return (
             <Card key={request.id} className="hover:shadow-md transition-shadow">
               <CardHeader>
                 <div className="flex justify-between items-start">
@@ -328,13 +335,13 @@ export function HelpRequestPanel({ userId, selectedQuizId }: HelpRequestPanelPro
                   <p className="text-gray-700">{request.question}</p>
                 </div>
                 
-                {request.responses.length > 0 && (
+                {safeRequest.responses && safeRequest.responses.length > 0 ? (
                   <div className="space-y-3 mb-4">
                     <h5 className="font-medium text-gray-900 flex items-center gap-2">
                       <MessageCircle className="h-4 w-4" />
-                      Responses ({request.responses.length})
+                      Responses ({safeRequest.responses.length})
                     </h5>
-                    {request.responses.map((response) => (
+                    {safeRequest.responses.map((response) => (
                       <div key={response.id} className="bg-gray-50 rounded-lg p-3">
                         <div className="flex items-center gap-2 mb-2">
                           <User className="h-4 w-4 text-gray-500" />
@@ -350,6 +357,16 @@ export function HelpRequestPanel({ userId, selectedQuizId }: HelpRequestPanelPro
                       </div>
                     ))}
                   </div>
+                ) : (
+                  <div className="mb-4 p-3 bg-blue-50 rounded-lg border border-blue-200">
+                    <div className="flex items-center gap-2 text-blue-700">
+                      <MessageCircle className="h-4 w-4" />
+                      <span className="text-sm font-medium">No responses yet</span>
+                    </div>
+                    <p className="text-xs text-blue-600 mt-1">
+                      Your question is waiting for a response from teachers or peers.
+                    </p>
+                  </div>
                 )}
                 
                 <div className="flex items-center justify-between text-sm text-gray-500">
@@ -364,7 +381,8 @@ export function HelpRequestPanel({ userId, selectedQuizId }: HelpRequestPanelPro
                 </div>
               </CardContent>
             </Card>
-          ))
+            )
+          })
         )}
       </div>
     </div>

@@ -16,7 +16,9 @@ import {
   Search,
   Plus,
   Trash2,
-  Eye
+  Edit,
+  Save,
+  X
 } from 'lucide-react'
 
 interface StudyGroup {
@@ -62,6 +64,10 @@ export function StudyGroupManager() {
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState('')
   const [success, setSuccess] = useState('')
+  const [editingGroup, setEditingGroup] = useState<string>('')
+  const [editForm, setEditForm] = useState({ name: '', description: '' })
+  const [bulkEditingMembers, setBulkEditingMembers] = useState<string>('')
+  const [selectedMembers, setSelectedMembers] = useState<string[]>([])
 
   useEffect(() => {
     fetchStudyGroups()
@@ -183,6 +189,89 @@ export function StudyGroupManager() {
     }
   }
 
+  const startEditGroup = (group: StudyGroup) => {
+    setEditingGroup(group.id)
+    setEditForm({ name: group.name, description: group.description })
+    setSelectedGroup(group.id) // Also open the management panel
+  }
+
+  const cancelEdit = () => {
+    setEditingGroup('')
+    setEditForm({ name: '', description: '' })
+  }
+
+  const saveGroupEdit = async (groupId: string) => {
+    if (!editForm.name.trim()) {
+      setError('Group name is required')
+      return
+    }
+
+    setIsLoading(true)
+    setError('')
+
+    try {
+      const response = await fetch(`/api/study-groups/${groupId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: editForm.name.trim(),
+          description: editForm.description.trim()
+        })
+      })
+
+      if (response.ok) {
+        setSuccess('Study group updated successfully!')
+        setEditingGroup('')
+        setEditForm({ name: '', description: '' })
+        fetchStudyGroups()
+      } else {
+        const errorData = await response.json()
+        setError(errorData.error || 'Failed to update study group')
+      }
+    } catch (error) {
+      setError('An error occurred while updating the study group')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const saveBulkMemberEdit = async (groupId: string) => {
+    setIsLoading(true)
+    setError('')
+
+    try {
+      const response = await fetch(`/api/study-groups/${groupId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          memberIds: selectedMembers
+        })
+      })
+
+      if (response.ok) {
+        setSuccess('Group members updated successfully!')
+        setBulkEditingMembers('')
+        setSelectedMembers([])
+        fetchStudyGroups()
+      } else {
+        const errorData = await response.json()
+        setError(errorData.error || 'Failed to update group members')
+      }
+    } catch (error) {
+      setError('An error occurred while updating group members')
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const toggleMemberSelection = (userId: string) => {
+    setSelectedMembers(prev => 
+      prev.includes(userId) 
+        ? prev.filter(id => id !== userId)
+        : [...prev, userId]
+    )
+  }
+
   const filteredGroups = studyGroups.filter(group =>
     group.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
     group.description.toLowerCase().includes(searchTerm.toLowerCase())
@@ -291,49 +380,124 @@ export function StudyGroupManager() {
               <CardHeader>
                 <div className="flex justify-between items-start">
                   <div className="flex-1">
-                    <CardTitle className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
-                        <Users className="h-4 w-4 text-white" />
+                    {editingGroup === group.id ? (
+                      // Edit Mode
+                      <div className="space-y-3">
+                        <div className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
+                            <Users className="h-4 w-4 text-white" />
+                          </div>
+                          <Input
+                            value={editForm.name}
+                            onChange={(e) => setEditForm(prev => ({ ...prev, name: e.target.value }))}
+                            placeholder="Group name"
+                            className="font-semibold text-lg"
+                          />
+                          <Badge variant={group.isActive ? 'default' : 'secondary'}>
+                            {group.isActive ? 'Active' : 'Inactive'}
+                          </Badge>
+                        </div>
+                        <Input
+                          value={editForm.description}
+                          onChange={(e) => setEditForm(prev => ({ ...prev, description: e.target.value }))}
+                          placeholder="Group description"
+                          className="text-sm"
+                        />
+                        <div className="flex items-center gap-2">
+                          <Button
+                            size="sm"
+                            onClick={() => saveGroupEdit(group.id)}
+                            disabled={isLoading || !editForm.name.trim()}
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                          >
+                            <Save className="h-4 w-4 mr-1" />
+                            Save
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={cancelEdit}
+                            disabled={isLoading}
+                          >
+                            <X className="h-4 w-4 mr-1" />
+                            Cancel
+                          </Button>
+                        </div>
                       </div>
-                      {group.name}
-                      <Badge variant={group.isActive ? 'default' : 'secondary'}>
-                        {group.isActive ? 'Active' : 'Inactive'}
-                      </Badge>
-                    </CardTitle>
-                    <CardDescription className="mt-2">
-                      {group.description || 'No description provided'}
-                    </CardDescription>
+                    ) : (
+                      // View Mode
+                      <>
+                        <CardTitle className="flex items-center gap-3">
+                          <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
+                            <Users className="h-4 w-4 text-white" />
+                          </div>
+                          {group.name}
+                          <Badge variant={group.isActive ? 'default' : 'secondary'}>
+                            {group.isActive ? 'Active' : 'Inactive'}
+                          </Badge>
+                        </CardTitle>
+                        <CardDescription className="mt-2">
+                          {group.description || 'No description provided'}
+                        </CardDescription>
+                      </>
+                    )}
                   </div>
                   <div className="flex items-center space-x-2 ml-4">
-                    {group.chatRoom && (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => window.open(`/chat?room=${group.chatRoom?.id}`, '_blank')}
-                        className="btn-secondary-professional"
-                      >
-                        <MessageSquare className="h-4 w-4 mr-2" />
-                        Chat Room
-                      </Button>
+                    {editingGroup !== group.id && (
+                      <>
+                        {group.chatRoom && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => window.open(`/chat?room=${group.chatRoom?.id}`, '_blank')}
+                            className="btn-secondary-professional"
+                          >
+                            <MessageSquare className="h-4 w-4 mr-2" />
+                            Chat Room
+                          </Button>
+                        )}
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => startEditGroup(group)}
+                          className="btn-secondary-professional text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                        >
+                          <Edit className="h-4 w-4 mr-2" />
+                          Edit
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setSelectedGroup(selectedGroup === group.id ? '' : group.id)}
+                          className="btn-secondary-professional"
+                        >
+                          <Settings className="h-4 w-4 mr-2" />
+                          Members
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => {
+                            setBulkEditingMembers(group.id)
+                            setSelectedMembers(group.members.map(m => m.user.id))
+                            setSelectedGroup(group.id)
+                          }}
+                          className="btn-secondary-professional text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                        >
+                          <Users className="h-4 w-4 mr-2" />
+                          Bulk Edit
+                        </Button>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => deleteStudyGroup(group.id)}
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        >
+                          <Trash2 className="h-4 w-4 mr-2" />
+                          Delete
+                        </Button>
+                      </>
                     )}
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setSelectedGroup(selectedGroup === group.id ? '' : group.id)}
-                      className="btn-secondary-professional"
-                    >
-                      <Settings className="h-4 w-4 mr-2" />
-                      Manage
-                    </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => deleteStudyGroup(group.id)}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                    >
-                      <Trash2 className="h-4 w-4 mr-2" />
-                      Delete
-                    </Button>
                   </div>
                 </div>
               </CardHeader>
@@ -359,55 +523,163 @@ export function StudyGroupManager() {
 
                 {/* Group Management Panel */}
                 {selectedGroup === group.id && (
-                  <div className="border-t pt-4 space-y-4">
-                    <h4 className="font-semibold text-gray-900">Group Members</h4>
+                  <div className="border-t pt-4 space-y-6">
+                    <div className="flex items-center justify-between">
+                      <h4 className="font-semibold text-gray-900 flex items-center gap-2">
+                        <Users className="h-5 w-5" />
+                        Manage Group Members
+                      </h4>
+                      <Badge variant="outline" className="text-sm">
+                        {group.members.length} member{group.members.length !== 1 ? 's' : ''}
+                      </Badge>
+                    </div>
                     
                     {/* Current Members */}
-                    <div className="space-y-2">
+                    <div className="space-y-3">
+                      <h5 className="font-medium text-gray-900 text-sm uppercase tracking-wide">Current Members</h5>
                       {group.members.length === 0 ? (
-                        <p className="text-gray-500 text-sm">No members yet</p>
+                        <div className="text-center py-6 bg-gray-50 rounded-lg border-2 border-dashed border-gray-200">
+                          <Users className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                          <p className="text-gray-500 text-sm">No members yet</p>
+                          <p className="text-gray-400 text-xs">Add students to get started</p>
+                        </div>
                       ) : (
-                        group.members.map((member) => (
-                          <div key={member.id} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                            <div>
-                              <p className="font-medium">{member.user.name}</p>
-                              <p className="text-sm text-gray-600">{member.user.email}</p>
+                        <div className="grid gap-2">
+                          {group.members.map((member) => (
+                            <div key={member.id} className="flex items-center justify-between p-3 bg-white border rounded-lg hover:shadow-sm transition-shadow">
+                              <div className="flex items-center gap-3">
+                                <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-blue-600 rounded-full flex items-center justify-center">
+                                  <span className="text-white text-sm font-semibold">
+                                    {member.user.name.charAt(0).toUpperCase()}
+                                  </span>
+                                </div>
+                                <div>
+                                  <p className="font-medium text-gray-900">{member.user.name}</p>
+                                  <p className="text-sm text-gray-600">{member.user.email}</p>
+                                </div>
+                              </div>
+                              <Button
+                                variant="outline"
+                                size="sm"
+                                onClick={() => removeMemberFromGroup(group.id, member.user.id)}
+                                className="text-red-600 hover:text-red-700 hover:bg-red-50 border-red-200"
+                              >
+                                <UserMinus className="h-4 w-4 mr-1" />
+                                Remove
+                              </Button>
                             </div>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => removeMemberFromGroup(group.id, member.user.id)}
-                              className="text-red-600 hover:text-red-700"
-                            >
-                              <UserMinus className="h-4 w-4" />
-                            </Button>
-                          </div>
-                        ))
+                          ))}
+                        </div>
                       )}
                     </div>
 
                     {/* Add Members */}
-                    <div>
-                      <h5 className="font-medium text-gray-900 mb-2">Add Members</h5>
-                      <div className="space-y-2 max-h-40 overflow-y-auto">
-                        {getAvailableUsersForGroup(group.id).map((user) => (
-                          <div key={user.id} className="flex items-center justify-between p-2 border rounded">
-                            <div>
-                              <p className="font-medium">{user.name}</p>
-                              <p className="text-sm text-gray-600">{user.email}</p>
-                            </div>
-                            <Button
-                              variant="outline"
-                              size="sm"
-                              onClick={() => addMemberToGroup(group.id, user.id)}
-                              className="text-green-600 hover:text-green-700"
-                            >
-                              <UserPlus className="h-4 w-4" />
-                            </Button>
+                    <div className="space-y-3">
+                      <h5 className="font-medium text-gray-900 text-sm uppercase tracking-wide">Available Students</h5>
+                      <div className="max-h-60 overflow-y-auto border rounded-lg">
+                        {getAvailableUsersForGroup(group.id).length === 0 ? (
+                          <div className="text-center py-6 bg-gray-50">
+                            <UserPlus className="h-8 w-8 text-gray-400 mx-auto mb-2" />
+                            <p className="text-gray-500 text-sm">All students are already members</p>
                           </div>
-                        ))}
+                        ) : (
+                          <div className="divide-y">
+                            {getAvailableUsersForGroup(group.id).map((user) => (
+                              <div key={user.id} className="flex items-center justify-between p-3 hover:bg-gray-50 transition-colors">
+                                <div className="flex items-center gap-3">
+                                  <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-green-600 rounded-full flex items-center justify-center">
+                                    <span className="text-white text-sm font-semibold">
+                                      {user.name.charAt(0).toUpperCase()}
+                                    </span>
+                                  </div>
+                                  <div>
+                                    <p className="font-medium text-gray-900">{user.name}</p>
+                                    <p className="text-sm text-gray-600">{user.email}</p>
+                                  </div>
+                                </div>
+                                <Button
+                                  variant="outline"
+                                  size="sm"
+                                  onClick={() => addMemberToGroup(group.id, user.id)}
+                                  className="text-green-600 hover:text-green-700 hover:bg-green-50 border-green-200"
+                                >
+                                  <UserPlus className="h-4 w-4 mr-1" />
+                                  Add
+                                </Button>
+                              </div>
+                            ))}
+                          </div>
+                        )}
                       </div>
                     </div>
+
+                    {/* Bulk Edit Members Interface */}
+                    {bulkEditingMembers === group.id && (
+                      <div className="border-t pt-4 space-y-4">
+                        <div className="flex items-center justify-between">
+                          <h5 className="font-medium text-purple-900 flex items-center gap-2">
+                            <Users className="h-5 w-5" />
+                            Bulk Edit Members
+                          </h5>
+                          <div className="flex gap-2">
+                            <Button
+                              size="sm"
+                              onClick={() => saveBulkMemberEdit(group.id)}
+                              disabled={isLoading}
+                              className="bg-purple-600 hover:bg-purple-700 text-white"
+                            >
+                              <Save className="h-4 w-4 mr-1" />
+                              Save Changes
+                            </Button>
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => {
+                                setBulkEditingMembers('')
+                                setSelectedMembers([])
+                              }}
+                              disabled={isLoading}
+                            >
+                              <X className="h-4 w-4 mr-1" />
+                              Cancel
+                            </Button>
+                          </div>
+                        </div>
+
+                        <div className="bg-purple-50 p-4 rounded-lg">
+                          <p className="text-sm text-purple-700 mb-3">
+                            Select/deselect students to manage group membership. Selected students will be members of this group.
+                          </p>
+                          <div className="max-h-60 overflow-y-auto space-y-2">
+                            {users.filter(user => user.role === 'STUDENT').map((user) => (
+                              <div key={user.id} className="flex items-center gap-3 p-2 bg-white rounded border">
+                                <input
+                                  type="checkbox"
+                                  checked={selectedMembers.includes(user.id)}
+                                  onChange={() => toggleMemberSelection(user.id)}
+                                  className="w-4 h-4 text-purple-600 border-gray-300 rounded focus:ring-purple-500"
+                                />
+                                <div className="w-8 h-8 bg-gradient-to-r from-purple-500 to-purple-600 rounded-full flex items-center justify-center">
+                                  <span className="text-white text-sm font-semibold">
+                                    {user.name.charAt(0).toUpperCase()}
+                                  </span>
+                                </div>
+                                <div className="flex-1">
+                                  <p className="font-medium text-gray-900">{user.name}</p>
+                                  <p className="text-sm text-gray-600">{user.email}</p>
+                                </div>
+                                <Badge variant={selectedMembers.includes(user.id) ? 'default' : 'outline'}>
+                                  {selectedMembers.includes(user.id) ? 'Selected' : 'Available'}
+                                </Badge>
+                              </div>
+                            ))}
+                          </div>
+                          <div className="mt-3 text-sm text-purple-600">
+                            {selectedMembers.length} student{selectedMembers.length !== 1 ? 's' : ''} selected
+                          </div>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
               </CardContent>

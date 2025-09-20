@@ -56,7 +56,7 @@ export function QuizAnnouncementManager() {
 
   const fetchQuizzes = async () => {
     try {
-      const response = await fetch('/api/quizzes')
+      const response = await fetch('/api/quizzes?role=admin')
       if (response.ok) {
         const data = await response.json()
         setQuizzes(data)

@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/auth'
+import { checkChatRoomAccess, getAccessDeniedMessage } from '@/lib/chat-access-control'
 
 // GET /api/chat/rooms/[id] - Get room details
 export async function GET(
@@ -41,6 +42,14 @@ export async function GET(
 
     if (!room) {
       return NextResponse.json({ error: 'Room not found' }, { status: 404 })
+    }
+
+    // Check access permissions
+    const hasAccess = await checkChatRoomAccess(session.id, session.role, room.type, room.quizId)
+    if (!hasAccess) {
+      return NextResponse.json({ 
+        error: getAccessDeniedMessage(room.type) 
+      }, { status: 403 })
     }
 
     return NextResponse.json(room)

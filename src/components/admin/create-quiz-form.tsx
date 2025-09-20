@@ -52,6 +52,27 @@ const createQuizSchema = z.object({
   chatRoomName: z.string().optional(),
   allowChatDuringQuiz: z.boolean().optional(),
   enableStudyGroup: z.boolean().optional(),
+  // Exam settings
+  isExam: z.boolean().optional(),
+  examEndTime: z.string().optional().refine((val) => {
+    if (!val) return true; // Optional field
+    // Accept both ISO datetime and datetime-local format
+    const isoRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(:\d{2})?(\.\d{3})?Z?$/;
+    const localRegex = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/;
+    return isoRegex.test(val) || localRegex.test(val);
+  }, {
+    message: "Invalid datetime format"
+  }),
+  examDuration: z.number().min(1).optional(),
+}).refine((data) => {
+  // If it's an exam, examEndTime is required
+  if (data.isExam && !data.examEndTime) {
+    return false;
+  }
+  return true;
+}, {
+  message: 'Exam end time is required for exams',
+  path: ['examEndTime'],
 })
 
 type CreateQuizFormData = z.infer<typeof createQuizSchema>
@@ -84,6 +105,10 @@ export function CreateQuizForm({ userId }: CreateQuizFormProps) {
       chatRoomName: '',
       allowChatDuringQuiz: false,
       enableStudyGroup: false,
+      // Exam defaults
+      isExam: false,
+      examEndTime: '',
+      examDuration: undefined,
       questions: [
         {
           text: '',
@@ -104,6 +129,7 @@ export function CreateQuizForm({ userId }: CreateQuizFormProps) {
 
   const watchedQuestions = watch('questions')
   const watchedEnableChat = watch('enableChat')
+  const watchedIsExam = watch('isExam')
 
   const addQuestion = () => {
     appendQuestion({
@@ -290,6 +316,96 @@ export function CreateQuizForm({ userId }: CreateQuizFormProps) {
             </CardContent>
           </Card>
 
+          {/* Exam Settings */}
+          <Card className="card-professional">
+            <CardHeader>
+              <CardTitle className="flex items-center gap-3 text-xl">
+                <div className="w-8 h-8 bg-gradient-to-r from-red-500 to-red-600 rounded-lg flex items-center justify-center">
+                  <BookOpen className="h-4 w-4 text-white" />
+                </div>
+                Assessment Type
+              </CardTitle>
+              <CardDescription className="text-gray-600">
+                Choose whether this is a regular quiz or a formal exam
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="space-y-4">
+                <div className="flex items-center space-x-2">
+                  <Controller
+                    name="isExam"
+                    control={control}
+                    render={({ field }) => (
+                      <Checkbox
+                        id="isExam"
+                        checked={field.value}
+                        onCheckedChange={field.onChange}
+                      />
+                    )}
+                  />
+                  <Label htmlFor="isExam" className="text-sm font-medium">
+                    This is a formal exam
+                  </Label>
+                </div>
+                <p className="text-xs text-gray-500 ml-6">
+                  ⚠️ Exams have stricter rules: no chat rooms will be created until after the exam ends
+                </p>
+
+                {watchedIsExam && (
+                  <div className="ml-6 space-y-4 border-l-2 border-red-200 pl-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="examEndTime">Exam End Time *</Label>
+                      <Input
+                        id="examEndTime"
+                        type="datetime-local"
+                        {...register('examEndTime')}
+                        className="input-professional"
+                      />
+                      {errors.examEndTime && (
+                        <p className="text-sm text-destructive">{errors.examEndTime.message}</p>
+                      )}
+                      <p className="text-xs text-gray-500">
+                        Post-exam discussion rooms will be created automatically after this time
+                      </p>
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="examDuration">Exam Duration (minutes)</Label>
+                      <Input
+                        id="examDuration"
+                        type="number"
+                        min="1"
+                        placeholder="e.g., 120 for 2 hours"
+                        {...register('examDuration', { valueAsNumber: true })}
+                        className="input-professional"
+                      />
+                      <p className="text-xs text-gray-500">
+                        Optional: Set the total duration for the exam period
+                      </p>
+                    </div>
+
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                      <div className="flex items-start space-x-2">
+                        <div className="w-5 h-5 bg-amber-500 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5">
+                          <span className="text-white text-xs font-bold">!</span>
+                        </div>
+                        <div>
+                          <h4 className="text-sm font-medium text-amber-800">Exam Mode Restrictions</h4>
+                          <ul className="text-xs text-amber-700 mt-1 space-y-1">
+                            <li>• No chat rooms will be created during exam period</li>
+                            <li>• Discussion rooms will be auto-created after exam ends</li>
+                            <li>• Students can only see exam content during exam time</li>
+                            <li>• Enhanced monitoring for academic integrity</li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+
           {/* Chat Settings */}
           <Card className="card-professional">
             <CardHeader>
@@ -300,7 +416,10 @@ export function CreateQuizForm({ userId }: CreateQuizFormProps) {
                 Chat & Discussion Settings
               </CardTitle>
               <CardDescription className="text-gray-600">
-                Configure chat rooms and discussion options for this quiz
+                {watchedIsExam 
+                  ? "Chat settings are disabled for exams - discussion rooms will be created after exam ends"
+                  : "Configure chat rooms and discussion options for this quiz"
+                }
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
@@ -308,14 +427,20 @@ export function CreateQuizForm({ userId }: CreateQuizFormProps) {
                 <div className="flex items-center space-x-2">
                   <Checkbox
                     id="enableChat"
+                    disabled={watchedIsExam}
                     {...register('enableChat')}
                   />
-                  <Label htmlFor="enableChat" className="text-sm font-medium">
+                  <Label htmlFor="enableChat" className={`text-sm font-medium ${watchedIsExam ? 'text-gray-400' : ''}`}>
                     Enable chat room for this quiz
                   </Label>
                 </div>
+                {watchedIsExam && (
+                  <p className="text-xs text-amber-600 ml-6">
+                    Chat settings are automatically disabled for exams
+                  </p>
+                )}
 
-                {watchedEnableChat && (
+                {watchedEnableChat && !watchedIsExam && (
                   <div className="ml-6 space-y-4 border-l-2 border-gray-200 pl-4">
                     <div className="space-y-2">
                       <Label htmlFor="chatRoomName">Chat Room Name</Label>

@@ -45,12 +45,7 @@ export default function HomePage() {
               <div className="space-y-4">
                 <Link href="/student">
                   <Button className="w-full btn-inftech-primary">
-                    Student Login
-                  </Button>
-                </Link>
-                <Link href="/student/register">
-                  <Button variant="outline" className="w-full btn-inftech-secondary">
-                    Don't have an account? Create One
+                    Get Started
                   </Button>
                 </Link>
               </div>
@@ -77,7 +72,7 @@ export default function HomePage() {
               </p>
               <Link href="/admin">
                 <Button className="w-full btn-inftech-success">
-                  Admin Login
+                  Get Started
                 </Button>
               </Link>
             </CardContent>

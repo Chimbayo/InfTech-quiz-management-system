@@ -38,6 +38,8 @@ model User {
   helpRequests      HelpRequest[]
   helpResponses     HelpResponse[]
   studyMilestones   StudyMilestone[]
+  sentMessages      DirectMessage[] @relation("SentMessages")
+  receivedMessages  DirectMessage[] @relation("ReceivedMessages")
 
   @@map("users")
 }
@@ -54,6 +56,10 @@ model Quiz {
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
   chatSettings String?   // Store chat configuration as JSON string
+  // Exam-specific fields
+  isExam      Boolean  @default(false) // Distinguishes between quiz and exam
+  examEndTime DateTime? // When the exam period ends (for post-exam chat creation)
+  examDuration Int?     // Duration in minutes for the exam period
 
   // Relations
   creatorId   String
@@ -411,4 +417,23 @@ model StudyMilestone {
   user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@map("study_milestones")
+}
+
+model DirectMessage {
+  id          String   @id @default(cuid())
+  content     String
+  senderId    String
+  recipientId String
+  isRead      Boolean  @default(false)
+  readAt      DateTime?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  isDeleted   Boolean  @default(false)
+  deletedAt   DateTime?
+
+  // Relations
+  sender      User     @relation("SentMessages", fields: [senderId], references: [id], onDelete: Cascade)
+  recipient   User     @relation("ReceivedMessages", fields: [recipientId], references: [id], onDelete: Cascade)
+
+  @@map("direct_messages")
 }

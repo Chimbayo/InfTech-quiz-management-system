@@ -92,7 +92,7 @@ export function RegisterForm() {
               </div>
             </div>
             <p className="text-responsive-sm text-gray-600">
-              Your account has been created successfully. You will be redirected to the login page shortly.
+              Your account has been created successfully.
             </p>
             <div className="flex justify-center">
               <div className="animate-spin rounded-full h-6 w-6 border-b-2 border-green-600"></div>

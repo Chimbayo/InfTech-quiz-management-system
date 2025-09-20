@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation'
 import { requireRole } from '@/lib/auth'
 import { prisma } from '@/lib/prisma'
 import { QuizResultsPage } from '@/components/admin/quiz-results-page'
+import { calculateQuizStatistics } from '@/lib/quiz-statistics'
 import { UserRole } from '@/types'
 
 // Force dynamic rendering
@@ -28,7 +29,7 @@ export default async function AdminQuizResultsPage({ params }: QuizResultsPagePr
       redirect('/admin/dashboard')
     }
 
-    // Get all attempts for this quiz with user details
+    // Get all attempts for this quiz with user details - sorted by score descending
     const attempts = await prisma.quizAttempt.findMany({
       where: { quizId: params.id },
       include: {
@@ -49,15 +50,14 @@ export default async function AdminQuizResultsPage({ params }: QuizResultsPagePr
           },
         },
       },
-      orderBy: { completedAt: 'desc' },
+      orderBy: [
+        { score: 'desc' }, // Primary sort by score (highest first)
+        { completedAt: 'asc' } // Secondary sort by completion time (earliest first for same scores)
+      ],
     })
 
-    // Calculate statistics
-    const totalAttempts = attempts.length
-    const passedAttempts = attempts.filter(attempt => attempt.passed).length
-    const averageScore = totalAttempts > 0 
-      ? attempts.reduce((sum, attempt) => sum + attempt.score, 0) / totalAttempts 
-      : 0
+    // Calculate comprehensive statistics using the enhanced utility
+    const statistics = await calculateQuizStatistics(params.id)
 
     const results = {
       quiz: {
@@ -66,15 +66,24 @@ export default async function AdminQuizResultsPage({ params }: QuizResultsPagePr
         description: quiz.description,
         passingScore: quiz.passingScore,
         createdAt: quiz.createdAt,
+        isExam: (quiz as any).isExam || false,
+        examEndTime: (quiz as any).examEndTime || null,
+        examDuration: (quiz as any).examDuration || null,
       },
       statistics: {
-        totalAttempts,
-        passedAttempts,
-        failedAttempts: totalAttempts - passedAttempts,
-        passRate: totalAttempts > 0 ? (passedAttempts / totalAttempts) * 100 : 0,
-        averageScore,
+        totalAttempts: statistics.totalAttempts,
+        completedAttempts: statistics.completedAttempts,
+        incompleteAttempts: statistics.incompleteAttempts,
+        uniqueStudents: statistics.uniqueStudents,
+        passedAttempts: statistics.passedAttempts,
+        failedAttempts: statistics.failedAttempts,
+        passRate: statistics.passRate,
+        averageScore: statistics.averageScore,
+        highestScore: statistics.highestScore,
+        lowestScore: statistics.lowestScore,
+        averageTimeSpent: statistics.averageTimeSpent,
       },
-      attempts,
+      attempts: attempts.filter(attempt => attempt.completedAt !== null), // Only show completed attempts
     }
 
     return (

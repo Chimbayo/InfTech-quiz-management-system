@@ -180,7 +180,6 @@ export function EnhancedIntegrityMonitor() {
             </div>
           </CardContent>
         </Card>
-
         <Card className="card-professional">
           <CardContent className="p-4">
             <div className="flex items-center justify-between">

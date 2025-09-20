@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getSession } from '@/lib/auth'
 import { monitorMessage } from '@/lib/academic-integrity'
+import { checkChatRoomAccess, getAccessDeniedMessage } from '@/lib/chat-access-control'
 
 // GET /api/chat/rooms/[id]/messages - Get messages for a room
 export async function GET(
@@ -21,11 +22,27 @@ export async function GET(
 
     // Check if room exists and user has access
     const room = await prisma.chatRoom.findUnique({
-      where: { id: roomId }
+      where: { id: roomId },
+      include: {
+        quiz: {
+          select: {
+            id: true,
+            title: true
+          }
+        }
+      }
     })
 
     if (!room) {
       return NextResponse.json({ error: 'Room not found' }, { status: 404 })
+    }
+
+    // Check access permissions
+    const hasAccess = await checkChatRoomAccess(session.id, session.role, room.type, room.quizId)
+    if (!hasAccess) {
+      return NextResponse.json({ 
+        error: getAccessDeniedMessage(room.type) 
+      }, { status: 403 })
     }
 
     const messages = await prisma.chatMessage.findMany({
@@ -90,6 +107,14 @@ export async function POST(
 
     if (!room.isActive) {
       return NextResponse.json({ error: 'Room is not active' }, { status: 403 })
+    }
+
+    // Check access permissions
+    const hasAccess = await checkChatRoomAccess(session.id, session.role, room.type, room.quizId)
+    if (!hasAccess) {
+      return NextResponse.json({ 
+        error: getAccessDeniedMessage(room.type) 
+      }, { status: 403 })
     }
 
     // Academic integrity check - monitor the message
