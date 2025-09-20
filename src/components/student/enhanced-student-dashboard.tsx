@@ -405,7 +405,7 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
   }
 
   const getScoreColor = (score: number, passingScore: number) => {
-    return score >= passingScore ? 'text-green-600' : 'text-red-600'
+    return score >= passingScore ? 'text-blue-600' : 'text-indigo-600'
   }
 
   const getScoreBadgeVariant = (score: number, passingScore: number) => {
@@ -616,7 +616,7 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
           <TabsContent value="dashboard" className="space-y-6 lg:space-y-8">
             {/* Stats Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
-              <Card className="stat-card-inftech stat-card-primary">
+              <Card className="stat-card-inftech stat-card-student-primary">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                   <CardTitle className="text-sm font-semibold text-white/90">Available Quizzes</CardTitle>
                   <BookOpen className="h-6 w-6 text-white/80" />
@@ -626,7 +626,7 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                 </CardContent>
               </Card>
 
-              <Card className="stat-card-inftech stat-card-success">
+              <Card className="stat-card-inftech stat-card-student-secondary">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                   <CardTitle className="text-sm font-semibold text-white/90">Completed</CardTitle>
                   <CheckCircle className="h-6 w-6 text-white/80" />
@@ -637,7 +637,7 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                 </CardContent>
               </Card>
 
-              <Card className="stat-card-inftech stat-card-warning">
+              <Card className="stat-card-inftech stat-card-student-accent">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                   <CardTitle className="text-sm font-semibold text-white/90">Average Score</CardTitle>
                   <TrendingUp className="h-6 w-6 text-white/80" />
@@ -653,7 +653,7 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                 </CardContent>
               </Card>
 
-              <Card className="stat-card-inftech stat-card-info">
+              <Card className="stat-card-inftech stat-card-student-light">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                   <CardTitle className="text-sm font-semibold text-white/90">Study Groups</CardTitle>
                   <Users className="h-6 w-6 text-white/80" />
@@ -671,7 +671,7 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
               <Card className="card-inftech card-inftech-hover w-full">
                 <CardHeader className="pb-4">
                   <CardTitle className="flex items-center gap-3 text-xl heading-inftech-primary">
-                    <div className="w-10 h-10 bg-gradient-to-r from-yellow-500 to-orange-500 rounded-xl flex items-center justify-center">
+                    <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-500 rounded-xl flex items-center justify-center">
                       <Star className="h-5 w-5 text-white" />
                     </div>
                     Recent Achievements
@@ -685,11 +685,11 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                     </div>
                   ) : (
                     studyMilestones.map((milestone) => (
-                      <div key={milestone.id} className="flex items-center gap-4 p-4 bg-gradient-to-r from-slate-50 to-yellow-50 rounded-xl border border-slate-200 hover:shadow-md transition-all duration-300">
+                      <div key={milestone.id} className="flex items-center gap-4 p-4 bg-gradient-to-r from-slate-50 to-blue-50 rounded-xl border border-slate-200 hover:shadow-md transition-all duration-300">
                         <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-md ${
-                          milestone.type === 'completion' ? 'bg-gradient-to-r from-emerald-500 to-green-500' :
+                          milestone.type === 'completion' ? 'bg-gradient-to-r from-blue-600 to-indigo-600' :
                           milestone.type === 'social' ? 'bg-gradient-to-r from-blue-500 to-indigo-500' : 
-                          'bg-gradient-to-r from-yellow-500 to-orange-500'
+                          'bg-gradient-to-r from-indigo-500 to-blue-600'
                         }`}>
                           {milestone.type === 'completion' ? <CheckCircle className="h-6 w-6 text-white" /> :
                            milestone.type === 'social' ? <Users className="h-6 w-6 text-white" /> :
@@ -732,7 +732,7 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                           <CardTitle className="flex items-center gap-4 text-xl mb-3">
                             <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg ${
                               quiz.isExam 
-                                ? 'bg-gradient-to-r from-red-500 to-red-600' 
+                                ? 'bg-gradient-to-r from-indigo-600 to-blue-700' 
                                 : 'bg-gradient-to-r from-blue-500 to-indigo-500'
                             }`}>
                               <BookOpen className="h-6 w-6 text-white" />
@@ -902,22 +902,22 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
           {/* Study Groups Tab */}
           <TabsContent value="study-groups" className="space-y-6">
             <div className="mb-6">
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-700 to-indigo-700 bg-clip-text text-transparent">My Study Groups</h2>
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-700 to-indigo-700 bg-clip-text text-transparent">My Study Groups</h2>
               <p className="text-gray-600 mt-1">Collaborate with peers in your assigned study groups and participate in discussions</p>
             </div>
 
             <div className="grid gap-6">
               {studyGroups.map((group) => (
-                <Card key={group.id} className="border-l-4 border-l-purple-500 hover:shadow-lg transition-all duration-300">
-                  <CardHeader className="bg-gradient-to-r from-purple-50 to-indigo-50">
+                <Card key={group.id} className="border-l-4 border-l-blue-500 hover:shadow-lg transition-all duration-300">
+                  <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50">
                     <div className="flex justify-between items-start">
                       <div className="flex-1">
                         <CardTitle className="flex items-center gap-3 text-lg">
-                          <div className="w-10 h-10 bg-gradient-to-r from-purple-500 to-purple-600 rounded-lg flex items-center justify-center">
+                          <div className="w-10 h-10 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-lg flex items-center justify-center">
                             <Users className="h-5 w-5 text-white" />
                           </div>
                           {group.name}
-                          <Badge className="bg-purple-100 text-purple-800">
+                          <Badge className="bg-blue-100 text-blue-800">
                             Member
                           </Badge>
                         </CardTitle>
@@ -929,9 +929,9 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                   </CardHeader>
                   <CardContent className="pt-4">
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-                      <div className="text-center p-3 bg-purple-50 rounded-lg">
-                        <div className="text-2xl font-bold text-purple-600">{group.members.length}</div>
-                        <div className="text-sm text-purple-700">Members</div>
+                      <div className="text-center p-3 bg-blue-50 rounded-lg">
+                        <div className="text-2xl font-bold text-blue-600">{group.members.length}</div>
+                        <div className="text-sm text-blue-700">Members</div>
                       </div>
                       <div className="text-center p-3 bg-blue-50 rounded-lg">
                         <div className="text-2xl font-bold text-blue-600">
@@ -939,9 +939,9 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                         </div>
                         <div className="text-sm text-blue-700">Chat Room</div>
                       </div>
-                      <div className="text-center p-3 bg-green-50 rounded-lg">
-                        <div className="text-2xl font-bold text-green-600">Active</div>
-                        <div className="text-sm text-green-700">Status</div>
+                      <div className="text-center p-3 bg-indigo-50 rounded-lg">
+                        <div className="text-2xl font-bold text-indigo-600">Active</div>
+                        <div className="text-sm text-indigo-700">Status</div>
                       </div>
                     </div>
 
@@ -975,7 +975,7 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                           <Button
                             size="sm"
                             onClick={() => handleJoinChatRoom(group.chatRooms![0].id)}
-                            className="bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800"
+                            className="bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800"
                           >
                             <MessageSquare className="h-4 w-4 mr-2" />
                             Join Discussion
@@ -984,7 +984,7 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                         <Button
                           variant="outline"
                           size="sm"
-                          className="border-purple-200 text-purple-700 hover:bg-purple-50"
+                          className="border-blue-200 text-blue-700 hover:bg-blue-50"
                         >
                           <Users className="h-4 w-4 mr-2" />
                           View Members
@@ -999,8 +999,8 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
             {studyGroups.length === 0 && (
               <Card className="border-2 border-dashed border-gray-200">
                 <CardContent className="text-center py-16">
-                  <div className="w-20 h-20 bg-gradient-to-r from-purple-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <Users className="h-10 w-10 text-purple-500" />
+                  <div className="w-20 h-20 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Users className="h-10 w-10 text-blue-500" />
                   </div>
                   <h3 className="text-xl font-semibold text-gray-900 mb-2">No Study Groups Assigned</h3>
                   <p className="text-gray-600 mb-4">
@@ -1045,7 +1045,7 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                 <Card>
                   <CardHeader>
                     <CardTitle className="flex items-center gap-2">
-                      <HelpCircle className="h-5 w-5 text-purple-600" />
+                      <HelpCircle className="h-5 w-5 text-blue-600" />
                       Need Help?
                     </CardTitle>
                     <CardDescription>
@@ -1055,8 +1055,8 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                   <CardContent className="text-center py-8">
                     <div className="space-y-4">
                       <div className="flex justify-center">
-                        <div className="bg-purple-100 p-4 rounded-full">
-                          <HelpCircle className="h-8 w-8 text-purple-600" />
+                        <div className="bg-blue-100 p-4 rounded-full">
+                          <HelpCircle className="h-8 w-8 text-blue-600" />
                         </div>
                       </div>
                       <div>
@@ -1066,7 +1066,7 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                         </p>
                         <Button 
                           onClick={() => setActiveTab('help')}
-                          className="bg-purple-600 hover:bg-purple-700"
+                          className="bg-blue-600 hover:bg-blue-700"
                         >
                           <HelpCircle className="h-4 w-4 mr-2" />
                           Go to Help Center
@@ -1125,7 +1125,7 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                         variant={filterStatus === 'passed' ? 'default' : 'outline'}
                         size="sm"
                         onClick={() => setFilterStatus('passed')}
-                        className="whitespace-nowrap text-green-600 border-green-200 hover:bg-green-50"
+                        className="whitespace-nowrap text-blue-600 border-blue-200 hover:bg-blue-50"
                       >
                         Passed ({attempts.filter(a => a.passed).length})
                       </Button>
@@ -1133,7 +1133,7 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                         variant={filterStatus === 'failed' ? 'default' : 'outline'}
                         size="sm"
                         onClick={() => setFilterStatus('failed')}
-                        className="whitespace-nowrap text-red-600 border-red-200 hover:bg-red-50"
+                        className="whitespace-nowrap text-indigo-600 border-indigo-200 hover:bg-indigo-50"
                       >
                         Failed ({attempts.filter(a => !a.passed).length})
                       </Button>
@@ -1180,9 +1180,9 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                         <div className="flex items-center space-x-4">
                           <div className="flex-shrink-0">
                             {attempt.passed ? (
-                              <CheckCircle className="h-8 w-8 text-green-600" />
+                              <CheckCircle className="h-8 w-8 text-blue-600" />
                             ) : (
-                              <XCircle className="h-8 w-8 text-red-600" />
+                              <XCircle className="h-8 w-8 text-indigo-600" />
                             )}
                           </div>
                           <div className="flex-1">
@@ -1276,7 +1276,7 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
           {/* Achievements Tab */}
           <TabsContent value="achievements" className="space-y-6">
             <div className="mb-6">
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent">Your Achievements</h2>
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">Your Achievements</h2>
               <p className="text-gray-600 mt-1">Track your progress and unlock new badges through active participation</p>
             </div>
 
@@ -1326,13 +1326,13 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
               </Card>
 
               {/* Peer Help Section */}
-              <Card className="border-green-200 shadow-lg">
-                <CardHeader className="bg-gradient-to-r from-green-50 to-emerald-50 border-b border-green-100">
-                  <CardTitle className="flex items-center gap-2 text-green-800">
+              <Card className="border-blue-200 shadow-lg">
+                <CardHeader className="bg-gradient-to-r from-blue-50 to-indigo-50 border-b border-blue-100">
+                  <CardTitle className="flex items-center gap-2 text-blue-800">
                     <Users className="h-5 w-5" />
                     Help Your Peers
                   </CardTitle>
-                  <CardDescription className="text-green-600">
+                  <CardDescription className="text-blue-600">
                     Answer questions from classmates and earn peer helper badges
                   </CardDescription>
                 </CardHeader>

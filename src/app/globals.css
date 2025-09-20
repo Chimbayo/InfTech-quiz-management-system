@@ -220,6 +220,23 @@
   .stat-card-info {
     @apply bg-gradient-to-br from-cyan-500 to-blue-600 text-white border-cyan-300;
   }
+
+  /* Student Dashboard Unified Color Scheme */
+  .stat-card-student-primary {
+    @apply bg-gradient-to-br from-blue-500 to-indigo-600 text-white border-blue-300;
+  }
+  
+  .stat-card-student-secondary {
+    @apply bg-gradient-to-br from-blue-600 to-indigo-700 text-white border-blue-400;
+  }
+  
+  .stat-card-student-accent {
+    @apply bg-gradient-to-br from-indigo-500 to-blue-600 text-white border-indigo-300;
+  }
+  
+  .stat-card-student-light {
+    @apply bg-gradient-to-br from-blue-400 to-indigo-500 text-white border-blue-200;
+  }
   
   /* Professional InfTech Badge Styles */
   .badge-inftech {
