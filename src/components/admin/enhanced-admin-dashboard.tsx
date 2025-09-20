@@ -463,7 +463,7 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
             </div>
             <div className="flex items-center space-x-2 lg:space-x-4">
               <div className="hidden sm:flex items-center space-x-2 bg-white/20 px-3 py-2 rounded-lg">
-                <div className="w-2 h-2 bg-green-400 rounded-full"></div>
+                <div className="w-2 h-2 bg-blue-400 rounded-full"></div>
                 <span className="text-sm font-medium text-white">Welcome, {user.name}</span>
               </div>
               <Button
@@ -493,15 +493,15 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
         {/* Sidebar Navigation */}
         <div className={`${
           isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
-        } lg:translate-x-0 fixed lg:relative z-50 lg:z-auto w-64 h-full bg-white/95 lg:bg-white/90 backdrop-blur-sm border-r border-emerald-100 p-4 lg:p-6 transition-transform duration-300 ease-in-out`}>
+        } lg:translate-x-0 fixed lg:relative z-50 lg:z-auto w-64 h-full bg-white/95 lg:bg-white/90 backdrop-blur-sm border-r border-blue-100 p-4 lg:p-6 transition-transform duration-300 ease-in-out`}>
           {/* Mobile Close Button */}
           <div className="flex justify-between items-center mb-4 lg:hidden">
-            <h2 className="text-lg font-semibold text-emerald-800">Menu</h2>
+            <h2 className="text-lg font-semibold text-blue-800">Menu</h2>
             <Button
               variant="ghost"
               size="sm"
               onClick={() => setIsMobileMenuOpen(false)}
-              className="text-emerald-700 hover:bg-emerald-50"
+              className="text-blue-700 hover:bg-blue-50"
             >
               <X className="h-5 w-5" />
             </Button>
@@ -516,8 +516,8 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
               variant={activeTab === 'dashboard' ? 'default' : 'ghost'}
               className={`w-full justify-start nav-inftech ${
                 activeTab === 'dashboard' 
-                  ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-lg' 
-                  : 'text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800'
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' 
+                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
               }`}
             >
               <BarChart3 className="h-4 w-4 mr-2" />
@@ -531,8 +531,8 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
               variant={activeTab === 'quizzes' ? 'default' : 'ghost'}
               className={`w-full justify-start nav-inftech ${
                 activeTab === 'quizzes' 
-                  ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-lg' 
-                  : 'text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800'
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' 
+                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
               }`}
             >
               <BookOpen className="h-4 w-4 mr-2" />
@@ -546,8 +546,8 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
               variant={activeTab === 'students' ? 'default' : 'ghost'}
               className={`w-full justify-start nav-inftech ${
                 activeTab === 'students' 
-                  ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-lg' 
-                  : 'text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800'
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' 
+                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
               }`}
             >
               <Users className="h-4 w-4 mr-2" />
@@ -606,8 +606,8 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
               variant={activeTab === 'analytics' ? 'default' : 'ghost'}
               className={`w-full justify-start nav-inftech ${
                 activeTab === 'analytics' 
-                  ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-lg' 
-                  : 'text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800'
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' 
+                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
               }`}
             >
               <BarChart3 className="h-4 w-4 mr-2" />
@@ -618,8 +618,8 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
               variant={activeTab === 'predictive' ? 'default' : 'ghost'}
               className={`w-full justify-start nav-inftech ${
                 activeTab === 'predictive' 
-                  ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-lg' 
-                  : 'text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800'
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' 
+                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
               }`}
             >
               <Brain className="h-4 w-4 mr-2" />
@@ -630,8 +630,8 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
               variant={activeTab === 'integrity' ? 'default' : 'ghost'}
               className={`w-full justify-start nav-inftech ${
                 activeTab === 'integrity' 
-                  ? 'bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-lg' 
-                  : 'text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800'
+                  ? 'bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg' 
+                  : 'text-blue-700 hover:bg-blue-50 hover:text-blue-800'
               }`}
             >
               <Target className="h-4 w-4 mr-2" />
@@ -640,7 +640,7 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
             <Button
               onClick={() => router.push('/admin/database')}
               variant="ghost"
-              className="w-full justify-start nav-inftech text-emerald-700 hover:bg-emerald-50 hover:text-emerald-800"
+              className="w-full justify-start nav-inftech text-blue-700 hover:bg-blue-50 hover:text-blue-800"
             >
               <Database className="h-4 w-4 mr-2" />
               Database Management
@@ -656,7 +656,7 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
               <div className="space-y-4 lg:space-y-6">
                 <div>
                   <h2 className="text-2xl lg:text-3xl font-bold heading-inftech-admin">Dashboard Overview</h2>
-                  <p className="text-emerald-600 mt-2 text-sm lg:text-base">Manage your quiz system and monitor student activity</p>
+                  <p className="text-blue-600 mt-2 text-sm lg:text-base">Manage your quiz system and monitor student activity</p>
                 </div>
 
                 {/* Stats Cards */}
@@ -668,7 +668,7 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
                     </CardHeader>
                     <CardContent>
                       <div className="text-3xl font-bold text-white mb-2">{stats.totalQuizzes}</div>
-                      <div className="text-emerald-100 text-sm font-medium">Active Assessments</div>
+                      <div className="text-blue-100 text-sm font-medium">Active Assessments</div>
                     </CardContent>
                   </Card>
 

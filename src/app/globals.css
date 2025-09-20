@@ -120,7 +120,7 @@
   }
   
   .card-inftech-success {
-    @apply bg-gradient-to-br from-emerald-50 to-green-50 border-emerald-200/60;
+    @apply bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200/60;
   }
   
   .card-inftech-warning {
@@ -141,7 +141,7 @@
   }
   
   .btn-inftech-success {
-    @apply bg-gradient-to-r from-emerald-600 to-green-600 hover:from-emerald-700 hover:to-green-700 text-white font-semibold px-6 py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-emerald-500 focus:ring-offset-2 transform hover:-translate-y-0.5;
+    @apply bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white font-semibold px-6 py-3 rounded-xl shadow-md hover:shadow-lg transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transform hover:-translate-y-0.5;
   }
   
   .btn-inftech-warning {
@@ -163,7 +163,7 @@
   }
   
   .header-inftech-admin {
-    @apply bg-gradient-to-r from-emerald-600 to-green-600 text-white shadow-lg;
+    @apply bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg;
   }
   
   .header-inftech-student {
@@ -176,7 +176,7 @@
   }
   
   .bg-inftech-admin {
-    @apply bg-gradient-to-br from-emerald-50 via-green-50 to-teal-100;
+    @apply bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-100;
   }
   
   .bg-inftech-student {
@@ -210,7 +210,7 @@
   }
   
   .stat-card-success {
-    @apply bg-gradient-to-br from-emerald-500 to-green-600 text-white border-emerald-300;
+    @apply bg-gradient-to-br from-blue-500 to-indigo-600 text-white border-blue-300;
   }
   
   .stat-card-warning {
@@ -248,7 +248,7 @@
   }
   
   .badge-inftech-success {
-    @apply bg-emerald-100 text-emerald-800 border border-emerald-200;
+    @apply bg-blue-100 text-blue-800 border border-blue-200;
   }
   
   .badge-inftech-warning {
@@ -269,7 +269,7 @@
   }
   
   .heading-inftech-admin {
-    @apply font-bold bg-gradient-to-r from-emerald-700 to-green-700 bg-clip-text text-transparent;
+    @apply font-bold bg-gradient-to-r from-blue-700 to-indigo-700 bg-clip-text text-transparent;
   }
 
   /* ========================================
