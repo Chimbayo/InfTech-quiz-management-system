@@ -32,7 +32,9 @@ import {
   Database,
   Shield,
   LogOut,
-  HelpCircle
+  HelpCircle,
+  Menu,
+  X
 } from 'lucide-react'
 import { SessionUser } from '@/lib/auth'
 import { Quiz } from '@prisma/client'
@@ -161,19 +163,23 @@ interface Announcement {
 
 export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDashboardProps) {
   const router = useRouter()
+  const { socket, isConnected } = useWebSocket()
+  const [activeTab, setActiveTab] = useState('dashboard')
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [chatRooms, setChatRooms] = useState<ChatRoom[]>([])
   const [suspiciousActivities, setSuspiciousActivities] = useState<SuspiciousActivity[]>([])
-  const [selectedQuiz, setSelectedQuiz] = useState<string>('')
+  const [students, setStudents] = useState<any[]>([])
+  const [loadingStudents, setLoadingStudents] = useState(false)
+  const [studyGroups, setStudyGroups] = useState<any[]>([])
+  const [loadingStudyGroups, setLoadingStudyGroups] = useState(false)
+  const [allQuizzes, setAllQuizzes] = useState<QuizWithCounts[]>(quizzes)
+  const [selectedStudent, setSelectedStudent] = useState<any>(null)
+  const [selectedGroup, setSelectedGroup] = useState<any>(null)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [announcementText, setAnnouncementText] = useState('')
   const [newStudyGroup, setNewStudyGroup] = useState({ name: '', description: '', quizId: '', memberIds: [] as string[] })
-  const [announcements, setAnnouncements] = useState<Announcement[]>([])
   const [newAnnouncement, setNewAnnouncement] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [announcementText, setAnnouncementText] = useState('')
-  const [activeTab, setActiveTab] = useState('dashboard')
-  const [allQuizzes, setAllQuizzes] = useState(quizzes)
-  
-  // Missing state variables
   const [students, setStudents] = useState<Student[]>([])
   const [studyGroups, setStudyGroups] = useState<StudyGroup[]>([])
   const [loadingStudents, setLoadingStudents] = useState(false)
@@ -445,15 +451,23 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="lg:hidden mr-3 text-white hover:bg-white/20"
+              >
+                <Menu className="h-6 w-6" />
+              </Button>
               <div className="bg-white/20 p-2 rounded-lg mr-3">
                 <Shield className="h-6 w-6 text-white" />
               </div>
-              <h1 className="text-2xl font-bold text-white">
+              <h1 className="text-xl lg:text-2xl font-bold text-white">
                 Admin Dashboard
               </h1>
             </div>
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2 bg-white/20 px-3 py-2 rounded-lg">
+            <div className="flex items-center space-x-2 lg:space-x-4">
+              <div className="hidden sm:flex items-center space-x-2 bg-white/20 px-3 py-2 rounded-lg">
                 <div className="w-2 h-2 bg-green-400 rounded-full"></div>
                 <span className="text-sm font-medium text-white">Welcome, {user.name}</span>
               </div>
@@ -465,19 +479,45 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
                 className="flex items-center gap-2 border-white/30 text-white hover:bg-white/20 hover:border-white/50"
               >
                 <LogOut className="h-4 w-4" />
-                {isLoggingOut ? 'Logging out...' : 'Logout'}
+                <span className="hidden sm:inline">{isLoggingOut ? 'Logging out...' : 'Logout'}</span>
               </Button>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="flex h-[calc(100vh-80px)]">
+      <div className="flex h-[calc(100vh-80px)] relative">
+        {/* Mobile Overlay */}
+        {isMobileMenuOpen && (
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+        )}
+
         {/* Sidebar Navigation */}
-        <div className="w-64 bg-white/90 backdrop-blur-sm border-r border-emerald-100 p-6">
+        <div className={`${
+          isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        } lg:translate-x-0 fixed lg:relative z-50 lg:z-auto w-64 h-full bg-white/95 lg:bg-white/90 backdrop-blur-sm border-r border-emerald-100 p-4 lg:p-6 transition-transform duration-300 ease-in-out`}>
+          {/* Mobile Close Button */}
+          <div className="flex justify-between items-center mb-4 lg:hidden">
+            <h2 className="text-lg font-semibold text-emerald-800">Menu</h2>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="text-emerald-700 hover:bg-emerald-50"
+            >
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
+          
           <div className="space-y-2">
             <Button
-              onClick={() => setActiveTab('dashboard')}
+              onClick={() => {
+                setActiveTab('dashboard')
+                setIsMobileMenuOpen(false)
+              }}
               variant={activeTab === 'dashboard' ? 'default' : 'ghost'}
               className={`w-full justify-start nav-inftech ${
                 activeTab === 'dashboard' 
@@ -489,7 +529,10 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
               Dashboard
             </Button>
             <Button
-              onClick={() => setActiveTab('quizzes')}
+              onClick={() => {
+                setActiveTab('quizzes')
+                setIsMobileMenuOpen(false)
+              }}
               variant={activeTab === 'quizzes' ? 'default' : 'ghost'}
               className={`w-full justify-start nav-inftech ${
                 activeTab === 'quizzes' 
@@ -501,7 +544,10 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
               Quizzes
             </Button>
             <Button
-              onClick={() => setActiveTab('students')}
+              onClick={() => {
+                setActiveTab('students')
+                setIsMobileMenuOpen(false)
+              }}
               variant={activeTab === 'students' ? 'default' : 'ghost'}
               className={`w-full justify-start nav-inftech ${
                 activeTab === 'students' 
@@ -608,18 +654,18 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
         </div>
 
         {/* Main Content */}
-        <div className="flex-1 overflow-auto">
+        <div className="flex-1 overflow-auto lg:ml-0">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="h-full">
             {/* Dashboard Tab */}
-            <TabsContent value="dashboard" className="space-y-6 p-6">
-              <div className="space-y-6">
+            <TabsContent value="dashboard" className="space-y-4 lg:space-y-6 p-4 lg:p-6">
+              <div className="space-y-4 lg:space-y-6">
                 <div>
-                  <h2 className="text-3xl font-bold heading-inftech-admin">Dashboard Overview</h2>
-                  <p className="text-emerald-600 mt-2">Manage your quiz system and monitor student activity</p>
+                  <h2 className="text-2xl lg:text-3xl font-bold heading-inftech-admin">Dashboard Overview</h2>
+                  <p className="text-emerald-600 mt-2 text-sm lg:text-base">Manage your quiz system and monitor student activity</p>
                 </div>
 
                 {/* Stats Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
                   <Card className="stat-card-inftech stat-card-success">
                     <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                       <CardTitle className="text-sm font-semibold text-white/90">Total Quizzes</CardTitle>

@@ -9,29 +9,34 @@ import { Badge } from '@/components/ui/badge'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
 import { 
   BookOpen, 
-  Clock, 
+  BarChart3, 
   Users, 
   MessageSquare, 
-  TrendingUp, 
-  Award, 
   Calendar, 
-  Play, 
-  Star,
-  CheckCircle,
-  Target,
-  Trophy,
-  Zap,
-  LogOut,
-  BarChart3,
-  UserPlus,
-  XCircle,
-  History,
-  Flame,
+  TrendingUp, 
+  CheckCircle, 
+  XCircle, 
+  Clock, 
+  Target, 
+  Award, 
+  Zap, 
+  Star, 
+  Trophy, 
+  Flame, 
+  HelpCircle, 
+  LogOut, 
+  History, 
+  Filter, 
+  Search,
+  Plus,
+  ArrowRight,
+  ChevronRight,
   Bell,
-  TrendingDown,
-  Activity,
-  HelpCircle,
-  Mail
+  Settings,
+  User,
+  Mail,
+  Menu,
+  X
 } from 'lucide-react'
 import { GamificationPanel } from '@/components/student/gamification-panel'
 import { StudySchedulingPanel } from '@/components/student/study-scheduling-panel'
@@ -98,7 +103,7 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
     quiz?: { id: string; title: string }
     _count?: { messages: number }
   })[]>([])
-  const [studyGroups, setStudyGroups] = useState<StudyGroupWithMembers[]>([])
+  const [studyGroups, setStudyGroups] = useState<StudyGroup[]>([])
   const [studyMilestones, setStudyMilestones] = useState<StudyMilestone[]>([])
   const [activeTab, setActiveTab] = useState('dashboard')
   const [upcomingQuizzes, setUpcomingQuizzes] = useState<QuizWithCounts[]>([])
@@ -111,6 +116,7 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
   const [selectedQuizForSession, setSelectedQuizForSession] = useState<string | null>(null)
   const [searchTerm, setSearchTerm] = useState('')
   const [filterStatus, setFilterStatus] = useState<'all' | 'passed' | 'failed'>('all')
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const { socket, isConnected } = useWebSocket()
 
   const fetchQuizzes = useCallback(async () => {
@@ -404,27 +410,35 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
       {/* Header */}
       <header className="header-inftech-student">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex justify-between items-center h-20">
+          <div className="flex justify-between items-center h-16 lg:h-20">
             <div className="flex items-center">
-              <div className="w-12 h-12 bg-gradient-to-r from-white/20 to-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center mr-4 shadow-lg">
-                <BookOpen className="h-7 w-7 text-white" />
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                className="lg:hidden mr-3 text-white hover:bg-white/20"
+              >
+                <Menu className="h-6 w-6" />
+              </Button>
+              <div className="w-10 h-10 lg:w-12 lg:h-12 bg-gradient-to-r from-white/20 to-white/10 backdrop-blur-sm rounded-2xl flex items-center justify-center mr-3 lg:mr-4 shadow-lg">
+                <BookOpen className="h-5 w-5 lg:h-7 lg:w-7 text-white" />
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-white">
-                  Quiz Student Portal
+                <h1 className="text-lg lg:text-2xl font-bold text-white">
+                  Student Portal
                 </h1>
-                <p className="text-blue-100 text-sm">Comprehensive Learning Dashboard</p>
+                <p className="text-blue-100 text-xs lg:text-sm hidden sm:block">Comprehensive Learning Dashboard</p>
               </div>
             </div>
-            <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 lg:space-x-4">
               <NotificationBell
                 userId={user.id}
                 userName={user.name}
                 userRole={user.role}
               />
-              <div className="flex items-center space-x-3 bg-white/10 backdrop-blur-sm px-4 py-2 rounded-xl border border-white/20">
+              <div className="hidden sm:flex items-center space-x-3 bg-white/10 backdrop-blur-sm px-3 lg:px-4 py-2 rounded-xl border border-white/20">
                 <div className="w-3 h-3 bg-green-400 rounded-full animate-pulse"></div>
-                <span className="text-sm font-semibold text-white">Welcome, {user.name}</span>
+                <span className="text-xs lg:text-sm font-semibold text-white">Welcome, {user.name}</span>
               </div>
               <Button
                 onClick={handleLogout}
@@ -433,21 +447,47 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
                 disabled={isLoggingOut}
                 className="bg-white/10 backdrop-blur-sm border-white/20 text-white hover:bg-white/20 hover:border-white/30 transition-all duration-300"
               >
-                <LogOut className="h-4 w-4 mr-2" />
-                {isLoggingOut ? 'Logging out...' : 'Logout'}
+                <LogOut className="h-4 w-4 lg:mr-2" />
+                <span className="hidden lg:inline">{isLoggingOut ? 'Logging out...' : 'Logout'}</span>
               </Button>
             </div>
           </div>
         </div>
       </header>
 
-      <div className="flex h-[calc(100vh-80px)]">
+      <div className="flex h-[calc(100vh-64px)] lg:h-[calc(100vh-80px)] relative">
+        {/* Mobile Overlay */}
+        {isMobileMenuOpen && (
+          <div 
+            className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+            onClick={() => setIsMobileMenuOpen(false)}
+          />
+        )}
+
         {/* Left Sidebar Navigation */}
-        <div className="w-72 nav-inftech p-6 flex flex-col">
-          <h3 className="text-xl font-bold heading-inftech-primary mb-6">Navigation</h3>
+        <div className={`${
+          isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
+        } lg:translate-x-0 fixed lg:relative z-50 lg:z-auto w-72 h-full nav-inftech p-4 lg:p-6 flex flex-col transition-transform duration-300 ease-in-out`}>
+          {/* Mobile Close Button */}
+          <div className="flex justify-between items-center mb-4 lg:hidden">
+            <h3 className="text-lg font-bold text-blue-800">Menu</h3>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="text-blue-700 hover:bg-blue-50"
+            >
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
+          
+          <h3 className="text-lg lg:text-xl font-bold heading-inftech-primary mb-4 lg:mb-6 hidden lg:block">Navigation</h3>
           <nav className="space-y-3 flex-1">
             <Button
-              onClick={() => setActiveTab('dashboard')}
+              onClick={() => {
+                setActiveTab('dashboard')
+                setIsMobileMenuOpen(false)
+              }}
               variant="ghost"
               className={`nav-item-inftech w-full justify-start ${
                 activeTab === 'dashboard' 
@@ -459,7 +499,10 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
               Dashboard
             </Button>
             <Button
-              onClick={() => setActiveTab('quizzes')}
+              onClick={() => {
+                setActiveTab('quizzes')
+                setIsMobileMenuOpen(false)
+              }}
               variant="ghost"
               className={`nav-item-inftech w-full justify-start ${
                 activeTab === 'quizzes' 
@@ -558,14 +601,14 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
         </div>
 
         {/* Main Content Area */}
-        <div className="flex-1 overflow-y-auto">
-          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
+        <div className="flex-1 overflow-y-auto lg:ml-0">
+          <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-8">
+            <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-4 lg:space-y-6">
 
           {/* Dashboard Tab */}
-          <TabsContent value="dashboard" className="space-y-8">
+          <TabsContent value="dashboard" className="space-y-6 lg:space-y-8">
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6">
               <Card className="stat-card-inftech stat-card-primary">
                 <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                   <CardTitle className="text-sm font-semibold text-white/90">Available Quizzes</CardTitle>

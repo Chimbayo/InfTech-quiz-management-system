@@ -452,6 +452,91 @@
   .sidebar-mobile.open {
     @apply translate-x-0;
   }
+
+  /* Mobile Dashboard Improvements */
+  .mobile-dashboard-header {
+    @apply h-16 lg:h-20;
+  }
+  
+  .mobile-nav-button {
+    @apply lg:hidden mr-3 text-white hover:bg-white/20 p-2 rounded-lg touch-target;
+  }
+  
+  .mobile-menu-overlay {
+    @apply fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden;
+  }
+  
+  .mobile-sidebar {
+    @apply fixed lg:relative z-50 lg:z-auto w-64 lg:w-72 h-full transition-transform duration-300 ease-in-out;
+  }
+  
+  .mobile-sidebar.closed {
+    @apply -translate-x-full lg:translate-x-0;
+  }
+  
+  .mobile-sidebar.open {
+    @apply translate-x-0;
+  }
+
+  /* Mobile Content Adjustments */
+  .mobile-main-content {
+    @apply flex-1 overflow-y-auto lg:ml-0;
+  }
+  
+  .mobile-stats-grid {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 lg:gap-6;
+  }
+  
+  .mobile-responsive-padding {
+    @apply px-4 sm:px-6 lg:px-8 py-4 lg:py-8;
+  }
+  
+  .mobile-responsive-spacing {
+    @apply space-y-4 lg:space-y-6;
+  }
+
+  /* Touch Targets for Mobile */
+  .touch-target {
+    @apply min-h-[44px] min-w-[44px] flex items-center justify-center;
+  }
+  
+  .mobile-button {
+    @apply px-4 py-3 text-base font-medium rounded-lg transition-all duration-200 touch-target;
+  }
+  
+  .mobile-card {
+    @apply p-4 lg:p-6 rounded-lg shadow-sm border transition-all duration-200;
+  }
+
+  /* Mobile Typography */
+  .mobile-heading {
+    @apply text-xl lg:text-3xl font-bold;
+  }
+  
+  .mobile-subheading {
+    @apply text-lg lg:text-xl font-semibold;
+  }
+  
+  .mobile-text {
+    @apply text-sm lg:text-base;
+  }
+
+  /* Mobile Quiz Cards */
+  .mobile-quiz-card {
+    @apply p-4 lg:p-6 border rounded-lg shadow-sm hover:shadow-md transition-all duration-200;
+  }
+  
+  .mobile-quiz-actions {
+    @apply flex flex-col sm:flex-row gap-2 sm:gap-3 mt-4;
+  }
+  
+  .mobile-quiz-button {
+    @apply flex-1 sm:flex-none px-4 py-2 text-sm font-medium rounded-lg transition-all duration-200 touch-target;
+  }
+  
+  .sidebar-mobile.open {
+    @apply translate-x-0;
+  }
   
   .sidebar-overlay {
     @apply fixed inset-0 bg-black bg-opacity-50 z-40;
