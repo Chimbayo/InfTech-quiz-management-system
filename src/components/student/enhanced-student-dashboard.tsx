@@ -91,6 +91,12 @@ interface StudyGroupWithMembers extends StudyGroup {
   _count: { members: number }
 }
 
+// Extend the StudyGroup type to include the missing properties
+interface ExtendedStudyGroup extends StudyGroup {
+  members: { user: { name: string; id: string; email: string; role: string } }[]
+  chatRooms?: { id: string; name: string; type: string; isActive: boolean }[]
+}
+
 interface EnhancedStudentDashboardProps {
   user: SessionUser
   quizzes: QuizWithCounts[]
@@ -104,7 +110,7 @@ export function EnhancedStudentDashboard({ user, quizzes, attempts }: EnhancedSt
     quiz?: { id: string; title: string }
     _count?: { messages: number }
   })[]>([])
-  const [studyGroups, setStudyGroups] = useState<StudyGroup[]>([])
+  const [studyGroups, setStudyGroups] = useState<ExtendedStudyGroup[]>([])
   const [studyMilestones, setStudyMilestones] = useState<StudyMilestone[]>([])
   const [activeTab, setActiveTab] = useState('dashboard')
   const [upcomingQuizzes, setUpcomingQuizzes] = useState<QuizWithCounts[]>([])
