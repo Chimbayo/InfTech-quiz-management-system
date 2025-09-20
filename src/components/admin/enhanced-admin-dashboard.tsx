@@ -168,24 +168,19 @@ export function EnhancedAdminDashboard({ user, quizzes, stats }: EnhancedAdminDa
   const [isLoggingOut, setIsLoggingOut] = useState(false)
   const [chatRooms, setChatRooms] = useState<ChatRoom[]>([])
   const [suspiciousActivities, setSuspiciousActivities] = useState<SuspiciousActivity[]>([])
-  const [students, setStudents] = useState<any[]>([])
+  const [students, setStudents] = useState<Student[]>([])
   const [loadingStudents, setLoadingStudents] = useState(false)
-  const [studyGroups, setStudyGroups] = useState<any[]>([])
+  const [studyGroups, setStudyGroups] = useState<StudyGroup[]>([])
   const [loadingStudyGroups, setLoadingStudyGroups] = useState(false)
   const [allQuizzes, setAllQuizzes] = useState<QuizWithCounts[]>(quizzes)
   const [selectedStudent, setSelectedStudent] = useState<any>(null)
   const [selectedGroup, setSelectedGroup] = useState<any>(null)
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [announcementText, setAnnouncementText] = useState('')
+  const [selectedQuiz, setSelectedQuiz] = useState('')
   const [newStudyGroup, setNewStudyGroup] = useState({ name: '', description: '', quizId: '', memberIds: [] as string[] })
   const [newAnnouncement, setNewAnnouncement] = useState('')
   const [isLoading, setIsLoading] = useState(false)
-  const [students, setStudents] = useState<Student[]>([])
-  const [studyGroups, setStudyGroups] = useState<StudyGroup[]>([])
-  const [loadingStudents, setLoadingStudents] = useState(false)
-  const [loadingStudyGroups, setLoadingStudyGroups] = useState(false)
-
-  const { socket, isConnected } = useWebSocket()
 
   useEffect(() => {
     if (!socket || !isConnected) return

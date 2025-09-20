@@ -36,7 +36,8 @@ import {
   User,
   Mail,
   Menu,
-  X
+  X,
+  Play
 } from 'lucide-react'
 import { GamificationPanel } from '@/components/student/gamification-panel'
 import { StudySchedulingPanel } from '@/components/student/study-scheduling-panel'
